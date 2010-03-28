@@ -1,19 +1,30 @@
-import random
-
 import pyglet
+from pyglet.window.key import *
 
-from src.util import spr
+from src.blob import Blob
 
-class Blob(pyglet.sprite.Sprite):
-    def __init__(self, sprite, off_min=2, off_max=6):
-        self.off_min = off_min
-        self.off_max = off_max
+
+#class Player(pyglet.sprite):
+class Player(Blob):
+    
+    speed = 2
+    radius = 10
+
+    def __init__(self, scene, batch=None, group=None, pgroup=None):
+        super(Player, self).__init__(dots=10, batch=batch, group=group, pgroup=pgroup)
+        self.scene = scene
+        self.x = self.y = 300
         
-    def set_offset(self):
-        self.xoff = rand.randint(self.off_min, self.off_max)
-        self.yoff = rand.randint(self.off_min, self.off_max)
+    def handle_movement(self, dt):
         
-    def update(self, t):
-        self.set_offset()
+        k = self.scene.keys
+        old = self.position
+
+        self.y += self.speed if k[UP] else -self.speed if k[DOWN] else 0
+        self.x += self.speed if k[RIGHT] else -self.speed if k[LEFT] else 0
         
+        if old != self.position:
+            self.wobble(dt)
         
+    def update(self, dt):
+        self.handle_movement(dt)

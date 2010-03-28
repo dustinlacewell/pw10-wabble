@@ -25,7 +25,7 @@ class GameWindow(pyglet.window.Window):
         # Create a reference for the current scene
         self.scene = None
         # Set initial scene with our utility function
-        self.splashscene()
+        self.gamescene()
 
     def setup_gl(self):
         pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)
@@ -38,6 +38,7 @@ class GameWindow(pyglet.window.Window):
         # Here we tell the current scene to update its logic
         self.scene.update(dt)
         self.bg.update(dt)
+        
 
     def on_draw(self):
         self.clear()
