@@ -16,16 +16,19 @@ class Dot(pyglet.sprite.Sprite):
         self.sprbatch = batch
         self.pgroup = pgroup
         
+        self.scale = .75
+        
         self.footprints = []
         self.oldpos = blob.position
+        self.dryspeed = random.randint(10, 100)
         pyglet.clock.schedule_interval(self.dry_footprints, self.dryrate)
-        pyglet.clock.schedule_interval(self.step, min(0.65, random.random() + 0.25))
+        pyglet.clock.schedule_interval(self.step, min(0.25, random.random() + 0.05))
         
         self.wobble(0)
         
     def dry_footprints(self, dt):
         for fp in list(self.footprints):
-            fp.opacity -= 80 * dt
+            fp.opacity -= self.dryspeed * dt
             if fp.opacity <= 0:
                 #pyglet.clock.unschedule(self.dry_footprints)
                 #pyglet.clock.unschedule(self.step)
@@ -37,6 +40,7 @@ class Dot(pyglet.sprite.Sprite):
             newprint = pyglet.sprite.Sprite(self.image, batch=self.sprbatch, group=self.pgroup)
             newprint.position = self.position
             newprint.opacity = 128
+            newprint.scale = .75
             self.footprints.append(newprint)
         
     def wobble(self, dots):
