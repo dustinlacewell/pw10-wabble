@@ -18,14 +18,14 @@ class GameWindow(pyglet.window.Window):
         self.keys = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keys)
         # cache image resources
-        pyglet.resource.path = ['dat/img/bgd']
+        pyglet.resource.path = ['dat/img/', 'dat/img/bgd']
         pyglet.resource.reindex()
         # create background manager
         self.bg = BackgroundManager(min_t=8, max_t=9)
         # Create a reference for the current scene
         self.scene = None
         # Set initial scene with our utility function
-        self.gamescene()
+        self.splashscene()
 
     def setup_gl(self):
         pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)
@@ -55,6 +55,9 @@ class GameWindow(pyglet.window.Window):
         self.push_handlers(self.scene)
     
     # Utility methods to easily set the two scenes we're using in this example
+    def splashscene(self):
+        self._set_scene(scenes.SplashScene(self))
+    
     def gamescene(self):
         self._set_scene(scenes.GameScene(self))
 

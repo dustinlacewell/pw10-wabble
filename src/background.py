@@ -27,15 +27,16 @@ class BackgroundManager(object):
         self.rotation.append(self.rotation.pop(0))
         self.next = spr(self.rotation[0])
         self.next.opacity = 0
-        self.schedule()
         
     def update(self, dt):
         if self.next:
             self.current.opacity -= dt * self.rate
             self.next.opacity += dt * self.rate
             if self.next.opacity >= 255:
+                self.current.opacity = 255
                 self.current = self.next
                 self.next = None
+                self.schedule()
                 
     def draw(self):
         self.current.draw()
