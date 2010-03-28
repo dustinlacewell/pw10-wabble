@@ -28,8 +28,4 @@ class Blob(pyglet.sprite.Sprite):
     def wobble(self, dt):
         for dot in self.dots:
             dot.wobble()
-            
-    
-        
-        
-        
+ 
