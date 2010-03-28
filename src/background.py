@@ -6,7 +6,7 @@ from src.util import spr
 
 class BackgroundManager(object):
     
-    opacity = 35
+    opacity = 145
     
     def __init__(self, rotation='backgrounds.txt', min_t=60, max_t=120, rate=50):
         self.min_t = min_t

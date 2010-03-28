@@ -1,9 +1,17 @@
+import math
+
 import pyglet
+
+from src.util import gradient
 
 class Line(object):
     
     LENGTH = 30
     SPEED = 200
+    
+    gradient = gradient((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), 600)
+    
+    print gradient
 
     def __init__(self, scene, x1, y1, x2, y2):
         # TODO: add asserts
@@ -21,6 +29,17 @@ class Line(object):
         self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
         # self.length = self.length_sq ** 0.5
         
+    def draw(self):
+        p = self.scene.player
+        dist = math.sqrt(((self.x1 - p.x)**2) + ((self.y1 - p.y)**2))
+        dist = int(600 / (900 / dist))
+        color = list(self.gradient[dist])
+        color.append(1.0)
+        pyglet.gl.glColor4f(*color)
+        pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
+             ('v2i', (int(self.x1), int(self.y1), int(self.x2), int(self.y2)))
+        )
+        
         
 class HorizontalLine(Line):
     def __init__(self, scene, batch, y_pos):
@@ -29,13 +48,6 @@ class HorizontalLine(Line):
         y1 = y2 = y_pos
         super(HorizontalLine, self).__init__(scene, x1, y1, x2, y2)
         self.forward = True
-        
-    def draw(self):
-        pyglet.gl.glColor4f(1.0, 0.0, 0.0, 1.0)
-        pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-             ('v2i', (int(self.x1), int(self.y1), int(self.x2), int(self.y2)))
-        )
-
         
     def update(self, dt):
         if self.forward:
@@ -62,12 +74,6 @@ class VerticalLine(Line):
         x1 = x2 = x_pos
         super(VerticalLine, self).__init__(scene, x1, y1, x2, y2)
         self.forward = True
-        
-    def draw(self):
-        pyglet.gl.glColor4f(1.0, 0.0, 0.0, 1.0)
-        pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-             ('v2i', (int(self.x1), int(self.y1), int(self.x2), int(self.y2)))
-        )
         
     def update(self, dt):
         if self.forward:

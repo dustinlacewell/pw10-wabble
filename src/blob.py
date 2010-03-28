@@ -8,7 +8,7 @@ class Dot(pyglet.sprite.Sprite):
     
     dryrate = 0.01
     
-    def __init__(self, blob, max_off=3, batch=None, group=None, pgroup=None):
+    def __init__(self, blob, max_off=3, footprints=True, batch=None, group=None, pgroup=None):
         super(Dot, self).__init__(blob.image, batch=batch, group=group)
         self.max_off = max_off
         self.blob = blob
@@ -18,11 +18,13 @@ class Dot(pyglet.sprite.Sprite):
         
         self.scale = .75
         
+        self.doprints = footprints
         self.footprints = []
         self.oldpos = blob.position
         self.dryspeed = random.randint(40, 60)
-        pyglet.clock.schedule_interval(self.dry_footprints, self.dryrate)
-        pyglet.clock.schedule_interval(self.step, min(0.25, random.random() + 0.05))
+        if self.doprints:
+            pyglet.clock.schedule_interval(self.dry_footprints, self.dryrate)
+            pyglet.clock.schedule_interval(self.step, min(0.25, random.random() + 0.05))
         
         self.wobble(0)
         
@@ -74,7 +76,7 @@ class Blob(pyglet.sprite.Sprite):
     
     fastwobble = 0.05
     
-    def __init__(self, dots=10, wobblerate=.15, batch=None, group=None, pgroup=None):
+    def __init__(self, dots=10, wobblerate=.15, footprints=True, batch=None, group=None, pgroup=None):
         super(Blob, self).__init__(img(random.choice(self.blob_sprites)), batch=batch, group=group)
         
         self.image.anchor_x = 8
@@ -84,9 +86,11 @@ class Blob(pyglet.sprite.Sprite):
         
         self.pgroup = pgroup
         
+        self.footprints = footprints
+        
         self.dots = []
         for n in xrange(dots):
-            self.dots.append(Dot(self, batch=batch, group=group, pgroup=pgroup))
+            self.dots.append(Dot(self, footprints=footprints, batch=batch, group=group, pgroup=pgroup))
         
         pyglet.clock.schedule_interval(self.wobble, wobblerate)
         
@@ -99,7 +103,7 @@ class Blob(pyglet.sprite.Sprite):
             
     def add_dot(self):
         if len(self.dots) < 20:
-            self.dots.append(Dot(self, batch=self.batch, group=self.group, pgroup=self.pgroup))
+            self.dots.append(Dot(self, footprints=self.footprints, batch=self.batch, group=self.group, pgroup=self.pgroup))
             
     def remove_dot(self):
         self.dots[0].die()
