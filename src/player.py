@@ -4,11 +4,10 @@ from pyglet.window.key import *
 from src.blob import Blob
 
 
-#class Player(pyglet.sprite):
 class Player(Blob):
     
     speed = 2
-    radius = 1
+    radius = 10
 
     def __init__(self, scene, batch=None, group=None, pgroup=None):
         super(Player, self).__init__(dots=5, batch=batch, group=group, pgroup=pgroup)

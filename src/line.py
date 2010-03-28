@@ -19,6 +19,7 @@ class Line(object):
         self.v1 = x2 - x1
         self.v2 = y2 - y1
         self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
+        # self.length = self.length_sq ** 0.5
         
         
 class HorizontalLine(Line):
