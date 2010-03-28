@@ -17,7 +17,7 @@ class SplashScene(object):
         self.blobs = []
         for pos in positions:
            blob_filename = random.choice( ['blob.png', 'blob2.png', 'blob3.png'] )
-           newblob = Blob(blob_filename, dots=3, batch=self.blob_batch)
+           newblob = Blob(dots=3, batch=self.blob_batch)
            newblob.set_position(*pos)
            self.blobs.append(newblob)
         self.blobs = []

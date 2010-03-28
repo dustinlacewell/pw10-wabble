@@ -7,7 +7,7 @@ from src.util import img
 from src.blob import Blob
 from src.player import Player
 from src.collisiondispatch import CollisionDispatcher
-from src.line import Line
+from src.line import Line, HorizontalLine, VerticalLine
 
 # This scene class is the object that the application class maintains
 class GameScene(object):
@@ -26,15 +26,14 @@ class GameScene(object):
         
         self.coll_funcs = CollisionDispatcher()
         # add collision functions
-        self.coll_funcs.add(Line, Player, coll_line_player)
+        self.coll_funcs.add(HorizontalLine, Player, coll_line_player)
+        self.coll_funcs.add(VerticalLine, Player, coll_line_player)
         self.coll_funcs.add(Blob, Player, coll_blob_player)
         
         # entities
         self.player = Player(self, batch=self.sprite_patch, group=self.blob_group, pgroup=self.print_group)
-        self.lines = []
-        
-        # TODO: remove, just for testing
-        self.lines.append(Line(0, 0, 100, 100))
+        self.lines = {}
+        pyglet.graphics.glLineWidth(3)
         
     def on_key_press(self, symbol, modifiers):
         if symbol in [UP, DOWN, LEFT, RIGHT]:
@@ -49,19 +48,43 @@ class GameScene(object):
         self.powerup.y = random.randint(30, 570)
 
     def update(self, dt):
+        deleted_lines = []
         self.player.update(dt)
-        for line in self.lines:
+        for key, line in self.lines.iteritems():
+            line.update(dt)
             if self.coll_funcs.collide(line, self.player):
-                pass
+                deleted_lines.append(key)
+                if self.player.remove_dot():
+                    self.window.splashscene()
+
+        for line in deleted_lines:
+            del self.lines[line]
             
         if self.coll_funcs.collide(self.powerup, self.player):
             self.reset_powerup()
             self.player.add_dot()
+            self.add_line()
         
-        
+    def add_line(self, r=0):
+        if r == 500:
+            return
+        t = 'h' if random.randint(0, 1) else 'v'
+        pos = (t, random.randint(0, 600))
+        if pos in self.lines:
+            self.add_line(r+1)
+        else:
+            if t == 'h':
+                newline = HorizontalLine(self, None, pos[1])
+            else:
+                newline = VerticalLine(self, None, pos[1])
+            self.lines[pos] = newline
 
-    def draw(self):
+    def draw(self):        
         self.sprite_patch.draw()
+        
+        for line in self.lines.itervalues():
+            line.draw()
+        
         
         
 def coll_line_player(line, player):

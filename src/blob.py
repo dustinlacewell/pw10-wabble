@@ -20,7 +20,7 @@ class Dot(pyglet.sprite.Sprite):
         
         self.footprints = []
         self.oldpos = blob.position
-        self.dryspeed = random.randint(10, 100)
+        self.dryspeed = random.randint(40, 60)
         pyglet.clock.schedule_interval(self.dry_footprints, self.dryrate)
         pyglet.clock.schedule_interval(self.step, min(0.25, random.random() + 0.05))
         
@@ -55,8 +55,13 @@ class Dot(pyglet.sprite.Sprite):
         #=======================================================================
         self.set_position(xoff, yoff)
         
-
-        
+    def die(self):
+        pyglet.clock.unschedule(self.dry_footprints)
+        pyglet.clock.unschedule(self.step)
+        for fp in self.footprints:
+            fp.delete()
+        self.delete()
+                
 class Blob(pyglet.sprite.Sprite):
     
     MAXDOTS = 10
@@ -95,4 +100,8 @@ class Blob(pyglet.sprite.Sprite):
     def add_dot(self):
         if len(self.dots) < 20:
             self.dots.append(Dot(self, batch=self.batch, group=self.group, pgroup=self.pgroup))
+            
+    def remove_dot(self):
+        self.dots[0].die()
+        self.dots.pop(0)
  

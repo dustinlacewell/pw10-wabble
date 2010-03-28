@@ -8,7 +8,7 @@ from src.blob import Blob
 class Player(Blob):
     
     speed = 2
-    radius = 10
+    radius = 1
 
     def __init__(self, scene, batch=None, group=None, pgroup=None):
         super(Player, self).__init__(dots=5, batch=batch, group=group, pgroup=pgroup)
@@ -28,3 +28,8 @@ class Player(Blob):
         
     def update(self, dt):
         self.handle_movement(dt)
+        
+    def remove_dot(self):
+        super(Player, self).remove_dot()
+        if len(self.dots) <= 5:
+            return True
