@@ -1,4 +1,4 @@
-import math
+import math, random
 
 import pyglet
 from pyglet.window.key import *
@@ -56,6 +56,7 @@ class GameScene(object):
             
         if self.coll_funcs.collide(self.powerup, self.player):
             self.reset_powerup()
+            self.player.add_dot()
         
         
 
@@ -77,6 +78,6 @@ def coll_line_player(line, player):
 def coll_blob_player(b, player):
     for dot in player.dots:
         dist = math.sqrt(((b.x - dot.x)**2) + ((b.y - dot.y)**2))
-        if dist <= 32:
+        if dist <= 16:
             return True
     return False

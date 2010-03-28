@@ -1,4 +1,4 @@
-import random
+import random, math
 
 import pyglet
 
@@ -44,13 +44,22 @@ class Dot(pyglet.sprite.Sprite):
             self.footprints.append(newprint)
         
     def wobble(self, dots):
-        xoff = random.randint(-dots, dots)
-        yoff = random.randint(-dots, dots)
-        self.set_position(self.blob.x + xoff, self.blob.y + yoff)
+        ddots = int(dots * 0.7)
+        radius = random.randint(0, ddots)
+        angle = random.randint(0, 360)
+        xoff = self.blob.x + radius*math.cos(angle)
+        yoff = self.blob.y + radius*math.sin(angle)
+        #=======================================================================
+        # xoff = min(10, random.randint(-ddots, ddots))
+        # yoff = min(10, random.randint(-ddots, ddots))
+        #=======================================================================
+        self.set_position(xoff, yoff)
         
 
         
 class Blob(pyglet.sprite.Sprite):
+    
+    MAXDOTS = 10
     
     blob_sprites = [
     
@@ -82,4 +91,8 @@ class Blob(pyglet.sprite.Sprite):
             for dot in self.dots:
                 dot.wobble(len(self.dots))
             self.fastwobble_t = 0.0
+            
+    def add_dot(self):
+        if len(self.dots) < 20:
+            self.dots.append(Dot(self, batch=self.batch, group=self.group, pgroup=self.pgroup))
  
