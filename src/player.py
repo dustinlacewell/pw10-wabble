@@ -10,7 +10,7 @@ class Player(Blob):
     radius = 10
 
     def __init__(self, scene, batch=None, group=None, pgroup=None):
-        super(Player, self).__init__(dots=5, footprints=False, batch=batch, group=group, pgroup=pgroup)
+        super(Player, self).__init__(dots=5, doprints=True, batch=batch, group=group, pgroup=pgroup)
         self.scene = scene
         self.x = self.y = 300
         
