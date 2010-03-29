@@ -29,7 +29,7 @@ class Dot(pyglet.sprite.Sprite):
 class Blob(pyglet.sprite.Sprite):
     
     MAXDOTS = 10
-    MAXPRINTS = 10
+    MAXPRINTS = 25
     IDLEWOBBLE = 0.15
     FASTWOBBLE = 0.05
     DRYTIME = 0.01
@@ -90,16 +90,16 @@ class Blob(pyglet.sprite.Sprite):
         if len(self.prints) < self.MAXPRINTS and self.oldposition != self.position:
             newprint = spr(random.choice(self.blob_sprites), batch=self.batch, group=self.pgroup)
             newprint.scale = .75
-            newprint.opacity = 200
+            newprint.opacity = 100
             newprint.image.anchor_x, newprint.image.anchor_y = self.image.anchor_x, self.image.anchor_y
             newprint.position = random.choice(self.dots).position if self.dots else self.position
             self.prints.append(newprint)
             self.oldposition = self.position
-        pyglet.clock.schedule_once(self.footprint, min(0.05, random.random()))
+        pyglet.clock.schedule_once(self.footprint, min(0.01, random.random()))
         
     def dry(self, dt):
         for p in list(self.prints):
-            p.opacity -= random.random() * 20
+            p.opacity -= random.random() * 10
             if p.opacity <= 0:
                 self.prints.remove(p)
                 p.visible = False
