@@ -111,33 +111,34 @@ def coll_line_player(line, player):
     return False
 
 def coll_segment_player(seg, player):
-    w1 = player.x - seg.x1 # vector from p1 to the player
-    w2 = player.y - seg.y1
-    u1 = seg.v1 / seg.LENGTH
-    u2 = seg.v2 / seg.LENGTH
-    s = w1 * u1 + w2 * u2
-    
-    prad_sq = player.radius * player.radius
-    if s < 0:
-        x = player.x - seg.x1
-        y = player.y - seg.y1
-        dist_sq = x * x + y * y
-        # print "seg1", dist_sq, prad_sq
-        if dist_sq < prad_sq:
-            print "collision 1"
-            return True
-        return False
-    elif s*s > seg.length_sq:
-        x = player.x - seg.x2
-        y = player.y - seg.y2
-        dist_sq = x * x + y * y
-        # print "seg2", dist_sq, prad_sq
-        if dist_sq < prad_sq:
-            print "collision 2"
-            return True
-        return False
+    for dot in player.dots:
+        w1 = dot.x - seg.x1 # vector from p1 to the player
+        w2 = dot.y - seg.y1
+        u1 = seg.v1 / seg.LENGTH
+        u2 = seg.v2 / seg.LENGTH
+        s = w1 * u1 + w2 * u2
+        
+        prad_sq = dot.radius * dot.radius
+        if s < 0:
+            x = dot.x - seg.x1
+            y = dot.y - seg.y1
+            dist_sq = x * x + y * y
+            # print "seg1", dist_sq, prad_sq
+            if dist_sq < prad_sq:
+                print "collision 1"
+                return True
+            return False
+        elif s*s > seg.length_sq:
+            x = dot.x - seg.x2
+            y = dot.y - seg.y2
+            dist_sq = x * x + y * y
+            # print "seg2", dist_sq, prad_sq
+            if dist_sq < prad_sq:
+                print "collision 2"
+                return True
+            return False
     # print "line"
-    return coll_line_player(seg, player)
+    #return coll_line_player(seg, player)
     
     
     

@@ -6,6 +6,7 @@ from src.util import img, spr
 
 class Dot(pyglet.sprite.Sprite):
     
+    radius = 12
     dryrate = 0.01
     
     def __init__(self, blob, max_off=3, footprints=True, batch=None, group=None, pgroup=None):
