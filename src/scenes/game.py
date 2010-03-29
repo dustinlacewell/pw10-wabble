@@ -27,7 +27,7 @@ class GameScene(object):
         self.print_group = pyglet.graphics.OrderedGroup(0)
         
         self.powerup = Blob(dots=0, batch=self.sprite_patch, group=self.blob_group)
-        self.reset_powerup()
+        self.powerup.x = self.powerup.y = 500
         
         self.coll_funcs = CollisionDispatcher()
         # add collision functions
@@ -53,7 +53,6 @@ class GameScene(object):
         
         deleted_lines = []
         self.player.update(dt)
-        
         for key, line in self.lines.iteritems():
             line.update(dt)
             check = False
@@ -61,12 +60,10 @@ class GameScene(object):
                 check = True
             elif isinstance(line, HorizontalLine) and abs(line.slot - self.player.y) < 16:
                 check = True
-                
             if check and self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
                 if self.player.remove_dot():
                     self.window.splashscene()
-
         for key in deleted_lines:
             line = self.lines[key]
             line.delete()

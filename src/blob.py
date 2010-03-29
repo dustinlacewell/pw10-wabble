@@ -64,18 +64,20 @@ class Blob(pyglet.sprite.Sprite):
         self.prints = list()
         self.doprints = doprints
         
-        for n in xrange(30):
-            newprint = spr(random.choice(self.blob_sprites), batch=self.batch, group=self.pgroup)
-            newprint.scale = .75
-            newprint.opacity = 0
-            newprint.image.anchor_x, newprint.image.anchor_y = self.image.anchor_x, self.image.anchor_y
-            self.prints.append(newprint)
+        if doprints:
+            for n in xrange(30):
+                newprint = spr(random.choice(self.blob_sprites), batch=self.batch, group=self.pgroup)
+                newprint.scale = .75
+                newprint.opacity = 0
+                newprint.image.anchor_x, newprint.image.anchor_y = self.image.anchor_x, self.image.anchor_y
+                self.prints.append(newprint)
         
             
         
         pyglet.clock.schedule_interval(self.wobble, self.IDLEWOBBLE)
-        pyglet.clock.schedule_once(self.footprint, random.random())
-        pyglet.clock.schedule_interval(self.dry, self.DRYTIME)
+        if self.doprints:
+            pyglet.clock.schedule_once(self.footprint, random.random())
+            pyglet.clock.schedule_interval(self.dry, self.DRYTIME)
         
     def wobble(self, dt):
         self.wobble_t += dt
