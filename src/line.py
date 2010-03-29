@@ -49,7 +49,7 @@ class HorizontalLine(Line):
         self.forward = True
         
     def __slot(self):
-        return y1
+        return self.y1
     slot =property(__slot)
         
     def update(self, dt):

@@ -1,3 +1,5 @@
+import cProfile
+
 from src.main import run
 
-run()
+cProfile.run('run()', 'profile.txt')

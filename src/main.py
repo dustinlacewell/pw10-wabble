@@ -2,7 +2,6 @@ import pyglet
 from pyglet.window import key
 # Import our submodule
 import scenes
-from background import BackgroundManager
 
 pyglet.options['debug'] = False
 
@@ -21,9 +20,10 @@ class GameWindow(pyglet.window.Window):
         pyglet.resource.path = ['dat/img/', 'dat/img/bgd']
         pyglet.resource.reindex()
         # create background manager
-        self.bg = BackgroundManager(min_t=8, max_t=9)
         # Create a reference for the current scene
         self.scene = None
+        
+        self.fps_display = pyglet.clock.ClockDisplay()
         # Set initial scene with our utility function
         self.gamescene()
 
@@ -37,14 +37,13 @@ class GameWindow(pyglet.window.Window):
     def update(self, dt):
         # Here we tell the current scene to update its logic
         self.scene.update(dt)
-        self.bg.update(dt)
-        
 
     def on_draw(self):
         self.clear()
-        self.bg.draw()
         # Here we hand off the drawing to the current scene
         self.scene.draw()
+        
+        self.fps_display.draw()
     
     # This utility function will remove the current scene and set a new one
     def _set_scene(self, scene):

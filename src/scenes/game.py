@@ -8,6 +8,7 @@ from src.blob import Blob
 from src.player import Player
 from src.collisiondispatch import CollisionDispatcher
 from src.line import Line, HorizontalLine, VerticalLine
+from src.background import BackgroundManager
 
 # This scene class is the object that the application class maintains
 class GameScene(object):
@@ -18,6 +19,9 @@ class GameScene(object):
         self.keys = window.keys
         
         self.sprite_patch = pyglet.graphics.Batch()
+        
+        self.bg = BackgroundManager(min_t=8, max_t=9)
+        
         self.blob_group = pyglet.graphics.OrderedGroup(1)
         self.print_group = pyglet.graphics.OrderedGroup(0)
         
@@ -44,12 +48,20 @@ class GameScene(object):
         self.powerup.y = random.randint(30, 570)
 
     def update(self, dt):
+        self.bg.update(dt)
+        
         deleted_lines = []
         self.player.update(dt)
         
         for key, line in self.lines.iteritems():
             line.update(dt)
-            if self.coll_funcs.collide(line, self.player):
+            check = False
+            if isinstance(line, VerticalLine) and abs(line.slot - self.player.x) < 16:
+                check = True
+            elif isinstance(line, HorizontalLine) and abs(line.slot - self.player.y) < 16:
+                check = True
+                
+            if check and self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
                 if self.player.remove_dot():
                     self.window.splashscene()
@@ -77,6 +89,7 @@ class GameScene(object):
             self.lines[pos] = newline
 
     def draw(self):        
+        self.bg.draw()
         self.sprite_patch.draw()
         
         for line in self.lines.itervalues():

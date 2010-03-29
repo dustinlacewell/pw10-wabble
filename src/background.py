@@ -1,4 +1,5 @@
 import random
+from collections import deque
 
 import pyglet
 
@@ -12,15 +13,17 @@ class BackgroundManager(object):
         self.min_t = min_t
         self.max_t = max_t    
         self.rate = rate # fade rate    
-        
-        self.rotation = []
-        for line in pyglet.resource.file(rotation):
-            self.rotation.append( line.strip() )
             
-        self.current = spr(self.rotation[0])
-        self.current.opacity = self.opacity
-        self.next = None
-    
+        self.batch = pyglet.graphics.Batch()
+        self.rotation = deque()
+        for line in pyglet.resource.file(rotation):
+            newspr = spr(line.strip(), batch=self.batch)
+            newspr.visible = False
+            self.rotation.append( newspr )
+        
+        self.fading = False
+        self.rotation[0].visible = True
+        self.rotation[0].opacity = self.opacity   
         self.schedule()
         
     def schedule(self):
@@ -28,23 +31,25 @@ class BackgroundManager(object):
         pyglet.clock.schedule_once(self.start_fade, time)
         
     def start_fade(self, t):
-        self.rotation.append(self.rotation.pop(0))
-        self.next = spr(self.rotation[0])
-        self.next.opacity = 0
+        self.rotation.rotate()
+        self.rotation[1].opacity = self.opacity
+        self.rotation[0].opacity = 0
+        self.rotation[0].visible = True
+        self.fading = True
+        
         
     def update(self, dt):
-        if self.next:
-            self.current.opacity -= dt * self.rate
-            self.next.opacity += dt * self.rate
-            if self.next.opacity >= self.opacity:
-                self.current.opacity = self.opacity
-                self.current = self.next
-                self.next = None
+        if self.fading:
+            old = self.rotation[1]
+            new = self.rotation[0]
+            delta = dt * self.rate
+            old.opacity -= delta
+            new.opacity += delta
+            if new.opacity >= self.opacity:
+                self.fading = False
+                old.visible = False
+                new = self.opacity
                 self.schedule()
-                
-    def draw(self):
-        self.current.draw()
-        if self.next:
-            self.next.draw()
-    
         
+    def draw(self):
+        self.batch.draw()

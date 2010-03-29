@@ -3,8 +3,8 @@ import pyglet
 def img(filename):
     return pyglet.resource.image(filename)
 
-def spr(filename):
-    return pyglet.sprite.Sprite(img(filename))
+def spr(filename, **kwargs):
+    return pyglet.sprite.Sprite(img(filename), **kwargs)
 
 
 from math import floor

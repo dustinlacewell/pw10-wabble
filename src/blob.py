@@ -29,12 +29,10 @@ class Dot(pyglet.sprite.Sprite):
         self.wobble(0)
         
     def dry_footprints(self, dt):
+        delta = self.dryspeed * dt
         for fp in list(self.footprints):
-            fp.opacity -= self.dryspeed * dt
+            fp.opacity -= delta
             if fp.opacity <= 0:
-                #pyglet.clock.unschedule(self.dry_footprints)
-                #pyglet.clock.unschedule(self.step)
-                fp.delete()
                 self.footprints.remove(fp)
                 
     def step(self, dt):
