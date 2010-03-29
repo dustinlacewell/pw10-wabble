@@ -99,3 +99,4 @@ class Blob(pyglet.sprite.Sprite):
             
     def remove_dot(self):
         d = self.dots.pop()
+        d.delete()
