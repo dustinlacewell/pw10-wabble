@@ -30,5 +30,7 @@ class Player(Blob):
         
     def remove_dot(self):
         super(Player, self).remove_dot()
+        super(Player, self).remove_dot()
+        super(Player, self).remove_dot()
         if len(self.dots) <= 5:
             return True

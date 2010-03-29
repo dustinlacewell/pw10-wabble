@@ -8,10 +8,9 @@ class Line(object):
     
     LENGTH = 30
     SPEED = 200
+    HEATUP_RADIUS = 300
     
-    gradient = gradient((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), 600)
-    
-    print gradient
+    gradient = gradient((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), HEATUP_RADIUS)
 
     def __init__(self, scene, x1, y1, x2, y2):
         # TODO: add asserts
@@ -32,7 +31,7 @@ class Line(object):
     def draw(self):
         p = self.scene.player
         dist = math.sqrt(((self.x1 - p.x)**2) + ((self.y1 - p.y)**2))
-        dist = int(600 / (900 / dist))
+        dist = int(min(self.HEATUP_RADIUS - 1, dist))
         color = list(self.gradient[dist])
         color.append(1.0)
         pyglet.gl.glColor4f(*color)
