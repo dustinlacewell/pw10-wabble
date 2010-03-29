@@ -7,7 +7,9 @@ from src.util import spr
 
 class BackgroundManager(object):
     
-    opacity = 145
+    MAXOPACITY = 145
+    FADEDELAY = .5
+    FADEAMOUNT = 15
     
     def __init__(self, rotation='backgrounds.txt', min_t=60, max_t=120, rate=50):
         self.min_t = min_t
@@ -22,8 +24,9 @@ class BackgroundManager(object):
             self.rotation.append( newspr )
         
         self.fading = False
+        self.fadetime = 0.0
         self.rotation[0].visible = True
-        self.rotation[0].opacity = self.opacity   
+        self.rotation[0].opacity = self.MAXOPACITY   
         self.schedule()
         
     def schedule(self):
@@ -32,7 +35,7 @@ class BackgroundManager(object):
         
     def start_fade(self, t):
         self.rotation.rotate()
-        self.rotation[1].opacity = self.opacity
+        self.rotation[1].opacity = self.MAXOPACITY
         self.rotation[0].opacity = 0
         self.rotation[0].visible = True
         self.fading = True
@@ -40,16 +43,19 @@ class BackgroundManager(object):
         
     def update(self, dt):
         if self.fading:
-            old = self.rotation[1]
-            new = self.rotation[0]
-            delta = dt * self.rate
-            old.opacity -= delta
-            new.opacity += delta
-            if new.opacity >= self.opacity:
-                self.fading = False
-                old.visible = False
-                new = self.opacity
-                self.schedule()
+            self.fadetime += dt
+            if self.fadetime >= self.FADEDELAY:
+                self.fadetime = 0.0
+                old = self.rotation[1]
+                new = self.rotation[0]
+                delta = dt * self.rate
+                old.opacity -= delta
+                new.opacity += delta
+                if new.opacity >= self.MAXOPACITY:
+                    self.fading = False
+                    old.visible = False
+                    new = self.MAXOPACITY
+                    self.schedule()
         
     def draw(self):
         self.batch.draw()

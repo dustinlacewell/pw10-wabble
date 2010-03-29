@@ -22,6 +22,7 @@ class GameScene(object):
         
         self.bg = BackgroundManager(min_t=8, max_t=9)
         
+        self.laser_group = pyglet.graphics.OrderedGroup(2)
         self.blob_group = pyglet.graphics.OrderedGroup(1)
         self.print_group = pyglet.graphics.OrderedGroup(0)
         
@@ -66,8 +67,10 @@ class GameScene(object):
                 if self.player.remove_dot():
                     self.window.splashscene()
 
-        for line in deleted_lines:
-            del self.lines[line]
+        for key in deleted_lines:
+            line = self.lines[key]
+            line.delete()
+            del self.lines[key]
             
         if self.coll_funcs.collide(self.powerup, self.player):
             self.reset_powerup()
@@ -83,17 +86,14 @@ class GameScene(object):
             self.add_line(r+1)
         else:
             if t == 'h':
-                newline = HorizontalLine(self, None, pos[1])
+                newline = HorizontalLine(self, self.sprite_patch, self.laser_group, pos[1])
             else:
-                newline = VerticalLine(self, None, pos[1])
+                newline = VerticalLine(self, self.sprite_patch, self.laser_group, pos[1])
             self.lines[pos] = newline
 
     def draw(self):        
         self.bg.draw()
         self.sprite_patch.draw()
-        
-        for line in self.lines.itervalues():
-            line.draw()
         
 # the collision detection is not perfect
 # should it detect collision for each Blob sepeartly?

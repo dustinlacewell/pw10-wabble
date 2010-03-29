@@ -55,15 +55,22 @@ class Blob(pyglet.sprite.Sprite):
         self.pgroup = pgroup
         
         self.oldposition = self.position
-        
-        
+
         self.dots = deque()
         for n in xrange(dots):
             newdot = Dot(self, batch=batch, group=group)
             self.dots.append(newdot)
-            
-        self.prints = deque()
+        
+        self.prints = list()
         self.doprints = doprints
+        
+        for n in xrange(30):
+            newprint = spr(random.choice(self.blob_sprites), batch=self.batch, group=self.pgroup)
+            newprint.scale = .75
+            newprint.opacity = 0
+            newprint.image.anchor_x, newprint.image.anchor_y = self.image.anchor_x, self.image.anchor_y
+            self.prints.append(newprint)
+        
             
         
         pyglet.clock.schedule_interval(self.wobble, self.IDLEWOBBLE)
@@ -87,19 +94,15 @@ class Blob(pyglet.sprite.Sprite):
         d.delete()
         
     def footprint(self, dt):
-        if len(self.prints) < self.MAXPRINTS and self.oldposition != self.position:
-            newprint = spr(random.choice(self.blob_sprites), batch=self.batch, group=self.pgroup)
-            newprint.scale = .75
-            newprint.opacity = 100
-            newprint.image.anchor_x, newprint.image.anchor_y = self.image.anchor_x, self.image.anchor_y
-            newprint.position = random.choice(self.dots).position if self.dots else self.position
-            self.prints.append(newprint)
+        if self.oldposition != self.position:
             self.oldposition = self.position
+            for p in self.prints:
+                if p.opacity == 0:
+                    p.opacity = 100
+                    p.position = random.choice(self.dots).position if self.dots else self.position
+                    break
         pyglet.clock.schedule_once(self.footprint, min(0.01, random.random()))
         
     def dry(self, dt):
         for p in list(self.prints):
-            p.opacity -= random.random() * 10
-            if p.opacity <= 0:
-                self.prints.remove(p)
-                p.visible = False
+            p.opacity = max(0, p.opacity - random.random() * 10)

@@ -12,12 +12,13 @@ class Line(object):
     
     gradient = gradient((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), HEATUP_RADIUS)
 
-    def __init__(self, scene, x1, y1, x2, y2):
+    def __init__(self, scene, batch, group, x1, y1, x2, y2):
         # TODO: add asserts
         assert(x1 <= x2)
         assert(y1 <= y2)
         
         self.scene = scene
+        self.batch = batch
         
         self.x1 = x1
         self.y1 = y1
@@ -26,26 +27,34 @@ class Line(object):
         self.v1 = x2 - x1
         self.v2 = y2 - y1
         self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
+        self.color = (0, 0, 0)
         # self.length = self.length_sq ** 0.5
+        self.vlist = batch.add(2, pyglet.gl.GL_LINES, group,
+            ('v2f/stream', (x1, y1, x2, y2)),
+            ('c3f/stream', (0, 0, 0, 0, 0, 0),
+        ))
         
-    def draw(self):
+    def update_vlist(self):
+        self.update_color()
+        self.vlist.vertices = [self.x1, self.y1, self.x2, self.y2]
+        self.vlist.colors = self.color*2
+        
+    def update_color(self):
         p = self.scene.player
         dist = math.sqrt(((self.x1 - p.x)**2) + ((self.y1 - p.y)**2))
         dist = int(min(self.HEATUP_RADIUS - 1, dist))
-        color = list(self.gradient[dist])
-        color.append(1.0)
-        pyglet.gl.glColor4f(*color)
-        pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-             ('v2i', (int(self.x1), int(self.y1), int(self.x2), int(self.y2)))
-        )
+        self.color = self.gradient[dist]
+        
+    def delete(self):
+        self.vlist.delete()
         
         
 class HorizontalLine(Line):
-    def __init__(self, scene, batch, y_pos):
+    def __init__(self, scene, batch, group, y_pos):
         x1 = 0
         x2 = self.LENGTH
         y1 = y2 = y_pos
-        super(HorizontalLine, self).__init__(scene, x1, y1, x2, y2)
+        super(HorizontalLine, self).__init__(scene, batch, group, x1, y1, x2, y2)
         self.forward = True
         
     def __slot(self):
@@ -69,13 +78,14 @@ class HorizontalLine(Line):
                 self.forward = True
                 self.x1 = 0
                 self.x2 = self.LENGTH
+        self.update_vlist()
                 
 class VerticalLine(Line):
-    def __init__(self, scene, batch, x_pos):
+    def __init__(self, scene, batch, group, x_pos):
         y1 = 0
         y2 = self.LENGTH
         x1 = x2 = x_pos
-        super(VerticalLine, self).__init__(scene, x1, y1, x2, y2)
+        super(VerticalLine, self).__init__(scene, batch, group, x1, y1, x2, y2)
         self.forward = True
         
     def __slot(self):
@@ -99,4 +109,5 @@ class VerticalLine(Line):
                 self.forward = True
                 self.y1 = 0
                 self.y2 = self.LENGTH
-        
+        self.update_vlist()
+    
