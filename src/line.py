@@ -48,6 +48,10 @@ class HorizontalLine(Line):
         super(HorizontalLine, self).__init__(scene, x1, y1, x2, y2)
         self.forward = True
         
+    def __slot(self):
+        return y1
+    slot =property(__slot)
+        
     def update(self, dt):
         if self.forward:
             pc = dt * self.SPEED
@@ -73,6 +77,10 @@ class VerticalLine(Line):
         x1 = x2 = x_pos
         super(VerticalLine, self).__init__(scene, x1, y1, x2, y2)
         self.forward = True
+        
+    def __slot(self):
+        return self.x1
+    slot = property(__slot)
         
     def update(self, dt):
         if self.forward:

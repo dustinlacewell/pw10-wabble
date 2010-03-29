@@ -35,10 +35,6 @@ class GameScene(object):
         self.lines = {}
         pyglet.graphics.glLineWidth(3)
         
-    def on_key_press(self, symbol, modifiers):
-        if symbol in [UP, DOWN, LEFT, RIGHT]:
-            self.player.handle_movement(symbol)
-        
     def on_mouse_motion(self, x, y, dx, dy):
         self.player.x = x
         self.player.y = y
@@ -50,6 +46,7 @@ class GameScene(object):
     def update(self, dt):
         deleted_lines = []
         self.player.update(dt)
+        
         for key, line in self.lines.iteritems():
             line.update(dt)
             if self.coll_funcs.collide(line, self.player):

@@ -60,9 +60,7 @@ class Dot(pyglet.sprite.Sprite):
     def die(self):
         pyglet.clock.unschedule(self.dry_footprints)
         pyglet.clock.unschedule(self.step)
-        for fp in self.footprints:
-            fp.delete()
-        self.delete()
+        self.footprints = []
                 
 class Blob(pyglet.sprite.Sprite):
     
@@ -107,5 +105,5 @@ class Blob(pyglet.sprite.Sprite):
             
     def remove_dot(self):
         self.dots[0].die()
-        self.dots.pop(0)
+        self.dots.pop()
  

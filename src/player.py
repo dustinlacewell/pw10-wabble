@@ -6,7 +6,7 @@ from src.blob import Blob
 
 class Player(Blob):
     
-    speed = 2
+    speed = 200
     radius = 10
 
     def __init__(self, scene, batch=None, group=None, pgroup=None):
@@ -15,12 +15,11 @@ class Player(Blob):
         self.x = self.y = 300
         
     def handle_movement(self, dt):
-        
         k = self.scene.keys
         old = self.position
-
-        self.y += self.speed if k[UP] else -self.speed if k[DOWN] else 0
-        self.x += self.speed if k[RIGHT] else -self.speed if k[LEFT] else 0
+        speed = min(self.speed * dt, 10)
+        self.y += speed if k[UP] else -speed if k[DOWN] else 0
+        self.x += speed if k[RIGHT] else -speed if k[LEFT] else 0
         
         if old != self.position:
             self.wobble(dt)
