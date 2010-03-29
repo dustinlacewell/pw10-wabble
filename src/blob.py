@@ -56,11 +56,6 @@ class Dot(pyglet.sprite.Sprite):
         # yoff = min(10, random.randint(-ddots, ddots))
         #=======================================================================
         self.set_position(xoff, yoff)
-        
-    def die(self):
-        pyglet.clock.unschedule(self.dry_footprints)
-        pyglet.clock.unschedule(self.step)
-        self.footprints = []
                 
 class Blob(pyglet.sprite.Sprite):
     
@@ -104,6 +99,4 @@ class Blob(pyglet.sprite.Sprite):
             self.dots.append(Dot(self, footprints=self.footprints, batch=self.batch, group=self.group, pgroup=self.pgroup))
             
     def remove_dot(self):
-        self.dots[0].die()
-        self.dots.pop()
- 
+        d = self.dots.pop()
