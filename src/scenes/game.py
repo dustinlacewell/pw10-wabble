@@ -9,6 +9,7 @@ from src.player import Player
 from src.collisiondispatch import CollisionDispatcher
 from src.line import Line, HorizontalLine, VerticalLine
 from src.background import BackgroundManager
+from src.score import ScoreLabel
 
 # This scene class is the object that the application class maintains
 class GameScene(object):
@@ -20,6 +21,8 @@ class GameScene(object):
         # The rendering batch
         self.batch = pyglet.graphics.Batch()
         # The foreground rendering groups
+        self.scoregroup_hi = pyglet.graphics.OrderedGroup(5)
+        self.scoregroup_lo = pyglet.graphics.OrderedGroup(4)
         self.laser_group = pyglet.graphics.OrderedGroup(3)
         self.blob_group = pyglet.graphics.OrderedGroup(2)
         self.print_group = pyglet.graphics.OrderedGroup(1)
@@ -42,7 +45,9 @@ class GameScene(object):
         # The lasers
         self.lines = {}
         self.do_horiz = True
-        pyglet.graphics.glLineWidth(3)       
+        pyglet.graphics.glLineWidth(3)
+        # Score labels
+        self.scores = []     
         
     def reset_blobule(self):
         '''give the blobule a random position'''
@@ -64,6 +69,14 @@ class GameScene(object):
                 newline = VerticalLine(self, self.batch, self.laser_group, pos[1])
             self.lines[pos] = newline
             self.do_horiz = not self.do_horiz
+            
+    def add_score(self):
+        self.score += 1
+        newscore = ScoreLabel(str(self.score), 
+                  self.blobule.x, self.blobule.y, 
+                  color=(0, 255, 0), size=12, 
+                  batch=self.batch, group=self.scoregroup_hi)
+        self.scores.append(newscore)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.player.x = x
@@ -92,16 +105,22 @@ class GameScene(object):
             line.delete()
         # Player-Blobule collision
         if self.coll_funcs.collide(self.blobule, self.player):
+            self.add_score()
             self.reset_blobule() # new blobule position
             self.player.add_dot() # increase bodymass
             self.add_line() # new random hazard
-            self.score += 1
+            
             if self.score >= 1:
                 self.bg.do_fade = True
             if self.score >= 2:
                 self.bg.do_zoom = True
             if self.score >= 3:
                 self.bg.do_spin = True
+            
+        for label in list(self.scores):
+            if label.update(dt):
+                self.scores.remove(label)
+                label.delete()
             
     def draw(self):        
         self.batch.draw()

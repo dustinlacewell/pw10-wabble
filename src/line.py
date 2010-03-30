@@ -7,7 +7,7 @@ from src.util import gradient
 class Line(object):
     
     LENGTH = 30
-    SPEED = 200
+    SPEED = 150
     HEATUP_RADIUS = 300
     
     gradient = gradient((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), HEATUP_RADIUS)

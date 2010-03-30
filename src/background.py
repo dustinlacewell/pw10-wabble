@@ -166,7 +166,7 @@ class BackgroundManager(object):
         # Fade effect
         if self.fading:
             self.fadetime += dt
-            if self.fadetime >= self.faderate:
+            if True or self.fadetime >= self.faderate:
                 self.fadetime = 0.0
                 old = self.rotation[1]
                 new = self.rotation[0]
@@ -187,7 +187,7 @@ class BackgroundManager(object):
         if self.zooming:
             bgimg = self.rotation[1]
             self.zoomtime += dt
-            if self.zoomtime >= self.zoomrate:
+            if True or self.zoomtime >= self.zoomrate:
                 self.zoomtime = 0.0
                 bgimg.scale += ((bgimg.scale * self.zoomamount) * dt) * self.zdirection
                 bgimg.scale = min(self.max_zoom, max(self.min_zoom, bgimg.scale))
@@ -198,7 +198,7 @@ class BackgroundManager(object):
         if self.spinning:
             bgimg = self.rotation[1]
             self.spintime += dt
-            if self.spintime >= self.spinrate:
+            if True or self.spintime >= self.spinrate:
                 self.spintime = 0.0
                 amount = self.spindelta * dt
                 self.spinamount -= amount
