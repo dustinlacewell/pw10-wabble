@@ -27,6 +27,8 @@ class Dot(pyglet.sprite.Sprite):
                 
 class Blob(pyglet.sprite.Sprite):
     
+    MAXSPEED = 150
+    MINSPEED = 50
     MAXDOTS = 10
     MAXPRINTS = 25
     IDLEWOBBLE = 0.15
@@ -103,4 +105,4 @@ class Blob(pyglet.sprite.Sprite):
         
     def dry(self, dt):
         for p in list(self.prints):
-            p.opacity = max(0, p.opacity - random.random() * 10)
+            p.opacity = max(0, p.opacity - (random.random() * 300) * dt)
