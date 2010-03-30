@@ -37,11 +37,11 @@ class GameScene(object):
         self.coll_funcs.add(Blob, Player, coll_blob_player)
         # The player blob
         self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
-        self.player.set_position(100, 100)
+        self.player.set_position(300, 500)
         self.score = 0
         # The blobule powerup
         self.blobule = Blob(dots=0, batch=self.batch, group=self.blob_group)
-        self.blobule.set_position(500, 500)
+        self.blobule.set_position(300, 300)
         # The lasers
         self.lines = {}
         self.do_horiz = True
