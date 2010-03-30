@@ -178,7 +178,11 @@ class BackgroundManager(object):
                     old.visible = False
                     new = self.MAXOPACITY
                     self._schedule_fade()
-                    self.spinamount = 0.0
+                    self.zooming = False
+                    self.spinning = False
+                    if random.random() > 0.20:
+                        self._schedule_zoom()
+                        self._schedule_spin()
         # Zoom effect
         if self.zooming:
             bgimg = self.rotation[1]
