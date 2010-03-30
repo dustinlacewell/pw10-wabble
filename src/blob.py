@@ -14,7 +14,6 @@ class Dot(pyglet.sprite.Sprite):
     def __init__(self, blob, batch=None, group=None):
         super(Dot, self).__init__(blob.image, batch=batch, group=group)
         self.blob = blob
-        self.sprbatch = batch
         self.scale = .8
         self.wobble(0)
         
@@ -34,13 +33,10 @@ class Blob(pyglet.sprite.Sprite):
     FASTWOBBLE = 0.05
     DRYTIME = 0.01
     
-    blob_sprites = [
-    
+    blob_sprites = [  
     'blob.png', 'blob2.png', 'blob3.png'
-                    
     ]
-    
-    fastwobble = 0.05
+    radius = 8
     
     def __init__(self, dots=0, doprints=True, batch=None, group=None, pgroup=None):
         super(Blob, self).__init__(img(random.choice(self.blob_sprites)), batch=batch, group=group)

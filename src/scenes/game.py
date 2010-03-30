@@ -19,12 +19,13 @@ class GameScene(object):
         self.keys = window.keys
         # The rendering batch
         self.batch = pyglet.graphics.Batch()
-        # Manages the background effects
-        self.bg = BackgroundManager(min_t=8, max_t=9)
         # The foreground rendering groups
-        self.laser_group = pyglet.graphics.OrderedGroup(2)
-        self.blob_group = pyglet.graphics.OrderedGroup(1)
-        self.print_group = pyglet.graphics.OrderedGroup(0)
+        self.laser_group = pyglet.graphics.OrderedGroup(3)
+        self.blob_group = pyglet.graphics.OrderedGroup(2)
+        self.print_group = pyglet.graphics.OrderedGroup(1)
+        self.bg_group = pyglet.graphics.OrderedGroup(0)
+        # Manages the background effects
+        self.bg = BackgroundManager(batch=self.batch, group=self.bg_group)
         # The collision machinery        
         self.coll_funcs = CollisionDispatcher()
         # Each entity pair has an algorithm
@@ -95,7 +96,6 @@ class GameScene(object):
             self.add_line() # new random hazard
             
     def draw(self):        
-        self.bg.draw()
         self.batch.draw()
             
         
