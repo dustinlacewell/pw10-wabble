@@ -114,11 +114,11 @@ class GameScene(object):
             self.player.add_dot() # increase bodymass
             self.add_line() # new random hazard
             
-            if self.score >= 1:
+            if self.score >= 5:
                 self.bg.do_fade = True
-            if self.score >= 2:
+            if self.score >= 15:
                 self.bg.do_zoom = True
-            if self.score >= 3:
+            if self.score >= 25:
                 self.bg.do_spin = True
             
         for label in list(self.scores):

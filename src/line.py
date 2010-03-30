@@ -27,7 +27,7 @@ class Line(object):
         self.v1 = x2 - x1
         self.v2 = y2 - y1
         self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
-        self.color = (0, 0, 0)
+        self.color = (255, 0, 0)
         # self.length = self.length_sq ** 0.5
         self.vlist = batch.add(2, pyglet.gl.GL_LINES, group,
             ('v2f/stream', (x1, y1, x2, y2)),
@@ -40,10 +40,11 @@ class Line(object):
         self.vlist.colors = self.color*2
         
     def update_color(self):
-        p = self.scene.player
-        dist = math.sqrt(((self.x1 - p.x)**2) + ((self.y1 - p.y)**2))
-        dist = int(min(self.HEATUP_RADIUS - 1, dist))
-        self.color = self.gradient[dist]
+        if self.scene.score >= 20:
+            p = self.scene.player
+            dist = math.sqrt(((self.x1 - p.x)**2) + ((self.y1 - p.y)**2))
+            dist = int(min(self.HEATUP_RADIUS - 1, dist))
+            self.color = self.gradient[dist]
         
     def delete(self):
         self.vlist.delete()

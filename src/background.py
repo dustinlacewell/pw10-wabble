@@ -40,17 +40,14 @@ class BackgroundManager(object):
     def init_spin(self,
                   min_st=4, max_st=6,
                   min_spin=15.0, max_spin=180.0,
-                  min_amount=3.0, max_amount=12.0,
-                  spinrate=0.00001):
+                  min_amount=3.0, max_amount=12.0):
         self.min_st = min_st
         self.max_st = max_st
         self.min_spin = min_spin
         self.max_spin = max_spin
         self.min_amount = min_amount
         self.max_amount = max_amount
-        self.spinrate = spinrate
         self.spinning = False
-        self.spintime = 0.0
         self.sdirection = 1
         self.spinamount = random.random() * max_spin + min_spin
         self.spindelta = random.random() * max_amount + min_amount
@@ -61,7 +58,7 @@ class BackgroundManager(object):
         pyglet.clock.schedule_once(self.start_spin, time)
         
     def _get_do_spin(self):
-        return self.__do_zoom
+        return self.__do_spin
     def _set_do_spin(self, bool):
         if bool:
             if self.__do_spin:
@@ -84,16 +81,14 @@ class BackgroundManager(object):
     def init_zoom(self, 
                   min_zt=1, max_zt=2,
                   max_zoom=2.0, min_zoom=1.0, 
-                  zoomrate=0.00001, zoomamount=0.1):
+                  zoomamount=0.1):
         # Fade Effect Attributes
         self.min_zt = min_zt
         self.max_zt = max_zt
         self.max_zoom = max_zoom
         self.min_zoom = min_zoom
-        self.zoomrate = zoomrate
         self.zoomamount = zoomamount
         self.zooming = False
-        self.zoomtime = 0.0
         self.zdirection = 1
         self.__do_zoom = False
         
@@ -124,14 +119,12 @@ class BackgroundManager(object):
         self.zooming = True   
                
         
-    def init_fade(self, min_ft=8, max_ft=9, faderate=0.05, fadeamount=20):
+    def init_fade(self, min_ft=8, max_ft=9, fadeamount=20):
         # Fade Effect Attributes
         self.min_ft = min_ft # minimum time between fades
         self.max_ft = max_ft # maximum time between fades    
-        self.faderate = faderate # delay between ticks
         self.fadeamount = fadeamount # opacity per tick
         self.fading = False # actually fading
-        self.fadetime = 0.0 # fade timer
         self.__do_fade = False
     
     def _schedule_fade(self):
@@ -165,47 +158,41 @@ class BackgroundManager(object):
     def update(self, dt):
         # Fade effect
         if self.fading:
-            self.fadetime += dt
-            if True or self.fadetime >= self.faderate:
-                self.fadetime = 0.0
-                old = self.rotation[1]
-                new = self.rotation[0]
-                delta = dt * self.fadeamount
-                old.opacity -= delta
-                new.opacity += delta
-                if new.opacity >= self.MAXOPACITY:
-                    self.fading = False
-                    old.visible = False
-                    new = self.MAXOPACITY
-                    self._schedule_fade()
-                    self.zooming = False
-                    self.spinning = False
-                    if random.random() > 0.20:
+            old = self.rotation[1]
+            new = self.rotation[0]
+            delta = dt * self.fadeamount
+            old.opacity -= delta
+            new.opacity += delta
+            if new.opacity >= self.MAXOPACITY:
+                self.fading = False
+                old.visible = False
+                new = self.MAXOPACITY
+                self._schedule_fade()
+                self.zooming = False
+                self.spinning = False
+                if random.random() > 0.20:
+                    if self.do_zoom:
                         self._schedule_zoom()
+                    if self.do_spin:
                         self._schedule_spin()
+                            
+        bgimg = self.rotation[1]
+                            
         # Zoom effect
         if self.zooming:
-            bgimg = self.rotation[1]
-            self.zoomtime += dt
-            if True or self.zoomtime >= self.zoomrate:
-                self.zoomtime = 0.0
-                bgimg.scale += ((bgimg.scale * self.zoomamount) * dt) * self.zdirection
-                bgimg.scale = min(self.max_zoom, max(self.min_zoom, bgimg.scale))
-                if bgimg.scale <= self.min_zoom or bgimg.scale >= self.max_zoom:
-                    self.zooming = False
-                    self._schedule_zoom()
+            bgimg.scale += ((bgimg.scale * self.zoomamount) * dt) * self.zdirection
+            bgimg.scale = min(self.max_zoom, max(self.min_zoom, bgimg.scale))
+            if bgimg.scale <= self.min_zoom or bgimg.scale >= self.max_zoom:
+                self.zooming = False
+                self._schedule_zoom()
                     
         if self.spinning:
-            bgimg = self.rotation[1]
-            self.spintime += dt
-            if True or self.spintime >= self.spinrate:
-                self.spintime = 0.0
-                amount = self.spindelta * dt
-                self.spinamount -= amount
-                bgimg.rotation += amount * self.sdirection
-                if self.spinamount <= 0:
-                    self.spinning = False
-                    self._schedule_spin()
+            amount = self.spindelta * dt
+            self.spinamount -= amount
+            bgimg.rotation += amount * self.sdirection
+            if self.spinamount <= 0:
+                self.spinning = False
+                self._schedule_spin()
                     
     def draw(self):
         self.batch.draw()
