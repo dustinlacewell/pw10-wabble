@@ -62,9 +62,9 @@ class GameScene(object):
         pos = (t, random.randint(0, 600))
         if pos in self.lines:
             self.add_line(r+1)
-        elif t=='h' and abs(pos - self.player.y) <= 16:
+        elif t=='h' and abs(pos[1] - self.player.y) <= 16:
             self.add_line(r+1)
-        elif t=='v' and abs(pos - self.player.x) <= 16:
+        elif t=='v' and abs(pos[1] - self.player.x) <= 16:
             self.add_line(r+1)
         else:
             if t == 'h':
