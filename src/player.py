@@ -6,7 +6,7 @@ from src.blob import Blob
 
 class Player(Blob):
     
-    speed = 200
+    speed = 50
     radius = 10
 
     def __init__(self, scene, batch=None, group=None, pgroup=None):
