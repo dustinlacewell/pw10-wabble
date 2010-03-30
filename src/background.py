@@ -11,6 +11,8 @@ class BackgroundManager(object):
     FADEDELAY = .5
     FADEAMOUNT = 15
     
+    ZOOMAMOUNT = 0.001
+    
     def __init__(self, rotation='backgrounds.txt', min_t=60, max_t=120, rate=50):
         self.min_t = min_t
         self.max_t = max_t    
@@ -20,6 +22,8 @@ class BackgroundManager(object):
         self.rotation = deque()
         for line in pyglet.resource.file(rotation):
             newspr = spr(line.strip(), batch=self.batch)
+            newspr.image.anchor_x, newspr.image.anchor_y = 300, 300
+            newspr.x, newspr.y = 300, 300
             newspr.visible = False
             self.rotation.append( newspr )
         
@@ -42,6 +46,7 @@ class BackgroundManager(object):
         
         
     def update(self, dt):
+        self.rotation[0].scale += self.ZOOMAMOUNT
         if self.fading:
             self.fadetime += dt
             if self.fadetime >= self.FADEDELAY:

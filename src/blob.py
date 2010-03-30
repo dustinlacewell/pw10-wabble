@@ -8,14 +8,14 @@ from src.util import img, spr
 class Dot(pyglet.sprite.Sprite):
     
     MAXOFFSET = 3
-    radius = 12
+    radius = 10
     dryrate = 0.1
     
     def __init__(self, blob, batch=None, group=None):
         super(Dot, self).__init__(blob.image, batch=batch, group=group)
         self.blob = blob
         self.sprbatch = batch
-        self.scale = .75
+        self.scale = .8
         self.wobble(0)
         
     def wobble(self, dots):

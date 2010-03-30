@@ -12,7 +12,6 @@ class Player(Blob):
     def __init__(self, scene, batch=None, group=None, pgroup=None):
         super(Player, self).__init__(dots=5, doprints=True, batch=batch, group=group, pgroup=pgroup)
         self.scene = scene
-        self.x = self.y = 100
         
     def handle_movement(self, dt):
         k = self.scene.keys
