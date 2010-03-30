@@ -25,11 +25,104 @@ class BackgroundManager(object):
         self.rotation[0].visible = True
         
         self.__do_fade = False
-        self.do_fade = True   
+        self.init_fade()
+        
+        self.__do_zoom = False
+        self.init_zoom()
+        
+        self.__do_spin = False
+        self.init_spin()
         
     def _get_visible(self):
         return [bg for bg in self.rotation if bg.visible]
-    visible = property(_get_visible)  
+    visible = property(_get_visible)
+    
+    def init_spin(self,
+                  min_st=4, max_st=6,
+                  min_spin=15.0, max_spin=180.0,
+                  min_amount=3.0, max_amount=12.0,
+                  spinrate=0.00001):
+        self.min_st = min_st
+        self.max_st = max_st
+        self.min_spin = min_spin
+        self.max_spin = max_spin
+        self.min_amount = min_amount
+        self.max_amount = max_amount
+        self.spinrate = spinrate
+        self.spinning = False
+        self.spintime = 0.0
+        self.sdirection = 1
+        self.spinamount = random.random() * max_spin + min_spin
+        self.spindelta = random.random() * max_amount + min_amount
+        self.__do_spin = False
+        
+    def _schedule_spin(self):
+        time = random.randint(self.min_st, self.max_st)
+        pyglet.clock.schedule_once(self.start_spin, time)
+        
+    def _get_do_spin(self):
+        return self.__do_zoom
+    def _set_do_spin(self, bool):
+        if bool:
+            if self.__do_spin:
+                return
+            self.init_spin()
+            self.__do_spin = True
+            self._schedule_spin()
+        else:
+            if not self.__do_spin:
+                return
+            pyglet.clock.unschedule(self.start_spin)
+    do_spin = property(_get_do_spin, _set_do_spin)
+            
+    def start_spin(self, dt):
+        self.spinamount = random.random() * self.max_spin + self.min_spin
+        self.spindelta = random.random() * self.max_amount + self.min_amount
+        self.sdirection = -self.sdirection
+        self.spinning = True  
+    
+    def init_zoom(self, 
+                  min_zt=1, max_zt=2,
+                  max_zoom=2.0, min_zoom=1.0, 
+                  zoomrate=0.00001, zoomamount=0.1):
+        # Fade Effect Attributes
+        self.min_zt = min_zt
+        self.max_zt = max_zt
+        self.max_zoom = max_zoom
+        self.min_zoom = min_zoom
+        self.zoomrate = zoomrate
+        self.zoomamount = zoomamount
+        self.zooming = False
+        self.zoomtime = 0.0
+        self.zdirection = 1
+        self.__do_zoom = False
+        
+    def _schedule_zoom(self):
+        time = random.randint(self.min_zt, self.max_zt)
+        pyglet.clock.schedule_once(self.start_zoom, time)
+        
+    def _get_do_zoom(self):
+        return self.__do_zoom
+    def _set_do_zoom(self, bool):
+        if bool:
+            if self.__do_zoom:
+                return
+            self.init_zoom()
+            self.__do_zoom = True
+            self._schedule_zoom()
+        else:
+            if not self.__do_zoom:
+                return
+            pyglet.clock.unschedule(self.start_zoom)
+    do_zoom = property(_get_do_zoom, _set_do_zoom)
+            
+    def start_zoom(self, dt):
+        if self.rotation[1].scale == self.max_zoom:
+            self.zdirection = -1
+        else:
+            self.zdirection = 1
+        self.zooming = True   
+               
         
     def init_fade(self, min_ft=8, max_ft=9, faderate=0.05, fadeamount=20):
         # Fade Effect Attributes
@@ -64,6 +157,7 @@ class BackgroundManager(object):
         self.rotation.rotate()
         self.rotation[1].opacity = self.MAXOPACITY
         self.rotation[0].opacity = 0
+        self.rotation[0].scale = 1
         self.rotation[0].visible = True
         self.fading = True
         
@@ -84,6 +178,30 @@ class BackgroundManager(object):
                     old.visible = False
                     new = self.MAXOPACITY
                     self._schedule_fade()
-        
+                    self.spinamount = 0.0
+        # Zoom effect
+        if self.zooming:
+            bgimg = self.rotation[1]
+            self.zoomtime += dt
+            if self.zoomtime >= self.zoomrate:
+                self.zoomtime = 0.0
+                bgimg.scale += ((bgimg.scale * self.zoomamount) * dt) * self.zdirection
+                bgimg.scale = min(self.max_zoom, max(self.min_zoom, bgimg.scale))
+                if bgimg.scale <= self.min_zoom or bgimg.scale >= self.max_zoom:
+                    self.zooming = False
+                    self._schedule_zoom()
+                    
+        if self.spinning:
+            bgimg = self.rotation[1]
+            self.spintime += dt
+            if self.spintime >= self.spinrate:
+                self.spintime = 0.0
+                amount = self.spindelta * dt
+                self.spinamount -= amount
+                bgimg.rotation += amount * self.sdirection
+                if self.spinamount <= 0:
+                    self.spinning = False
+                    self._schedule_spin()
+                    
     def draw(self):
         self.batch.draw()

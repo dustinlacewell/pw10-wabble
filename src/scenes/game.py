@@ -35,6 +35,7 @@ class GameScene(object):
         # The player blob
         self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
         self.player.set_position(100, 100)
+        self.score = 0
         # The blobule powerup
         self.blobule = Blob(dots=0, batch=self.batch, group=self.blob_group)
         self.blobule.set_position(500, 500)
@@ -94,6 +95,13 @@ class GameScene(object):
             self.reset_blobule() # new blobule position
             self.player.add_dot() # increase bodymass
             self.add_line() # new random hazard
+            self.score += 1
+            if self.score >= 1:
+                self.bg.do_fade = True
+            if self.score >= 2:
+                self.bg.do_zoom = True
+            if self.score >= 3:
+                self.bg.do_spin = True
             
     def draw(self):        
         self.batch.draw()
