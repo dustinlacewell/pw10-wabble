@@ -22,10 +22,11 @@ class GameWindow(pyglet.window.Window):
         # create background manager
         # Create a reference for the current scene
         self.scene = None
+        self._game_scene = scenes.GameScene(self)
         
         self.fps_display = pyglet.clock.ClockDisplay()
         # Set initial scene with our utility function
-        self.gamescene()
+        self.splashscene()
 
     def setup_gl(self):
         pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)
@@ -59,7 +60,7 @@ class GameWindow(pyglet.window.Window):
         self._set_scene(scenes.SplashScene(self))
     
     def gamescene(self):
-        self._set_scene(scenes.GameScene(self))
+        self._set_scene(self._game_scene)
 
 def run():
     window = GameWindow()

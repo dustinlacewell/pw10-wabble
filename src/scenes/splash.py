@@ -204,7 +204,7 @@ class SplashScene(object):
             #self.blob_group.tick()
         if self.blobs[-1].player.y == 300 and not self.done:
             self.done = True
-            pyglet.clock.schedule_once(self.do_gamescene, 2)
+            self.window.gamescene()
             
     def do_gamescene(self, dt):
         for b in list(self.blobs[:-1]):
