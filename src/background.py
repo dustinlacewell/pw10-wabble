@@ -8,7 +8,7 @@ from src.util import spr
 class BackgroundManager(object):
     
     # Fade Effect
-    MAXOPACITY = 145
+    MAXOPACITY = 255
     
     def __init__(self, rotation='backgrounds.txt', batch=None, group=None):
         self.batch = batch

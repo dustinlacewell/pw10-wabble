@@ -40,7 +40,7 @@ class Blob(pyglet.sprite.Sprite):
     ]
     radius = 8
     
-    def __init__(self, dots=0, doprints=True, batch=None, group=None, pgroup=None):
+    def __init__(self, dots=0, prints=30, batch=None, group=None, pgroup=None):
         super(Blob, self).__init__(img(random.choice(self.blob_sprites)), batch=batch, group=group)
         
         self.image.anchor_x = 8
@@ -60,10 +60,10 @@ class Blob(pyglet.sprite.Sprite):
             self.dots.append(newdot)
         
         self.prints = list()
-        self.doprints = doprints
+        self.doprints = prints > 0
         
-        if doprints:
-            for n in xrange(30):
+        if self.doprints:
+            for n in xrange(prints):
                 newprint = spr(random.choice(self.blob_sprites), batch=self.batch, group=self.pgroup)
                 newprint.scale = .75
                 newprint.opacity = 0
