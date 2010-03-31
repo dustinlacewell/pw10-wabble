@@ -117,6 +117,8 @@ class SplashScene(object):
         
         self.blob_group = src.glsl.blob.BlobGroup()
         
+        self.done = False
+        
         self.splash_images = []
         splashbg = SplashImage(img('splashbg.png'),
               self.splash_batch, self.bg_group,
@@ -198,14 +200,15 @@ class SplashScene(object):
             for blob in self.blobs:
                 blob.update(dt)
             #self.blob_group.tick()
-        if self.blobs[-1].player.y == 300:
-            pyglet.clock.schedule_once(self.do_gamescene, 5)
-            for b in list(self.blobs[:-1]):
+        if self.blobs[-1].player.y == 300 and not self.done:
+            self.done = True
+            pyglet.clock.schedule_once(self.do_gamescene, 2)
+            
+    def do_gamescene(self, dt):
+        for b in list(self.blobs[:-1]):
                 b.die()
                 self.blobs.remove(b)
                 self.blob_group.blobs = []
-            
-    def do_gamescene(self, dt):
         self.window.gamescene() 
 
     def draw(self):

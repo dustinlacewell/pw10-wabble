@@ -149,14 +149,15 @@ class BlobGroup(object):
     
     rnd = None
     
-    ball_shader = _buildBallShader()
+    ball_shader = None
     
     def __init__(self, seed=0):
+        print 'wtf'
         self.rnd = Random(seed)
         
         self.blobs = []
         
-        #self.ball_shader = 
+        self.ball_shader = _buildBallShader()
         
     def addBlob(self, blob):
         self.blobs.append(blob)
