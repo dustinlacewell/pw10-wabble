@@ -24,7 +24,7 @@ class Player(Blob):
          x, y, acceleration_cap=0.1,
          radius=8.0, sides=12,
          r=random.uniform(0.1, 0.35),
-         g=random.uniform(0.1, 0.35),
+         g=1.0,
          b=random.uniform(0.0, 0.075)
          #r=1.0, g=1.0, b=0.0
         )
@@ -32,7 +32,7 @@ class Player(Blob):
         group.addBlob(self.blob)
         
         for n in xrange(5):
-            self.add_dot(x, y)
+            self.add_dot(x, y, r=0.3, g=.75, b=0.3)
             
     def get_blob(self):
         return self.blob

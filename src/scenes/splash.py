@@ -10,7 +10,7 @@ from src.player import Player
 Blob.IDLEWOBBLE = 0.015
 
 class SplashImage(pyglet.sprite.Sprite):
-    def __init__(self, image, batch, group, x, y, wait1, fadein, wait2, fadeout):
+    def __init__(self, image, batch, group, x, y, wait1, fadein, wait2, fadeout, maxopacity=255):
         image.anchor_x, image.anchor_y = 300, image.height / 2
         super(SplashImage, self).__init__(image, batch=batch, group=group)
         self.x = x
@@ -24,6 +24,7 @@ class SplashImage(pyglet.sprite.Sprite):
         
         self.fade1 = False
         self.fade2 = False
+        self.maxopacity = maxopacity
         pyglet.clock.schedule_once(self._start_fade1, self.wait1)
         
     def _start_fade1(self, dt):
@@ -37,8 +38,8 @@ class SplashImage(pyglet.sprite.Sprite):
     def update(self, dt):
         if self.fade1:
             self.opacity += self.fadein * dt
-            if self.opacity >= 255:
-                self.opacity = 255
+            if self.opacity >= self.maxopacity:
+                self.opacity = self.maxopacity
                 self.fade1 = False
                 if self.wait2 >= 0.0:
                     pyglet.clock.schedule_once(self._start_fade2, self.wait2)
@@ -156,7 +157,8 @@ class SplashScene(object):
               self.splash_batch, self.bg_group,
               300, 300,
               9, 80,
-              -1, 0
+              -1, 0,
+              maxopacity=128,
               )
         self.splash_images.append(babaroa)
         

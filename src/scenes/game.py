@@ -122,7 +122,7 @@ class GameScene(object):
         if ((self.blobule.x - self.player.x) ** 2 + (self.blobule.y - self.player.y) ** 2) ** 0.5 <= 8.0:
             self.add_score()
             self.reset_blobule() # new blobule position
-            self.player.add_dot(self.player.x, self.player.y) # increase bodymass
+            self.player.add_dot(self.player.x, self.player.y, r=0.0, g=1.0, b=0.0) # increase bodymass
             self.add_line() # new random hazard
             
             if self.score >= 5:

@@ -25,7 +25,7 @@ class GameWindow(pyglet.window.Window):
         
         self.fps_display = pyglet.clock.ClockDisplay()
         # Set initial scene with our utility function
-        self.splashscene()
+        self.gamescene()
 
     def setup_gl(self):
         pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)

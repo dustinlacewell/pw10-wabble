@@ -34,7 +34,7 @@ class Blob(object):
                 
             new_dot = src.glsl.blob.Blob(
              x, y, acceleration_cap=cap,
-             r=r, g=g, b=b
+             r=r, g=1.0, b=b
             )
             self.dots.append(new_dot)
             self.blob_group.addBlob(new_dot)
@@ -59,13 +59,13 @@ class Blobule(Blob):
          self.x, self.y,
          0.0, 0.2,
          radius=8.0, sides=12,
-         r=0.1, g=0.1, b=0.75
+         r=0.0, g=1.0, b=0.0
         )
         self.dots.append(blobule)
         group.addBlob(blobule)
         
         for i in xrange(10):
-            self.add_dot(self.x, self.y, r=0.05, g=0.05, b=0.35, cap=0.025)
+            self.add_dot(self.x, self.y, r=0.0, g=1.0, b=0.0, cap=0.05)
             
     def set_position(self, x, y):
         for dot in self.dots:
