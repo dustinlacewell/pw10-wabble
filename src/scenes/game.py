@@ -4,12 +4,14 @@ import pyglet
 from pyglet.window.key import *
 
 from src.util import img
-from src.blob import Blob
+from src.blob import Blob, Blobule
 from src.player import Player
 from src.collisiondispatch import CollisionDispatcher
 from src.line import Line, HorizontalLine, VerticalLine
 from src.background import BackgroundManager
 from src.score import ScoreLabel
+
+import src.glsl.blob
 
 # This scene class is the object that the application class maintains
 class GameScene(object):
@@ -24,9 +26,12 @@ class GameScene(object):
         self.scoregroup_hi = pyglet.graphics.OrderedGroup(5)
         self.scoregroup_lo = pyglet.graphics.OrderedGroup(4)
         self.laser_group = pyglet.graphics.OrderedGroup(3)
-        self.blob_group = pyglet.graphics.OrderedGroup(2)
+        #self.blob_group = pyglet.graphics.OrderedGroup(2)
         self.print_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
+        # The containers for all blobs to be rendered
+        self.blob_group = src.glsl.blob.BlobGroup()
+        self.blobule_group = src.glsl.blob.BlobGroup()
         # Manages the background effects
         self.bg = BackgroundManager(batch=self.batch, group=self.bg_group)
         # The collision machinery        
@@ -36,12 +41,15 @@ class GameScene(object):
         self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
         self.coll_funcs.add(Blob, Player, coll_blob_player)
         # The player blob
-        self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
-        self.player.set_position(300, 500)
+        self.player = Player(self, self.blob_group, 300, 500)
+        #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
+        #self.player.set_position(300, 500)
         self.score = 0
         # The blobule powerup
-        self.blobule = Blob(dots=0, batch=self.batch, group=self.blob_group)
-        self.blobule.set_position(300, 300)
+        self.blobule = Blobule(self.blobule_group)
+        self.reset_blobule()
+        #self.blobule = Blob(dots=0, batch=self.batch, group=self.blob_group)
+        #self.blobule.set_position(300, 300)
         # The lasers
         self.lines = {}
         self.do_horiz = True
@@ -51,8 +59,7 @@ class GameScene(object):
         
     def reset_blobule(self):
         '''give the blobule a random position'''
-        self.blobule.x = random.randint(30, 570)
-        self.blobule.y = random.randint(30, 570)
+        self.blobule.set_position(random.randint(30, 570), random.randint(30, 570))
         
     def add_line(self, r=0):
         '''add a new random line hazard'''
@@ -89,6 +96,8 @@ class GameScene(object):
     def update(self, dt):
         self.bg.update(dt) # background effects
         self.player.update(dt)
+        self.blob_group.tick()
+        self.blobule_group.tick()
         # Line-Player collision
         deleted_lines = []
         for key, line in self.lines.iteritems():
@@ -108,10 +117,11 @@ class GameScene(object):
             line = self.lines.pop(key)
             line.delete()
         # Player-Blobule collision
-        if self.coll_funcs.collide(self.blobule, self.player):
+        #self.coll_funcs.collide(self.blobule, self.player):
+        if ((self.blobule.x - self.player.x) ** 2 + (self.blobule.y - self.player.y) ** 2) ** 0.5 <= 8.0:
             self.add_score()
             self.reset_blobule() # new blobule position
-            self.player.add_dot() # increase bodymass
+            self.player.add_dot(self.player.x, self.player.y) # increase bodymass
             self.add_line() # new random hazard
             
             if self.score >= 5:
@@ -128,7 +138,9 @@ class GameScene(object):
             
     def draw(self):        
         self.batch.draw()
-            
+        self.blobule_group.draw(600, 600)
+        self.blob_group.draw(600, 600)
+        
         
 # the collision detection is not perfect
 # should it detect collision for each Blob sepeartly?

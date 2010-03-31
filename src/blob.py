@@ -1,11 +1,14 @@
 import random, math
-from collections import deque
+#from collections import deque
+from random import uniform
 
 import pyglet
 
 from src.util import img, spr
 
-class Dot(pyglet.sprite.Sprite):
+import src.glsl.blob
+
+"""class Dot(pyglet.sprite.Sprite):
     
     MAXOFFSET = 3
     radius = 10
@@ -23,44 +26,52 @@ class Dot(pyglet.sprite.Sprite):
         angle = random.randint(0, 360)
         xoff = self.blob.x + radius*math.cos(angle)
         yoff = self.blob.y + radius*math.sin(angle)
-        self.set_position(xoff, yoff)
+        self.set_position(xoff, yoff)"""
                 
-class Blob(pyglet.sprite.Sprite):
+class Blob(object):
     
     MAXSPEED = 150
     MINSPEED = 50
-    MAXDOTS = 10
-    MAXPRINTS = 25
+    MAXDOTS = 25
+    """MAXPRINTS = 25
     IDLEWOBBLE = 0.15
     FASTWOBBLE = 0.05
-    DRYTIME = 0.01
+    DRYTIME = 0.01"""
     
-    blob_sprites = [  
-    'blob.png', 'blob2.png', 'blob3.png'
-    ]
-    radius = 8
+    #blob_sprites = [  
+    #'blob.png', 'blob2.png', 'blob3.png'
+    #]
+    #radius = 8
     
+    
+<<<<<<< HEAD:src/blob.py
     def __init__(self, dots=0, prints=30, batch=None, group=None, pgroup=None):
         super(Blob, self).__init__(img(random.choice(self.blob_sprites)), batch=batch, group=group)
+=======
+    def __init__(self, group, doprints=True):
+        self.blob_group = group
+>>>>>>> c85b74976d9fea5ac2fd6a10b88f6d167a9de9b1:src/blob.py
         
-        self.image.anchor_x = 8
-        self.image.anchor_y = 8
+        #self.image.anchor_x = 8
+        #self.image.anchor_y = 8
         
-        self.wobble_t = 0.0
+        #self.wobble_t = 0.0
         
-        self.batch = batch
-        self.group = group
-        self.pgroup = pgroup
+        #self.batch = batch
+        #self.group = group
+        #self.pgroup = pgroup
         
-        self.oldposition = self.position
+        #self.oldposition = self.position
 
-        self.dots = deque()
-        for n in xrange(dots):
-            newdot = Dot(self, batch=batch, group=group)
-            self.dots.append(newdot)
+        self.dots = []
         
+<<<<<<< HEAD:src/blob.py
         self.prints = list()
         self.doprints = prints > 0
+=======
+        """self.prints = list()
+        self.doprints = doprints
+>>>>>>> c85b74976d9fea5ac2fd6a10b88f6d167a9de9b1:src/blob.py
         
         if self.doprints:
             for n in xrange(prints):
@@ -75,25 +86,46 @@ class Blob(pyglet.sprite.Sprite):
         pyglet.clock.schedule_interval(self.wobble, self.IDLEWOBBLE)
         if self.doprints:
             pyglet.clock.schedule_once(self.footprint, random.random())
-            pyglet.clock.schedule_interval(self.dry, self.DRYTIME)
+            pyglet.clock.schedule_interval(self.dry, self.DRYTIME)"""
         
-    def wobble(self, dt):
+    """def wobble(self, dt):
         self.wobble_t += dt
         if self.wobble_t >= self.FASTWOBBLE:
             for dot in self.dots:
                 dot.wobble(len(self.dots))
-            self.wobble_t = 0.0
+            self.wobble_t = 0.0"""
             
-    def add_dot(self):
+    def update_wander_limit(self):
+        dot_distance = math.sqrt((len(self.dots) - 1) * 3)
+        for dot in self.dots[1:]:
+            dot.wander_limit = dot_distance
+            
+    def add_dot(self, x, y, r=None, g=None, b=None):
         if len(self.dots) < self.MAXDOTS:
-            newdot = Dot(self, batch=self.batch, group=self.group)
-            self.dots.append(newdot)
-            
-    def remove_dot(self):
-        d = self.dots.pop()
-        d.delete()
+            if r is None:
+                r = uniform(0.05, 0.125)
+            if g is None:
+                g = uniform(0.05, 0.25)
+            if b is None:
+                b = uniform(0.0, 0.075)
+                
+            new_dot = src.glsl.blob.Blob(
+             x, y, acceleration_cap=0.2,
+             r=r, g=g, b=b
+            )
+            self.dots.append(new_dot)
+            self.blob_group.addBlob(new_dot)
+        self.update_wander_limit()
         
-    def footprint(self, dt):
+    def remove_dot(self):
+        if len(self.dots) > 1:
+            old_dot = self.dots.pop(1)
+            self.blob_group.removeBlob(old_dot)
+            self.update_wander_limit()
+            return True
+        return False
+        
+    """def footprint(self, dt):
         if self.oldposition != self.position:
             self.oldposition = self.position
             for p in self.prints:
@@ -105,4 +137,28 @@ class Blob(pyglet.sprite.Sprite):
         
     def dry(self, dt):
         for p in list(self.prints):
-            p.opacity = max(0, p.opacity - (random.random() * 300) * dt)
+            p.opacity = max(0, p.opacity - (random.random() * 300) * dt)"""
+            
+class Blobule(Blob):
+    x = 300
+    y = 300
+    
+    def __init__(self, group, doprints=True):
+        super(Blobule, self).__init__(group, doprints=doprints)
+        blobule = src.glsl.blob.Blob(
+         self.x, self.y,
+         0.0, 0.2,
+         radius=8.0, sides=12,
+         r=0.1, g=0.1, b=0.75
+        )
+        self.dots.append(blobule)
+        group.addBlob(blobule)
+        
+        for i in xrange(10):
+            self.add_dot(self.x, self.y, r=0.05, g=0.05, b=0.35)
+            
+    def set_position(self, x, y):
+        for dot in self.dots:
+            self.x = dot.x = dot.root_x = x
+            self.y = dot.y = dot.root_y = y
+            
