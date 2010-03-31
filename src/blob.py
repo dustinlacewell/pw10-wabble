@@ -42,7 +42,7 @@ class Blob(object):
     #'blob.png', 'blob2.png', 'blob3.png'
     #]
     #radius = 8
-    def __init__(self, group, doprints=True):
+    def __init__(self, group):
         self.blob_group = group
         
         #self.image.anchor_x = 8
@@ -132,7 +132,7 @@ class Blobule(Blob):
     y = 300
     
     def __init__(self, group, doprints=True):
-        super(Blobule, self).__init__(group, doprints=doprints)
+        super(Blobule, self).__init__(group)
         blobule = src.glsl.blob.Blob(
          self.x, self.y,
          0.0, 0.2,

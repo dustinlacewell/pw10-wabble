@@ -167,7 +167,7 @@ class BlobGroup(object):
         
         for ball in self.blobs:
             ball.tick(_rnd, _colour_rnd)
-            ball.tick(_rnd, _colour_rnd)
+            #ball.tick(_rnd, _colour_rnd)
             
     def draw(self, width, height):
         _ball_shader = self.ball_shader

@@ -14,7 +14,7 @@ class Player(Blob):
     #def __init__(self, scene, batch=None, group=None, pgroup=None):
     def __init__(self, scene, group, x, y):
         #super(Player, self).__init__(dots=5, doprints=True, batch=batch, group=group, pgroup=pgroup)
-        super(Player, self).__init__(group, doprints=True)
+        super(Player, self).__init__(group)
         self.scene = scene
         self.speed = self.MAXSPEED
         self.x = x
@@ -61,7 +61,7 @@ class Player(Blob):
             if offset_x or offset_y:
                 dot.x += offset_x
                 dot.y += offset_y
-                dot.acceleration_cap = self.base_dot_acceleration * 8.5
+                dot.acceleration_cap = self.base_dot_acceleration * 6.5
             else:
                 dot.acceleration_cap -= dot.acceleration_cap * .33
                 if dot.acceleration_cap <= .03:

@@ -2,8 +2,10 @@ import pickle, random
 
 import pyglet
 
+import src
 from src.util import img
 from src.blob import Blob
+from src.player import Player
 
 Blob.IDLEWOBBLE = 0.015
 
@@ -47,33 +49,60 @@ class SplashImage(pyglet.sprite.Sprite):
                 self.fade2 = False
                 self.visible = False
 
-class BlobController(object):
-    def __init__(self, blob):
-        self.ox, self.oy = blob.x, blob.y
-        blob.y = -random.randint(20, 600)
+class PlayerController(object):
+    def __init__(self, scene, group, x, y):
+        self.ox, self.oy = x, y
+        ry = -random.randint(20, 600)
         dir = random.randint(50, 300)
         dir = dir if random.randint(0,1) else -dir
-        blob.x = self.ox + dir
-        if blob.x >= 600:
-            blob.x - abs(dir) * 2
-        elif blob.x <= 0:
-            blob.x + abs(dir) * 2
+        rx = self.ox + dir
+        if rx >= 600:
+            rx - abs(dir) * 2
+        elif rx <= 0:
+            rx + abs(dir) * 2
+            
+        self.dottime = 0.0
         
-        self.blob = blob
+        self.player = Player(scene, group, rx, ry)
         
-        self.vx = 1 if self.ox - blob.x > 0 else -1
-        self.vy = 1 if self.oy - blob.y > 0 else -1
+        self.vx = 1 if self.ox - self.player.x > 0 else -1
+        self.vy = 1 if self.oy - self.player.y > 0 else -1
         
     def update(self, dt):
-        if self.blob.y != self.oy:
-            self.blob.y += (100 * dt) * self.vy
-            if abs(self.blob.y - self.oy) <= 5:
-                self.blob.y = self.oy
+        blob = self.player.blob
+        
+        dx, dy = self.player.x, self.player.y
+        if self.player.y != self.oy:
+            self.player.y += (100 * dt) * self.vy
+            if abs(self.player.y - self.oy) <= 5:
+                self.player.y = self.oy
         else:
-            if self.blob.x != self.ox:
-                self.blob.x += (100 * dt) * self.vx
-                if abs(self.blob.x - self.ox) <= 5:
-                    self.blob.x = self.ox
+            if self.player.x != self.ox:
+                self.player.x += (100 * dt) * self.vx
+                if abs(self.player.x - self.ox) <= 5:
+                    self.player.x = self.ox
+        location = (self.player.x, self.player.y)
+        offset_x = dx - self.player.x
+        offset_y = dy - self.player.y
+        
+        self.dottime += dt
+
+        for dot in self.player.dots:
+            dot.setRoot(*location)
+            if self.dottime >= 0.0:
+                rndx = random.randint(1, 4)
+                rndx = rndx if random.randint(0,1) else -rndx
+                rndy = random.randint(1, 4)
+                rndy = rndy if random.randint(0,1) else -rndy
+                dot.x = self.player.x + rndx
+                dot.y = self.player.y + rndy
+                self.dottime = 0.0
+            else:
+                dot.x += offset_x
+                dot.y += offset_y
+        (blob.x, blob.y) = location
+        
+        
         
 
 # This scene class is the object that the application class maintains
@@ -86,6 +115,8 @@ class SplashScene(object):
         self.splash_batch = pyglet.graphics.Batch()
         self.label_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
+        
+        self.blob_group = src.glsl.blob.BlobGroup()
         
         self.splash_images = []
         splashbg = SplashImage(img('splashbg.png'),
@@ -131,20 +162,13 @@ class SplashScene(object):
         positions = pickle.load(open('dat/splashblobs.pkl'))
         self.blobs = []
         for pos in positions:
-           blob_filename = random.choice( ['blob.png', 'blob2.png', 'blob3.png'] )
-           prints = 0 if random.random() > 0.2 else 6
-           newblob = Blob(dots=3, prints=prints, batch=self.blob_batch)
-           newblob.IDLEWOBBLE = 0.01
-           newblob.set_position(*pos)
-           newblobcon = BlobController(newblob)
-           self.blobs.append(newblobcon)    
+           newblob = PlayerController(self, self.blob_group, pos[0], pos[1])
+           self.blobs.append(newblob)    
            
-        newblob = Blob(dots=3, batch=self.blob_batch)
-        newblob.x = newblob.y = 300
-        blobcon = BlobController(newblob) 
-        blobcon.blob.x = 300
-        blobcon.blob.y = -1000
-        self.blobs.append(blobcon)
+        newblob = PlayerController(self, self.blob_group, 300, 300)
+        newblob.player.x = 300
+        newblob.player.y = -1500
+        self.blobs.append(newblob)
            
         self.doblobs = False
         pyglet.clock.schedule_once(self._set_do_blobs, 4.0)
@@ -168,24 +192,20 @@ class SplashScene(object):
         #-------------------------------------------- self.blobs.append(newblob)
 
     def update(self, dt):
+        
         for image in self.splash_images:
             image.update(dt)
         if self.doblobs:
             for blob in self.blobs:
                 blob.update(dt)
-        if self.blobs[-1].blob.y == 300:
-            for blob in self.blobs[:-1]:
-                blob.blob.opacity -= 80 * dt
-                if blob.blob.opacity <= 0:
-                    blob.blob.opacity = 0
-                for dot in blob.blob.dots:
-                    dot.opacity -= 80 * dt
-                    if dot.opacity <= 0:
-                        dot.opacity = 0
-        if self.blobs[0].blob.opacity == 0:
+            #self.blob_group.tick()
+            print len(self.blob_group.blobs)
+        if self.blobs[-1].player.y == 300:
             self.window.gamescene()
+            
+        
 
     def draw(self):
         self.splash_batch.draw()
         if self.doblobs:
-            self.blob_batch.draw()
+            self.blob_group.draw(600, 600)
