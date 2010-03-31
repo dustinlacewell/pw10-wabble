@@ -10,8 +10,15 @@ Blob.IDLEWOBBLE = 0.015
 class BlobController(object):
     def __init__(self, blob):
         self.ox, self.oy = blob.x, blob.y
-        blob.x = random.randint(0, 600)
-        blob.y = -20
+        blob.y = -random.randint(20, 600)
+        dir = random.randint(50, 300)
+        dir = dir if random.randint(0,1) else -dir
+        blob.x = self.ox + dir
+        if blob.x >= 600:
+            blob.x - abs(dir) * 2
+        elif blob.x <= 0:
+            blob.x + abs(dir) * 2
+        
         self.blob = blob
         
         self.vx = 1 if self.ox - blob.x > 0 else -1
