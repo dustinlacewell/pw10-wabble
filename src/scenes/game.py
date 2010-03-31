@@ -30,8 +30,7 @@ class GameScene(object):
         self.print_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
         # The containers for all blobs to be rendered
-        self.blob_group = src.glsl.blob.BlobGroup()
-        self.blobule_group = src.glsl.blob.BlobGroup()
+        
         # Manages the background effects
         self.bg = BackgroundManager(batch=self.batch, group=self.bg_group)
         # The collision machinery        
@@ -41,6 +40,8 @@ class GameScene(object):
         self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
         self.coll_funcs.add(Blob, Player, coll_blob_player)
         # The player blob
+        self.blob_group = src.glsl.blob.BlobGroup()
+        self.blobule_group = src.glsl.blob.BlobGroup()
         self.player = Player(self, self.blob_group, 300, 300)
         #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
         #self.player.set_position(300, 500)
@@ -136,7 +137,7 @@ class GameScene(object):
                 self.scores.remove(label)
                 label.delete()
             
-    def draw(self):        
+    def draw(self):   
         self.batch.draw()
         self.blobule_group.draw(600, 600)
         self.blob_group.draw(600, 600)

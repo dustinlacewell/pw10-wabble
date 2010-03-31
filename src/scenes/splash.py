@@ -52,7 +52,7 @@ class SplashImage(pyglet.sprite.Sprite):
 class PlayerController(object):
     def __init__(self, scene, group, x, y):
         self.ox, self.oy = x, y
-        ry = -random.randint(20, 600)
+        ry = -random.randint(100, 500)
         dir = random.randint(50, 300)
         dir = dir if random.randint(0,1) else -dir
         rx = self.ox + dir
@@ -101,6 +101,9 @@ class PlayerController(object):
         location = (self.player.x, self.player.y)
         offset_x = dx - self.player.x
         offset_y = dy - self.player.y
+        
+    def die(self):
+        pyglet.clock.unschedule(self.wobble)
         
 
 # This scene class is the object that the application class maintains
@@ -196,9 +199,14 @@ class SplashScene(object):
                 blob.update(dt)
             #self.blob_group.tick()
         if self.blobs[-1].player.y == 300:
-            self.window.gamescene()
+            pyglet.clock.schedule_once(self.do_gamescene, 5)
+            for b in list(self.blobs[:-1]):
+                b.die()
+                self.blobs.remove(b)
+                self.blob_group.blobs = []
             
-        
+    def do_gamescene(self, dt):
+        self.window.gamescene() 
 
     def draw(self):
         self.splash_batch.draw()
