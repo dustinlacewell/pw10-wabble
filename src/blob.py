@@ -42,15 +42,8 @@ class Blob(object):
     #'blob.png', 'blob2.png', 'blob3.png'
     #]
     #radius = 8
-    
-    
-<<<<<<< HEAD:src/blob.py
-    def __init__(self, dots=0, prints=30, batch=None, group=None, pgroup=None):
-        super(Blob, self).__init__(img(random.choice(self.blob_sprites)), batch=batch, group=group)
-=======
     def __init__(self, group, doprints=True):
         self.blob_group = group
->>>>>>> c85b74976d9fea5ac2fd6a10b88f6d167a9de9b1:src/blob.py
         
         #self.image.anchor_x = 8
         #self.image.anchor_y = 8
@@ -65,13 +58,8 @@ class Blob(object):
 
         self.dots = []
         
-<<<<<<< HEAD:src/blob.py
-        self.prints = list()
-        self.doprints = prints > 0
-=======
         """self.prints = list()
         self.doprints = doprints
->>>>>>> c85b74976d9fea5ac2fd6a10b88f6d167a9de9b1:src/blob.py
         
         if self.doprints:
             for n in xrange(prints):
@@ -100,7 +88,7 @@ class Blob(object):
         for dot in self.dots[1:]:
             dot.wander_limit = dot_distance
             
-    def add_dot(self, x, y, r=None, g=None, b=None):
+    def add_dot(self, x, y, r=None, g=None, b=None, cap=0.2):
         if len(self.dots) < self.MAXDOTS:
             if r is None:
                 r = uniform(0.05, 0.125)
@@ -110,7 +98,7 @@ class Blob(object):
                 b = uniform(0.0, 0.075)
                 
             new_dot = src.glsl.blob.Blob(
-             x, y, acceleration_cap=0.2,
+             x, y, acceleration_cap=cap,
              r=r, g=g, b=b
             )
             self.dots.append(new_dot)
