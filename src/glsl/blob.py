@@ -35,7 +35,7 @@ def _buildBallShader():
             
             float brightness_mod = 0.0;
             if(alpha > 0.75){
-                brightness_mod = alpha + 0.25;
+                brightness_mod = 1.0 + (alpha - 0.75) / 2.0;
             }
             
             if(alpha > 0.2){
@@ -142,7 +142,7 @@ class Blob(object):
             else:
                 self.vec_y = max(self.vec_y + rnd.uniform(-accel, accel / 2.0), -accel)
                 
-        return [old_x, old_y, self.x, self.y]
+        #return [old_x, old_y, self.x, self.y]
         
 class BlobGroup(object):
     blobs = None

@@ -143,7 +143,7 @@ class Blobule(Blob):
         group.addBlob(blobule)
         
         for i in xrange(10):
-            self.add_dot(self.x, self.y, r=0.05, g=0.05, b=0.35)
+            self.add_dot(self.x, self.y, r=0.05, g=0.05, b=0.35, cap=0.025)
             
     def set_position(self, x, y):
         for dot in self.dots:
