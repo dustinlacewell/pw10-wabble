@@ -62,11 +62,28 @@ class PlayerController(object):
             rx + abs(dir) * 2
             
         self.dottime = 0.0
+        self.rndx = []
+        self.rndy = []
+        for x in range(4):
+            rndx = random.randint(1, 4)
+            rndx = rndx if random.randint(0,1) else -rndx
+            rndy = random.randint(1, 4)
+            rndy = rndy if random.randint(0,1) else -rndy
+            self.rndx.append(rndx)
+            self.rndy.append(rndy)
         
         self.player = Player(scene, group, rx, ry)
         
         self.vx = 1 if self.ox - self.player.x > 0 else -1
         self.vy = 1 if self.oy - self.player.y > 0 else -1
+        
+        pyglet.clock.schedule_interval(self.wobble, .25)
+        
+    def wobble(self, dt):
+        for dot in self.player.dots:
+            dot.setRoot(self.player.x, self.player.y)
+            dot.x = self.player.x + random.choice(self.rndx)
+            dot.y = self.player.y + random.choice(self.rndy)
         
     def update(self, dt):
         blob = self.player.blob
@@ -84,25 +101,10 @@ class PlayerController(object):
         location = (self.player.x, self.player.y)
         offset_x = dx - self.player.x
         offset_y = dy - self.player.y
-        
-        self.dottime += dt
-
         for dot in self.player.dots:
             dot.setRoot(*location)
-            if self.dottime >= 0.0:
-                rndx = random.randint(1, 4)
-                rndx = rndx if random.randint(0,1) else -rndx
-                rndy = random.randint(1, 4)
-                rndy = rndy if random.randint(0,1) else -rndy
-                dot.x = self.player.x + rndx
-                dot.y = self.player.y + rndy
-                self.dottime = 0.0
-            else:
-                dot.x += offset_x
-                dot.y += offset_y
-        (blob.x, blob.y) = location
-        
-        
+            dot.x -= offset_x
+            dot.y -= offset_y
         
 
 # This scene class is the object that the application class maintains
