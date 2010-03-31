@@ -108,8 +108,6 @@ class SplashScene(object):
     def __init__(self, window):
         # Store a reference to the application window
         self.window = window
-        
-        self.blob_batch = pyglet.graphics.Batch()
         self.splash_batch = pyglet.graphics.Batch()
         self.label_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
