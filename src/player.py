@@ -61,9 +61,11 @@ class Player(Blob):
             if offset_x or offset_y:
                 dot.x += offset_x
                 dot.y += offset_y
-                dot.acceleration_cap = self.base_dot_acceleration * 2.5
+                dot.acceleration_cap = self.base_dot_acceleration * 8.5
             else:
-                dot.acceleration_cap = self.base_dot_acceleration
+                dot.acceleration_cap -= dot.acceleration_cap * .33
+                if dot.acceleration_cap <= .03:
+                    dot.acceleration_cap = 0
         (self.blob.x, self.blob.y) = location
         
     def remove_dot(self):

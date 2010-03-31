@@ -82,7 +82,7 @@ class Blob(object):
      x, y,
      wander_limit=0.0, acceleration_cap=0.0,
      vec_x=0.0, vec_y=0.0,
-     sides=7, radius=4.0,
+     sides=7, radius=6.0,
      r=0.25, g=0.25, b=0.05
     ):
         self.x = x
