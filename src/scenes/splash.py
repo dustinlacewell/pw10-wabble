@@ -5,6 +5,30 @@ import pyglet
 from src.util import img
 from src.blob import Blob
 
+Blob.IDLEWOBBLE = 0.015
+
+class BlobController(object):
+    def __init__(self, blob):
+        self.ox, self.oy = blob.x, blob.y
+        blob.x = random.randint(0, 600)
+        blob.y = -20
+        self.blob = blob
+        
+        self.vx = 1 if self.ox - blob.x > 0 else -1
+        self.vy = 1 if self.oy - blob.y > 0 else -1
+        
+    def update(self, dt):
+        if self.blob.y != self.oy:
+            self.blob.y += (100 * dt) * self.vy
+            if abs(self.blob.y - self.oy) <= 5:
+                self.blob.y = self.oy
+        else:
+            if self.blob.x != self.ox:
+                self.blob.x += (100 * dt) * self.vx
+                if abs(self.blob.x - self.ox) <= 5:
+                    self.blob.x = self.ox
+        
+
 # This scene class is the object that the application class maintains
 class SplashScene(object):
     def __init__(self, window):
@@ -18,10 +42,10 @@ class SplashScene(object):
         for pos in positions:
            blob_filename = random.choice( ['blob.png', 'blob2.png', 'blob3.png'] )
            newblob = Blob(dots=3, doprints=False, batch=self.blob_batch)
+           newblob.IDLEWOBBLE = 0.01
            newblob.set_position(*pos)
-           self.blobs.append(newblob)
-        self.blobs = []
-        
+           newblobcon = BlobController(newblob)
+           self.blobs.append(newblobcon)        
 
     def on_key_press(self, symbol, modifiers):
         pass
@@ -39,7 +63,8 @@ class SplashScene(object):
         #-------------------------------------------- self.blobs.append(newblob)
 
     def update(self, dt):
-        pass
+        for blob in self.blobs:
+            blob.update(dt)
 
     def draw(self):
         self.blob_batch.draw()
