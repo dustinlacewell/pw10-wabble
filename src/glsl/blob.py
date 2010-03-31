@@ -28,19 +28,25 @@ def _buildBallShader():
             ))));
             
             //Calculate inverse square for opacity, with a quantizing twist.
-            float alpha = 1.0 / sqrt(
+            float alpha = min(1.0, 1.0 / sqrt(
              pow((position.x - gl_FragCoord.x), 2.0) +
              pow((position.y - gl_FragCoord.y), 2.0)
-            );
+            ));
+            
+            float brightness_mod = 0.0;
+            if(alpha > 0.75){
+                brightness_mod = alpha + 0.25;
+            }
+            
             if(alpha > 0.2){
-                alpha = min(0.75, alpha * 1.5);
+                alpha = min(0.8, alpha * 1.5);
             }
             
             gl_FragColor = vec4(
-             (1.0 - influence) * core_rgb.r + influence * rgb.r,
-             (1.0 - influence) * core_rgb.g + influence * rgb.g,
-             (1.0 - influence) * core_rgb.b + influence * rgb.b,
-             alpha
+             min(1.0, ((1.0 - influence) * core_rgb.r + influence * rgb.r) * brightness_mod),
+             min(1.0, ((1.0 - influence) * core_rgb.g + influence * rgb.g) * brightness_mod),
+             min(1.0, ((1.0 - influence) * core_rgb.b + influence * rgb.b) * brightness_mod),
+             min(1.0, alpha)
             );
         }"""
      )
