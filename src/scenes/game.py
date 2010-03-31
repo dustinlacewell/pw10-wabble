@@ -41,7 +41,7 @@ class GameScene(object):
         self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
         self.coll_funcs.add(Blob, Player, coll_blob_player)
         # The player blob
-        self.player = Player(self, self.blob_group, 300, 500)
+        self.player = Player(self, self.blob_group, 300, 300)
         #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
         #self.player.set_position(300, 500)
         self.score = 0

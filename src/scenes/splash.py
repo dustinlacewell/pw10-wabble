@@ -77,7 +77,7 @@ class PlayerController(object):
         self.vx = 1 if self.ox - self.player.x > 0 else -1
         self.vy = 1 if self.oy - self.player.y > 0 else -1
         
-        pyglet.clock.schedule_interval(self.wobble, .25)
+        pyglet.clock.schedule_interval(self.wobble, .05)
         
     def wobble(self, dt):
         for dot in self.player.dots:
@@ -101,10 +101,6 @@ class PlayerController(object):
         location = (self.player.x, self.player.y)
         offset_x = dx - self.player.x
         offset_y = dy - self.player.y
-        for dot in self.player.dots:
-            dot.setRoot(*location)
-            dot.x -= offset_x
-            dot.y -= offset_y
         
 
 # This scene class is the object that the application class maintains
@@ -201,7 +197,6 @@ class SplashScene(object):
             for blob in self.blobs:
                 blob.update(dt)
             #self.blob_group.tick()
-            print len(self.blob_group.blobs)
         if self.blobs[-1].player.y == 300:
             self.window.gamescene()
             
