@@ -16,38 +16,43 @@ def _buildBallShader():
      shader.FragmentShader("""
         uniform vec3 rgb;
         uniform vec2 position;
+        uniform float radius;
         uniform vec3 core_rgb;
         uniform vec2 core_position;
         uniform float core_radius;
         
         void main(){
-            //Calulate radial influence.
-            float influence = min(1.0, max(0.0, 1.0 - ((core_radius / 2.0) / sqrt(
-             pow((position.x - core_position.x), 2.0) +
-             pow((position.y - core_position.y), 2.0)
-            ))));
-            
-            //Calculate inverse square for opacity, with a quantizing twist.
-            float alpha = min(1.0, 1.0 / sqrt(
+            //Calculate distance from centre of current blob.
+            float distance = sqrt(
              pow((position.x - gl_FragCoord.x), 2.0) +
              pow((position.y - gl_FragCoord.y), 2.0)
-            ));
-            
-            float brightness_mod = 0.0;
-            if(alpha > 0.75){
-                brightness_mod = 1.0 + (alpha - 0.75) / 2.0;
-            }
-            
-            if(alpha > 0.2){
-                alpha = min(0.8, alpha * 1.5);
-            }
-            
-            gl_FragColor = vec4(
-             min(1.0, ((1.0 - influence) * core_rgb.r + influence * rgb.r) * brightness_mod),
-             min(1.0, ((1.0 - influence) * core_rgb.g + influence * rgb.g) * brightness_mod),
-             min(1.0, ((1.0 - influence) * core_rgb.b + influence * rgb.b) * brightness_mod),
-             min(1.0, alpha)
             );
+            
+            //Calculate distance from core blob.
+            float core_distance = sqrt(
+             pow((core_position.x - gl_FragCoord.x), 2.0) +
+             pow((core_position.y - gl_FragCoord.y), 2.0)
+            );
+            
+            if(core_distance >= core_radius - 1.1 && abs(distance - radius) <= 1.1){
+                gl_FragColor = vec4(0.25, 0.75, 0.075, 0.75);
+            }else{
+                //Calulate radial influence.
+                float influence = min(1.0, max(0.0, 1.0 - ((core_radius / 2.0) / core_distance)));
+                
+                //Brighten the core of each blob.
+                float brightness_mod = 0.0;
+                if(distance < 0.75){
+                    brightness_mod = 1.0 + sqrt((1.0 / distance) - 0.75);
+                }
+                
+                gl_FragColor = vec4(
+                 min(1.0, ((1.0 - influence) * core_rgb.r + influence * rgb.r) * brightness_mod),
+                 min(1.0, ((1.0 - influence) * core_rgb.g + influence * rgb.g) * brightness_mod),
+                 min(1.0, ((1.0 - influence) * core_rgb.b + influence * rgb.b) * brightness_mod),
+                 0.95
+                );
+            }
         }"""
      )
     )
@@ -201,6 +206,7 @@ class BlobGroup(object):
             for blob in self.blobs:
                 _ball_shader.setUniform_vec3('rgb', blob.r, blob.g, blob.b)
                 _ball_shader.setUniform_vec2('position', blob.x, blob.y)
+                _ball_shader.setUniform_float('radius', blob.radius)
                 
                 glVertexPointer(2, GL_FLOAT, 0, blob.vertices)
                 glLoadIdentity()
