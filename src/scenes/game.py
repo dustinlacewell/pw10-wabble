@@ -40,8 +40,8 @@ class GameScene(object):
         self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
         self.coll_funcs.add(Blob, Player, coll_blob_player)
         # The player blob
-        self.blob_group = src.glsl.blob.BlobGroup(300, 300, 8, (0.075, 0.25, 0.0))
-        self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.2, 0.0, 0.4))
+        self.blob_group = src.glsl.blob.BlobGroup(300, 300, 8, (0.125, 0.375, 0.0))
+        self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.5, 0.0, 0.5))
         self.player = Player(self, self.blob_group)
         #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
         #self.player.set_position(300, 500)

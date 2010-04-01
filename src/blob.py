@@ -42,7 +42,7 @@ class Blob(object):
         return (self.blob_group.x, self.blob_group.y)
         
 class Blobule(Blob):
-    def __init__(self, group, doprints=True, dots=10):
+    def __init__(self, group, doprints=True, dots=10, accel_min=0.0375, accel_max=1.0):
         super(Blobule, self).__init__(group)
         blobule = src.glsl.blob.Blob(
          group.x, group.y,
@@ -52,5 +52,5 @@ class Blobule(Blob):
         group.addBlob(blobule)
         
         for i in xrange(dots):
-            self.add_dot(group.x, group.y, accel_min=0.0375)
+            self.add_dot(group.x, group.y, accel_min=accel_min, accel_max=accel_max)
             

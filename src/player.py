@@ -20,7 +20,7 @@ class Player(Blob):
         
         self.radius = self.blob.radius
         
-        for n in xrange(10):
+        for n in xrange(5):
             self.add_dot(group.x, group.y)
             
     def get_blob(self):
