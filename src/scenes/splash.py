@@ -127,7 +127,7 @@ class SplashScene(object):
               )
         self.splash_images.append(babaroa)
         
-        for i in xrange(15):
+        for i in xrange(7):
             for j in xrange(8):
                 column = rnd.randint(10, 590)
                 blob_group = src.glsl.blob.BlobGroup(

@@ -65,6 +65,9 @@ class GameWindow(pyglet.window.Window):
         
     def scorescene(self, score=0):
         self._set_scene(scenes.ScoreScene(self, score))
+        
+    def preload_gamescene(self):
+        self._game_scene = scenes.GameScene(self)
 
 def run():
     window = GameWindow()

@@ -33,7 +33,6 @@ class SplashImage(pyglet.sprite.Sprite):
         self.fade2 = True
 
     def update(self, dt):
-        print self.opacity
         if self.fade1:
             self.opacity += self.fadein * dt
             if self.opacity >= self.maxopacity:
@@ -50,7 +49,8 @@ class SplashImage(pyglet.sprite.Sprite):
             
 # This scene class is the object that the application class maintains
 class ScoreScene(object):
-    def __init__(self, window, lastscore):
+    def __init__(self, window, playerscore):
+        window.preload_gamescene()
         pyglet.gl.glClearColor(1.0, 1.0, 1.0, 1.0)
         # Store a reference to the application window
         self.window = window
@@ -78,16 +78,26 @@ class ScoreScene(object):
         self.splash_images.append(scoretext)
         
         self.score_labels = []
-        print str(lastscore)
-        lastscore = pyglet.text.Label(str(lastscore),
+        self.playerscore = playerscore
+        self.lastscore = 0
+        self.lastscore_label = pyglet.text.Label('0',
               font_name='Psychotic', font_size=62,
               anchor_x = 'center', anchor_y = 'center',
               batch=self.splash_batch, group=self.label_group,
               x = 300, y=425
         )
-        self.score_labels.append(lastscore)
+        self.score_labels.append(self.lastscore_label)
+        pyglet.clock.schedule_interval(self._increase_scorelabel, 0.05)
+        
+    def _increase_scorelabel(self, dt):
+        self.lastscore += 1
+        self.lastscore_label.text = str(self.lastscore)
+        if self.lastscore == self.playerscore:
+            pyglet.clock.unschedule(self._increase_scorelabel)
+        
         
     def on_key_press(self, symbol, modifiers):
+        pyglet.clock.unschedule(self._increase_scorelabel)
         self.window.splashscene()
 
     def update(self, dt):
