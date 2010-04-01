@@ -17,7 +17,8 @@ class GameWindow(pyglet.window.Window):
         self.keys = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keys)
         # cache image resources
-        pyglet.resource.path = ['dat/img/', 'dat/img/bgd']
+        pyglet.resource.path = ['dat/img/', 'dat/img/bgd', 'dat/font/']
+        pyglet.resource.add_font('dat/font/psychotic.ttf')
         pyglet.resource.reindex()
         # create background manager
         # Create a reference for the current scene
@@ -61,6 +62,9 @@ class GameWindow(pyglet.window.Window):
     
     def gamescene(self):
         self._set_scene(self._game_scene)
+        
+    def scorescene(self, score=0):
+        self._set_scene(scenes.ScoreScene(self, score))
 
 def run():
     window = GameWindow()

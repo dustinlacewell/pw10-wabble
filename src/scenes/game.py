@@ -115,7 +115,7 @@ class GameScene(object):
                 deleted_lines.append(key)
                 # remove_dot returns whether player is dead
                 if self.player.remove_dot():
-                    self.window.splashscene()
+                    self.window.scorescene(score=self.score)
         # clean up the dead lines
         for key in deleted_lines:
             line = self.lines.pop(key)

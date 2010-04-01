@@ -135,7 +135,6 @@ class BlobGroup(object):
     y = None
     
     def __init__(self, x, y, core_radius, colour, seed=None):
-        print 'wtf'
         self.colour = colour
         self.x = x
         self.y = y

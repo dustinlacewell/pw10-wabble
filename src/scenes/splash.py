@@ -68,6 +68,7 @@ class PlayerController(object):
 class SplashScene(object):
     def __init__(self, window):
         # Store a reference to the application window
+        pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)
         self.window = window
         self.splash_batch = pyglet.graphics.Batch()
         self.label_group = pyglet.graphics.OrderedGroup(1)
@@ -78,7 +79,7 @@ class SplashScene(object):
         self.blobs = []
         self.blob_groups = []
         
-        self.player_blob_group = src.glsl.blob.BlobGroup(300, rnd.randint(-1500, 0), 8, (0.125, 0.375, 0.0))
+        self.player_blob_group = src.glsl.blob.BlobGroup(300, -800, 8, (0.125, 0.375, 0.0))
         self.player_blob = PlayerController(self, self.player_blob_group, 300, 300, True)
         self.blobs.append(self.player_blob)
         
