@@ -86,8 +86,8 @@ class ScoreScene(object):
               batch=self.splash_batch, group=self.label_group,
               x = 300, y=425
         )
+        self.score_done = False
         self.score_labels.append(self.lastscore_label)
-        pyglet.clock.schedule_interval(self._increase_scorelabel, 0.05)
         
     def _increase_scorelabel(self, dt):
         self.lastscore += 1
@@ -97,14 +97,19 @@ class ScoreScene(object):
         
         
     def on_key_press(self, symbol, modifiers):
-        pyglet.clock.unschedule(self._increase_scorelabel)
-        self.window.splashscene()
+        if self.lastscore == self.playerscore:
+            pyglet.clock.unschedule(self._increase_scorelabel)
+            self.window.splashscene()
 
     def update(self, dt):
         for image in self.splash_images:
             image.update(dt)
         for label in self.score_labels:
             label.opacity = self.splash_images[0].opacity
+            
+        if self.splash_images[0].opacity >= self.splash_images[0].maxopacity and not self.score_done:
+            self.score_done = True
+            pyglet.clock.schedule_interval(self._increase_scorelabel, 0.05)
 
     def draw(self):
         self.splash_batch.draw()
