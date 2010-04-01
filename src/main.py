@@ -1,3 +1,19 @@
+
+import os
+import os.path
+
+orig_join = os.path.join
+
+def myjoin(*paths):
+    joined_path = os.path.normpath(orig_join(*paths))
+    if __debug__:
+        print joined_path
+    return joined_path
+
+
+os.path.join = myjoin
+
+
 import pyglet
 from pyglet.window import key
 # Import our submodule
@@ -17,8 +33,8 @@ class GameWindow(pyglet.window.Window):
         self.keys = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keys)
         # cache image resources
-        pyglet.resource.path = ['dat/img/', 'dat/img/bgd', 'dat/font/']
-        pyglet.resource.add_font('dat/font/psychotic.ttf')
+        pyglet.resource.path = ['dat/img/', 'dat/img/bgd', 'dat/font']
+        pyglet.resource.add_font('psychotic.ttf')
         pyglet.resource.reindex()
         # create background manager
         # Create a reference for the current scene
