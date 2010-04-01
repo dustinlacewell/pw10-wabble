@@ -1,0 +1,20 @@
+
+
+how to run:
+
+    run run_game.py in the console
+
+how to play:
+    use the arrow keys to move the 'slime monster'
+
+
+problems:
+No sound on windows?
+
+    'AVbin is required to decode compressed media')
+    pyglet.media.riff.WAVEFormatException: AVbin is required to decode compressed media
+
+    -> download it from http://code.google.com/p/avbin/downloads/list
+
+    save the avbin.dll next to python.exe, not in windows/system32 as suggested in the readme
+    

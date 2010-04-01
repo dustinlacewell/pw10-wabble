@@ -56,7 +56,18 @@ class GameScene(object):
         self.do_horiz = True
         pyglet.graphics.glLineWidth(3)
         # Score labels
-        self.scores = []     
+        self.scores = []
+        self.load_sounds()
+        self.music_player = pyglet.media.Player()
+        self.music_player.eos_action = pyglet.media.Player.EOS_LOOP
+        self.music_player.volume = 0.5
+        self.music_player.queue(self.music)
+    
+    def load_sounds(self):
+        self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
+        self.scream2 = pyglet.media.load('dat/audio/fx/scream2.mp3', streaming=False)
+        self.music = pyglet.media.load('dat/audio/1indus.mp3')
+        
         
     def reset_blobule(self):
         '''give the blobule a random position'''
@@ -97,6 +108,8 @@ class GameScene(object):
         self.player.y = y
 
     def update(self, dt):
+        if not self.music_player.playing:
+            self.music_player.play()
         self.bg.update(dt) # background effects
         self.player.update(dt)
         self.blob_group.tick()
@@ -113,6 +126,8 @@ class GameScene(object):
                 check = True
             if check and self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
+                scream = random.choice([self.scream1, self.scream2])
+                scream.play()
                 # remove_dot returns whether player is dead
                 if self.player.remove_dot():
                     self.window.scorescene(score=self.score)

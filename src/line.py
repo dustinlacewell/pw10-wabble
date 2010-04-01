@@ -11,6 +11,7 @@ class Line(object):
     HEATUP_RADIUS = 300
     
     gradient = gradient((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), HEATUP_RADIUS)
+    laser_fx = pyglet.media.load('dat/audio/fx/laser.mp3', streaming=False)
 
     def __init__(self, scene, batch, group, x1, y1, x2, y2):
         # TODO: add asserts
@@ -28,11 +29,12 @@ class Line(object):
         self.v2 = y2 - y1
         self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
         self.color = (255, 0, 0)
-        # self.length = self.length_sq ** 0.5
         self.vlist = batch.add(2, pyglet.gl.GL_LINES, group,
             ('v2f/stream', (x1, y1, x2, y2)),
             ('c3f/stream', (0, 0, 0, 0, 0, 0),
         ))
+        self.play_fx()
+        
         
     def update_vlist(self):
         self.update_color()
@@ -48,6 +50,12 @@ class Line(object):
         
     def delete(self):
         self.vlist.delete()
+        
+    def play_fx(self):
+        player = pyglet.media.Player()
+        player.queue(self.laser_fx)
+        player.volume = 0.15
+        player.play()
         
         
 class HorizontalLine(Line):
@@ -71,6 +79,7 @@ class HorizontalLine(Line):
                 self.forward = False
                 self.x1 = 600 - self.LENGTH
                 self.x2 = 600
+                self.play_fx()
         else:
             pc = dt * self.SPEED
             self.x1 -= pc
@@ -79,6 +88,7 @@ class HorizontalLine(Line):
                 self.forward = True
                 self.x1 = 0
                 self.x2 = self.LENGTH
+                self.play_fx()
         self.update_vlist()
                 
 class VerticalLine(Line):
@@ -102,6 +112,7 @@ class VerticalLine(Line):
                 self.forward = False
                 self.y1 = 600 - self.LENGTH
                 self.y2 = 600
+                self.play_fx()
         else:
             pc = dt * self.SPEED
             self.y1 -= pc
@@ -110,5 +121,6 @@ class VerticalLine(Line):
                 self.forward = True
                 self.y1 = 0
                 self.y2 = self.LENGTH
+                self.play_fx()
         self.update_vlist()
     

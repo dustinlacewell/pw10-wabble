@@ -20,6 +20,9 @@ from pyglet.window import key
 import scenes
 
 pyglet.options['debug'] = False
+pyglet.options['audio'] = ('openal', 'directsound', 'alsa', 'silent')
+
+import pyglet.media
 
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 600
@@ -29,11 +32,12 @@ class GameWindow(pyglet.window.Window):
     def __init__(self):
         super(GameWindow, self).__init__(WINDOW_WIDTH, WINDOW_HEIGHT, caption="Wasers")
         self.setup_gl()
-        pyglet.clock.schedule(self.update)
+        # pyglet.clock.schedule(self.update)
+        pyglet.clock.schedule_interval(self.update, 1.0/30.0)
         self.keys = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keys)
         # cache image resources
-        pyglet.resource.path = ['dat/img/', 'dat/img/bgd', 'dat/font']
+        pyglet.resource.path = ['dat/img/', 'dat/img/bgd', 'dat/font', 'dat/audio', 'dat/audio/fx']
         pyglet.resource.reindex()
         pyglet.resource.add_font('psychotic.ttf')
         # create background manager
