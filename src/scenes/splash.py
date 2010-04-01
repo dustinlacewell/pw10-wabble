@@ -55,7 +55,7 @@ class PlayerController(object):
         if player_dot:
             self.blobule = Blobule(group, dots=5)
         else:
-            self.blobule = Blobule(group, dots=7, accel_max=2.0)
+            self.blobule = Blobule(group, dots=5, accel_max=2.0)
             
     def update(self, dt):
         offset = 100.0 * dt
@@ -127,7 +127,7 @@ class SplashScene(object):
         self.splash_images.append(babaroa)
         
         for i in xrange(15):
-            for j in xrange(10):
+            for j in xrange(8):
                 column = rnd.randint(10, 590)
                 blob_group = src.glsl.blob.BlobGroup(
                  column, rnd.randint(-100 * (i + 1), -100 * i),

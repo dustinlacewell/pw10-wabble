@@ -41,8 +41,8 @@ class Line(object):
         
     def update_color(self):
         if self.scene.score >= 20:
-            p = self.scene.player
-            dist = math.sqrt(((self.x1 - p.x)**2) + ((self.y1 - p.y)**2))
+            (player_x, player_y) = self.scene.player.get_position()
+            dist = math.sqrt(((self.x1 - player_x)**2) + ((self.y1 - player_y)**2))
             dist = int(min(self.HEATUP_RADIUS - 1, dist))
             self.color = self.gradient[dist]
         
