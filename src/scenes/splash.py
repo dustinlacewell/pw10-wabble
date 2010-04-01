@@ -4,10 +4,11 @@ import pyglet
 
 import src
 from src.util import img
-from src.blob import Blob
-from src.player import Player
+#from src.blob import Blob
+from src.blob import Blobule
+#from src.player import Player
 
-Blob.IDLEWOBBLE = 0.015
+#Blob.IDLEWOBBLE = 0.015
 
 class SplashImage(pyglet.sprite.Sprite):
     def __init__(self, image, batch, group, x, y, wait1, fadein, wait2, fadeout, maxopacity=255):
@@ -51,7 +52,9 @@ class SplashImage(pyglet.sprite.Sprite):
                 self.visible = False
 
 class PlayerController(object):
-    def __init__(self, scene, group, x, y):
+    def __init__(self, scene, group, x, y, player_dot=False):
+        self.group = group
+        
         self.ox, self.oy = x, y
         ry = -random.randint(100, 500)
         dir = random.randint(50, 300)
@@ -73,21 +76,24 @@ class PlayerController(object):
             self.rndx.append(rndx)
             self.rndy.append(rndy)
         
-        self.player = Player(scene, group, rx, ry)
+        if player_dot:
+            self.blobule = Blobule(group, dots=10)
+        else:
+            self.blobule = Blobule(group, dots=4)
+            
+        self.vx = 1 if self.ox - rx > 0 else -1
+        self.vy = 1 if self.oy - ry > 0 else -1
         
-        self.vx = 1 if self.ox - self.player.x > 0 else -1
-        self.vy = 1 if self.oy - self.player.y > 0 else -1
+        #pyglet.clock.schedule_interval(self.wobble, .05)
         
-        pyglet.clock.schedule_interval(self.wobble, .05)
-        
-    def wobble(self, dt):
+    """def wobble(self, dt):
         for dot in self.player.dots:
             dot.setRoot(self.player.x, self.player.y)
             dot.x = self.player.x + random.choice(self.rndx)
-            dot.y = self.player.y + random.choice(self.rndy)
+            dot.y = self.player.y + random.choice(self.rndy)"""
         
     def update(self, dt):
-        blob = self.player.blob
+        """blob = self.player.blob
         
         dx, dy = self.player.x, self.player.y
         if self.player.y != self.oy:
@@ -101,10 +107,34 @@ class PlayerController(object):
                     self.player.x = self.ox
         location = (self.player.x, self.player.y)
         offset_x = dx - self.player.x
-        offset_y = dy - self.player.y
+        offset_y = dy - self.player.y"""
         
-    def die(self):
-        pyglet.clock.unschedule(self.wobble)
+        """dx, dy = self.group.x, self.group.y
+        if dy != self.oy:
+            dy += (100 * dt) * self.vy
+            if abs(dy - self.oy) <= 5:
+                dy = self.oy
+        else:
+            if dx != self.ox:
+                dx += (100 * dt) * self.vx
+                if abs(dx - self.ox) <= 5:
+                    dx = self.ox"""
+        #location = (self.player.x, self.player.y)
+        #offset_x = dx - self.player.x
+        #offset_y = dy - self.player.y
+        
+        #self.group.offsetPosition(self.group.x - dx, self.group.y - dy)
+        
+        self.group.offsetPosition(
+         (self.ox - self.group.x) / 17.5,
+         max(0.75, (self.oy - self.group.y) / 17.5),
+        )
+        
+        
+        self.group.tick()
+        
+    """def die(self):
+        pyglet.clock.unschedule(self.wobble)"""
         
 
 # This scene class is the object that the application class maintains
@@ -116,7 +146,8 @@ class SplashScene(object):
         self.label_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
         
-        self.blob_group = src.glsl.blob.BlobGroup()
+        self.blob_groups = []
+        self.newblob_group = src.glsl.blob.BlobGroup(300, -1000, 8, (0.075, 0.25, 0.0))
         
         self.done = False
         
@@ -165,14 +196,16 @@ class SplashScene(object):
         positions = pickle.load(open('dat/splashblobs.pkl'))
         self.blobs = []
         for pos in positions:
-           newblob = PlayerController(self, self.blob_group, pos[0], pos[1])
+           blob_group = src.glsl.blob.BlobGroup(random.randint(-300, 900), random.randint(-600, 0), 8, (0.25, 0.075, 0.0))
+           self.blob_groups.append(blob_group)
+           newblob = PlayerController(self, blob_group, pos[0], pos[1])
            self.blobs.append(newblob)    
            
-        newblob = PlayerController(self, self.blob_group, 300, 300)
-        newblob.player.x = 300
-        newblob.player.y = -1500
+        newblob = PlayerController(self, self.newblob_group, 300, 300, True)
+        #newblob.player.x = 300
+        #newblob.player.y = -1500
         self.blobs.append(newblob)
-           
+        
         self.doblobs = False
         pyglet.clock.schedule_once(self._set_do_blobs, 4.0)
         
@@ -199,21 +232,34 @@ class SplashScene(object):
         for image in self.splash_images:
             image.update(dt)
         if self.doblobs:
+            #for group in self.blob_groups + [self.newblob_group]:
+            #    group.tick()
             for blob in self.blobs:
                 blob.update(dt)
             #self.blob_group.tick()
-        if self.blobs[-1].player.y == 300 and not self.done:
+        if self.newblob_group.y >= 299 and not self.done:
             self.done = True
             self.window.gamescene()
+        #if self.blobs[-1].player.y == 300 and not self.done:
+        #    self.done = True
+        #    self.window.gamescene()
             
     def do_gamescene(self, dt):
-        for b in list(self.blobs[:-1]):
-                b.die()
-                self.blobs.remove(b)
-                self.blob_group.blobs = []
+        del self.newblob_group
+        del self.blob_groups
+        #for b in list(self.blobs[:-1]):
+        #        b.die()
+        #        self.blobs.remove(b)
+        #for blob in self.blobs:
+        #    blob.die()
+        del self.blobs
+        #        self.blob_group.blobs = []
         self.window.gamescene() 
 
     def draw(self):
         self.splash_batch.draw()
         if self.doblobs:
-            self.blob_group.draw(600, 600)
+            for group in self.blob_groups + [self.newblob_group]:
+                group.draw(600, 600)
+            #self.blob_group.draw(600, 600)
+            

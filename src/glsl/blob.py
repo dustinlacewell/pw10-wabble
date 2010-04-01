@@ -14,10 +14,9 @@ def _buildBallShader():
         }"""
      ),
      shader.FragmentShader("""
-        uniform vec3 rgb;
         uniform vec2 position;
         uniform float radius;
-        uniform vec3 core_rgb;
+        uniform vec3 rgb;
         uniform vec2 core_position;
         uniform float core_radius;
         
@@ -35,11 +34,13 @@ def _buildBallShader():
             );
             
             if(core_distance >= core_radius - 1.1 && abs(distance - radius) <= 1.1){
-                gl_FragColor = vec4(0.25, 0.75, 0.075, 0.75);
+                gl_FragColor = vec4(
+                 min(1.0, rgb.r * 2.0),
+                 min(1.0, rgb.g * 2.0),
+                 min(1.0, rgb.b * 2.0),
+                 0.95
+                );
             }else{
-                //Calulate radial influence.
-                float influence = min(1.0, max(0.0, 1.0 - ((core_radius / 2.0) / core_distance)));
-                
                 //Brighten the core of each blob.
                 float brightness_mod = 0.0;
                 if(distance < 0.75){
@@ -47,9 +48,9 @@ def _buildBallShader():
                 }
                 
                 gl_FragColor = vec4(
-                 min(1.0, ((1.0 - influence) * core_rgb.r + influence * rgb.r) * brightness_mod),
-                 min(1.0, ((1.0 - influence) * core_rgb.g + influence * rgb.g) * brightness_mod),
-                 min(1.0, ((1.0 - influence) * core_rgb.b + influence * rgb.b) * brightness_mod),
+                 min(1.0, rgb.r * brightness_mod),
+                 min(1.0, rgb.g * brightness_mod),
+                 min(1.0, rgb.b * brightness_mod),
                  0.95
                 );
             }
@@ -71,115 +72,109 @@ def _buildBallVertices(sides, radius):
     
     
 class Blob(object):
-    x = None
-    y = None
-    vec_x = None
-    vec_y = None
-    root_x = None
-    root_y = None
-    wander_limit = None
-    acceleration_cap = None
-    vertices = None
-    sides = None
-    r = None
-    g = None
-    b = None
-    max_r = None
-    max_g = None
-    max_b = None
-    radius = None
+    vec_x = 0.0
+    vec_y = 0.0
     
     def __init__(self,
      x, y,
-     wander_limit=0.0, acceleration_cap=0.0,
-     vec_x=0.0, vec_y=0.0,
-     sides=7, radius=6.0,
-     r=0.25, g=0.25, b=0.05
+     wander_limit=0.0,
+     acceleration_max=0.0, acceleration_min=0.0,
+     sides=7, radius=6.0
     ):
         self.x = x
         self.y = y
-        self.vec_x = vec_x
-        self.vec_y = vec_y
         self.wander_limit = wander_limit
-        self.acceleration_cap = acceleration_cap
+        self.acceleration_max = acceleration_max
+        self.acceleration_min = acceleration_min
+        self.acceleration = acceleration_max
         self.vertices = _buildBallVertices(sides, radius)
         self.sides = len(self.vertices) // 2
-        self.r = r
-        self.g = g
-        self.b = b
-        self.max_r = min(1.0, r * 1.5)
-        self.max_g = min(1.0, g * 1.5)
-        self.max_b = min(1.0, b * 1.5)
         self.radius = radius
         
-    def setRoot(self, x, y):
-        self.root_x = x
-        self.root_y = y
-        
-    def tick(self, rnd, colour_rnd):
-        old_x = self.x
-        old_y = self.y
-        accel = self.acceleration_cap
-        
-        self.r = max(self.max_r * 0.5, min(self.max_r, self.r + colour_rnd.uniform(-0.01, 0.01)))
-        self.g = max(self.max_g * 0.5, min(self.max_g, self.g + colour_rnd.uniform(-0.01, 0.01)))
-        self.b = max(self.max_b * 0.5, min(self.max_b, self.b + colour_rnd.uniform(-0.01, 0.01)))
-        
+    def tick(self, rnd, root_x, root_y):
         if self.wander_limit:
-            self.x += self.vec_x
+            old_x = self.x
+            old_y = self.y
+            accel = self.acceleration = max(self.acceleration_min, self.acceleration * 0.975)
             
-            if abs(self.root_x - self.x) >= self.wander_limit:
-                if (self.root_x < self.x and self.vec_x > 0) or (self.root_x > self.x and self.vec_x < 0):
-                    self.vec_x *= -1.0
-            if abs(self.root_y - self.y) >= self.wander_limit:
-                if (self.root_y < self.y and self.vec_y > 0) or (self.root_y > self.y and self.vec_y < 0):
-                    self.vec_y *= -1.0
+            vec_x = self.vec_x
+            vec_y = self.vec_y
+            
+            if abs(root_x - self.x) >= self.wander_limit:
+                if (root_x < self.x and vec_x > 0) or (root_x > self.x and vec_x < 0):
+                    vec_x *= -1.0
+            if abs(root_y - self.y) >= self.wander_limit:
+                if (root_y < self.y and vec_y > 0) or (root_y > self.y and vec_y < 0):
+                    vec_y *= -1.0
                     
-            self.x += self.vec_x
-            self.y += self.vec_y
+            self.x += vec_x
+            self.y += vec_y
             
-            if self.vec_x > 0:
-                self.vec_x = min(self.vec_x + rnd.uniform(-accel / 2.0, accel), accel)
+            if vec_x > 0:
+                vec_x = min(vec_x + rnd.uniform(-accel / 2.0, accel), accel)
             else:
-                self.vec_x = max(self.vec_x + rnd.uniform(-accel, accel / 2.0), -accel)
+                vec_x = max(vec_x + rnd.uniform(-accel, accel / 2.0), -accel)
             if self.vec_y > 0:
-                self.vec_y = min(self.vec_y + rnd.uniform(-accel / 2.0, accel), accel)
+                vec_y = min(vec_y + rnd.uniform(-accel / 2.0, accel), accel)
             else:
-                self.vec_y = max(self.vec_y + rnd.uniform(-accel, accel / 2.0), -accel)
+                vec_y = max(vec_y + rnd.uniform(-accel, accel / 2.0), -accel)
                 
-        #return [old_x, old_y, self.x, self.y]
-        
+            self.vec_x = vec_x
+            self.vec_y = vec_y
+            
 class BlobGroup(object):
     blobs = None
     
     rnd = None
     
+    colour = None
+    
     ball_shader = _buildBallShader()
     
-    def __init__(self, seed=0):
+    x = None
+    y = None
+    
+    def __init__(self, x, y, core_radius, colour, seed=None):
         print 'wtf'
-        self.rnd = Random(seed)
+        self.colour = colour
+        self.x = x
+        self.y = y
+        self.core_radius = core_radius
         
+        if seed is None:
+            import time
+            self.rnd = Random(time.time())
+        else:
+            self.rnd = Random(seed)
+            
         self.blobs = []
         
-        #self.ball_shader = _buildBallShader()
-        
+    def offsetPosition(self, x, y):
+        self.x += x
+        self.y += y
+        for blob in self.blobs:
+            blob.x += x
+            blob.y += y
+            blob.acceleration = blob.acceleration_max
+            
+    def setPosition(self, x, y):
+        self.x = x
+        self.y = y
+        for blob in self.blobs:
+            blob.x = x
+            blob.y = y
+            blob.acceleration = blob.acceleration_max
+            
     def addBlob(self, blob):
         self.blobs.append(blob)
         
-    def removeBlob(self, blob):
-        if blob in self.blobs:
-            self.blobs.remove(blob)
-            return True
-        return False
-        
     def tick(self):
-        _rnd = self.rnd
-        _colour_rnd = Random()
+        rnd = self.rnd
+        root_x = self.x
+        root_y = self.y
         
         for ball in self.blobs:
-            ball.tick(_rnd, _colour_rnd)
-            #ball.tick(_rnd, _colour_rnd)
+            ball.tick(rnd, root_x, root_y)
             
     def draw(self, width, height):
         _ball_shader = self.ball_shader
@@ -188,7 +183,7 @@ class BlobGroup(object):
         glPushMatrix()
         glLoadIdentity()
         gluOrtho2D(0.0, width, 0.0, height)
-        glScalef(1.0, 1.0, 1.0)
+        #glScalef(1.0, 1.0, 1.0)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
@@ -198,13 +193,11 @@ class BlobGroup(object):
         if self.blobs:
             _ball_shader.enable()
             
-            blob = self.blobs[0]
-            _ball_shader.setUniform_vec3('core_rgb', blob.r, blob.g, blob.b)
-            _ball_shader.setUniform_vec2('core_position', blob.x, blob.y)
-            _ball_shader.setUniform_float('core_radius', blob.radius)
+            _ball_shader.setUniform_vec3('rgb', *self.colour)
+            _ball_shader.setUniform_vec2('core_position', self.x, self.y)
+            _ball_shader.setUniform_float('core_radius', self.core_radius)
             
             for blob in self.blobs:
-                _ball_shader.setUniform_vec3('rgb', blob.r, blob.g, blob.b)
                 _ball_shader.setUniform_vec2('position', blob.x, blob.y)
                 _ball_shader.setUniform_float('radius', blob.radius)
                 
@@ -212,6 +205,7 @@ class BlobGroup(object):
                 glLoadIdentity()
                 glTranslatef(blob.x, blob.y, 0.0)
                 glDrawArrays(GL_TRIANGLE_FAN, 0, blob.sides)
+                
             _ball_shader.disable()
             
         glDisableClientState(GL_VERTEX_ARRAY)

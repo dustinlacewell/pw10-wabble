@@ -40,9 +40,9 @@ class GameScene(object):
         self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
         self.coll_funcs.add(Blob, Player, coll_blob_player)
         # The player blob
-        self.blob_group = src.glsl.blob.BlobGroup()
-        self.blobule_group = src.glsl.blob.BlobGroup()
-        self.player = Player(self, self.blob_group, 300, 300)
+        self.blob_group = src.glsl.blob.BlobGroup(300, 300, 8, (0.075, 0.25, 0.0))
+        self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.2, 0.0, 0.4))
+        self.player = Player(self, self.blob_group)
         #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
         #self.player.set_position(300, 500)
         self.score = 0
@@ -60,7 +60,7 @@ class GameScene(object):
         
     def reset_blobule(self):
         '''give the blobule a random position'''
-        self.blobule.set_position(random.randint(30, 570), random.randint(30, 570))
+        self.blobule_group.setPosition(random.randint(30, 570), random.randint(30, 570))
         
     def add_line(self, r=0):
         '''add a new random line hazard'''
@@ -68,11 +68,12 @@ class GameScene(object):
             return
         t = 'h' if self.do_horiz else 'v'
         pos = (t, random.randint(0, 600))
+        (player_x, player_y) = self.player.get_position()
         if pos in self.lines:
             self.add_line(r+1)
-        elif t=='h' and abs(pos[1] - self.player.y) <= 16:
+        elif t=='h' and abs(pos[1] - player_y) <= 16:
             self.add_line(r+1)
-        elif t=='v' and abs(pos[1] - self.player.x) <= 16:
+        elif t=='v' and abs(pos[1] - player_x) <= 16:
             self.add_line(r+1)
         else:
             if t == 'h':
@@ -84,8 +85,9 @@ class GameScene(object):
             
     def add_score(self):
         self.score += 1
+        (blobule_x, blobule_y) = self.blobule.get_position()
         newscore = ScoreLabel(str(self.score), 
-                  self.blobule.x, self.blobule.y, 
+                  blobule_x, blobule_y, 
                   color=(0, 255, 0), size=12, 
                   batch=self.batch, group=self.scoregroup_hi)
         self.scores.append(newscore)
@@ -101,12 +103,13 @@ class GameScene(object):
         self.blobule_group.tick()
         # Line-Player collision
         deleted_lines = []
+        (player_x, player_y) = self.player.get_position()
         for key, line in self.lines.iteritems():
             line.update(dt)
             check = False # exclude impossible collisions
-            if isinstance(line, VerticalLine) and abs(line.slot - self.player.x) < 16:
+            if isinstance(line, VerticalLine) and abs(line.slot - player_x) < 16:
                 check = True
-            elif isinstance(line, HorizontalLine) and abs(line.slot - self.player.y) < 16:
+            elif isinstance(line, HorizontalLine) and abs(line.slot - player_y) < 16:
                 check = True
             if check and self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
@@ -119,10 +122,13 @@ class GameScene(object):
             line.delete()
         # Player-Blobule collision
         #self.coll_funcs.collide(self.blobule, self.player):
-        if ((self.blobule.x - self.player.x) ** 2 + (self.blobule.y - self.player.y) ** 2) ** 0.5 <= 8.0:
+        
+        (blobule_x, blobule_y) = self.blobule.get_position()
+        (player_x, player_y) = self.player.get_position()
+        if ((blobule_x - player_x) ** 2 + (blobule_y - player_y) ** 2) ** 0.5 <= 8.0:
             self.add_score()
             self.reset_blobule() # new blobule position
-            self.player.add_dot(self.player.x, self.player.y, r=0.0, g=1.0, b=0.0) # increase bodymass
+            self.player.add_dot(player_x, player_y) # increase bodymass
             self.add_line() # new random hazard
             
             if self.score >= 5:
@@ -194,3 +200,4 @@ def coll_blob_player(b, player):
         if dist <= 10:
             return True
     return False
+    

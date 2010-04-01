@@ -16,59 +16,41 @@ class Blob(object):
 
     def __init__(self, group):
         self.blob_group = group
-        self.dots = []
-            
-    def update_wander_limit(self):
-        dot_distance = math.sqrt((len(self.dots) - 1) * 2)
+        self.dots = group.blobs
+        
+    def _update_wander_limit(self):
+        dot_distance = math.sqrt((len(self.dots) - 1) * 2.5)
         for dot in self.dots[1:]:
             dot.wander_limit = dot_distance
             
-    def add_dot(self, x, y, r=None, g=None, b=None, cap=0.2):
+    def add_dot(self, x, y, accel_min=0.025, accel_max=1.0):
         if len(self.dots) < self.MAXDOTS:
-            if r is None:
-                r = uniform(0.05, 0.125)
-            if g is None:
-                g = uniform(0.05, 0.25)
-            if b is None:
-                b = uniform(0.0, 0.075)
-                
-            new_dot = src.glsl.blob.Blob(
-             x, y, acceleration_cap=cap,
-             r=r, g=1.0, b=b
-            )
-            self.dots.append(new_dot)
-            self.blob_group.addBlob(new_dot)
-        self.update_wander_limit()
+            self.dots.append(src.glsl.blob.Blob(
+             x, y,
+             acceleration_max=accel_max, acceleration_min=accel_min
+            ))
+        self._update_wander_limit()
         
     def remove_dot(self):
         if len(self.dots) > 1:
             old_dot = self.dots.pop(1)
-            self.blob_group.removeBlob(old_dot)
-            self.update_wander_limit()
+            self._update_wander_limit()
             return True
         return False
-
-            
+        
+    def get_position(self):
+        return (self.blob_group.x, self.blob_group.y)
+        
 class Blobule(Blob):
-    x = 300
-    y = 300
-    
-    def __init__(self, group, doprints=True):
+    def __init__(self, group, doprints=True, dots=10):
         super(Blobule, self).__init__(group)
         blobule = src.glsl.blob.Blob(
-         self.x, self.y,
+         group.x, group.y,
          0.0, 0.2,
-         radius=8.0, sides=12,
-         r=0.0, g=1.0, b=0.0
+         radius=group.core_radius, sides=12,
         )
-        self.dots.append(blobule)
         group.addBlob(blobule)
         
-        for i in xrange(10):
-            self.add_dot(self.x, self.y, r=0.0, g=1.0, b=0.0, cap=0.05)
-            
-    def set_position(self, x, y):
-        for dot in self.dots:
-            self.x = dot.x = dot.root_x = x
-            self.y = dot.y = dot.root_y = y
+        for i in xrange(dots):
+            self.add_dot(group.x, group.y, accel_min=0.0375)
             
