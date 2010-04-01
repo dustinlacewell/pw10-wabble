@@ -130,7 +130,7 @@ class SplashScene(object):
             for j in xrange(8):
                 column = rnd.randint(10, 590)
                 blob_group = src.glsl.blob.BlobGroup(
-                 column, rnd.randint(-100 * (i + 1), -100 * i),
+                 column, rnd.randint(-100 * (j + 1), -100 * j),
                  8, (0.375, 0.125, 0.0)
                 )
                 self.blob_groups.append(blob_group)
