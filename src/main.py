@@ -68,7 +68,8 @@ class GameWindow(pyglet.window.Window):
         # Here we hand off the drawing to the current scene
         self.scene.draw()
         
-        #self.fps_display.draw()
+        if __debug__:
+            self.fps_display.draw()
     
     # This utility function will remove the current scene and set a new one
     def _set_scene(self, scene):
