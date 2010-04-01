@@ -58,10 +58,9 @@ class GameScene(object):
         # Score labels
         self.scores = []
         self.load_sounds()
-        self.music_player = pyglet.media.Player()
-        self.music_player.eos_action = pyglet.media.Player.EOS_LOOP
-        self.music_player.volume = 0.5
-        self.music_player.queue(self.music)
+        window.music_player.eos_action = pyglet.media.Player.EOS_LOOP
+        window.music_player.volume = 0.5
+        window.music_player.queue(self.music)
     
     def load_sounds(self):
         self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
@@ -108,8 +107,9 @@ class GameScene(object):
         self.player.y = y
 
     def update(self, dt):
-        if not self.music_player.playing:
-            self.music_player.play()
+        if not self.window.music_player.playing:
+            if __debug__: print 'starting playing game scene music'
+            self.window.music_player.play()
         self.bg.update(dt) # background effects
         self.player.update(dt)
         self.blob_group.tick()
