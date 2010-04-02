@@ -22,10 +22,11 @@ class GameScene(object):
         self.keys = window.keys
         # The rendering batch
         self.batch = pyglet.graphics.Batch()
+        self.laser_batch = pyglet.graphics.Batch()
         # The foreground rendering groups
         self.scoregroup_hi = pyglet.graphics.OrderedGroup(5)
         self.scoregroup_lo = pyglet.graphics.OrderedGroup(4)
-        self.laser_group = pyglet.graphics.OrderedGroup(3)
+        #self.laser_group = pyglet.graphics.OrderedGroup(3)
         #self.blob_group = pyglet.graphics.OrderedGroup(2)
         self.print_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
@@ -84,9 +85,9 @@ class GameScene(object):
             self.add_line(r+1)
         else:
             if t == 'h':
-                newline = HorizontalLine(self, self.batch, self.laser_group, pos[1])
+                newline = HorizontalLine(self, self.laser_batch, None, pos[1])
             else:
-                newline = VerticalLine(self, self.batch, self.laser_group, pos[1])
+                newline = VerticalLine(self, self.laser_batch, None, pos[1])
             self.lines[pos] = newline
             self.do_horiz = not self.do_horiz
             
@@ -159,6 +160,7 @@ class GameScene(object):
         self.batch.draw()
         self.blobule_group.draw(600, 600)
         self.blob_group.draw(600, 600)
+        self.laser_batch.draw()
         
         
 # the collision detection is not perfect
