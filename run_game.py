@@ -15,7 +15,7 @@ import cProfile
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet
 pyglet.options['debug'] = False
-pyglet.options['audio'] = ('pulse', 'alsa', 'openal', 'directsound', 'silent')
+pyglet.options['audio'] = ('pulse', 'directsound', 'silent')
 
 # run in right directory
 if not sys.argv[0]:
