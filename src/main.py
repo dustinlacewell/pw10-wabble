@@ -35,7 +35,7 @@ class GameWindow(pyglet.window.Window):
         self.keys = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keys)
         # cache image resources
-        pyglet.resource.path = ['dat/img/', 'dat/img/bgd', 'dat/font', 'dat/audio', 'dat/audio/fx']
+        pyglet.resource.path = ['dat', 'dat/img/', 'dat/img/bgd', 'dat/font', 'dat/audio', 'dat/audio/fx']
         pyglet.resource.reindex()
         pyglet.resource.add_font('psychotic.ttf')
         # create background manager
@@ -50,7 +50,7 @@ class GameWindow(pyglet.window.Window):
         
         self.fps_display = pyglet.clock.ClockDisplay()
         # Set initial scene with our utility function
-        self.splashscene()
+        self.gamescene()
 
     def setup_gl(self):
         pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)
