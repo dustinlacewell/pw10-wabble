@@ -5,17 +5,16 @@
 TODO: docstring
 """
 
-__version__ = '$Id: run_game.py 199 2009-07-12 16:38:49Z dr0iddr0id $'
+__version__ = '$Id: run_game.py 218 2009-07-18 20:44:59Z dr0iddr0id $'
 
 import sys
 import os
 import subprocess
-import datetime
 
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet
 pyglet.options['debug'] = False
-pyglet.options['audio'] = ('avbin', 'openal', 'directsound', 'alsa', 'silent')
+pyglet.options['audio'] = ('silent',)
 
 # run in right directory
 if not sys.argv[0]:
@@ -41,23 +40,4 @@ def run_optimized():
         run()
 
 if __name__ == '__main__':
-    try:
-        std_out = sys.stdout
-        std_err = sys.stderr
-        mode = 'wb'
-        # not sure if a timestamp is appreciated since it generates lots of 
-        # files, simply replace 'now' to use it
-        now = ''
-        #now = '-' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        name = 'out%s.txt' %(now)
-        sys.stdout = open(name, mode)
-        name = 'err%s.txt' %(now)
-        sys.stderr = open(name, mode)
-
-        run_optimized()
-
-    finally:
-        sys.stdout.close()
-        sys.stdout = std_out
-        sys.stderr.close()
-        sys.stderr = std_err
+    run_optimized()

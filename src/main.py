@@ -16,9 +16,6 @@ os.path.join = myjoin
 import gc
 
 import pyglet
-pyglet.options['debug'] = False
-pyglet.options['audio'] = ('avbin', 'openal', 'directsound', 'alsa', 'silent')
-
 from pyglet.window import key
 # Import our submodule
 import scenes

@@ -11,6 +11,10 @@ import sys
 import os
 import subprocess
 
+# Set Pyglet options now, before anything else can import a sub-module.
+import pyglet
+pyglet.options['debug'] = False
+pyglet.options['audio'] = ('avbin', 'openal', 'directsound', 'alsa', 'silent')
 
 # run in right directory
 if not sys.argv[0]:
