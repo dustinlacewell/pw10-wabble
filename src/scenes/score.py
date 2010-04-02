@@ -19,10 +19,10 @@ class SplashImage(pyglet.sprite.Sprite):
         self.fadein = fadein
         self.fadeout = fadeout
         
-        self.fade1 = False
+        self.fade1 = True
         self.fade2 = False
         self.maxopacity = maxopacity
-        pyglet.clock.schedule_once(self._start_fade1, self.wait1)
+        #pyglet.clock.schedule_once(self._start_fade1, self.wait1)
         
     def _start_fade1(self, dt):
         print 'start fade1'
