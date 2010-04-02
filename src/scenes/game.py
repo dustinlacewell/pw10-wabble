@@ -58,14 +58,11 @@ class GameScene(object):
         # Score labels
         self.scores = []
         self.load_sounds()
-        window.music_player.eos_action = pyglet.media.Player.EOS_LOOP
-        window.music_player.volume = 0.5
-        window.music_player.queue(self.music)
+
     
     def load_sounds(self):
         self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
         self.scream2 = pyglet.media.load('dat/audio/fx/scream2.mp3', streaming=False)
-        self.music = pyglet.media.load('dat/audio/1indus.mp3')
         
         
     def reset_blobule(self):

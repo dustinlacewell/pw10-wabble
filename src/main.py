@@ -13,6 +13,7 @@ def myjoin(*paths):
 
 os.path.join = myjoin
 
+import gc
 
 import pyglet
 from pyglet.window import key
@@ -20,7 +21,7 @@ from pyglet.window import key
 import scenes
 
 pyglet.options['debug'] = False
-pyglet.options['audio'] = ('openal', 'directsound', 'alsa', 'silent')
+pyglet.options['audio'] = ('avbin', 'openal', 'directsound', 'alsa', 'silent')
 
 import pyglet.media
 
@@ -43,7 +44,9 @@ class GameWindow(pyglet.window.Window):
         # create background manager
         
         self.music_player = pyglet.media.Player()
-
+        self.music_player.eos_action = pyglet.media.Player.EOS_LOOP
+        self.music_player.volume = 0.5
+        self.music_player.queue(pyglet.media.load('dat/audio/1indus.mp3'))
         # Create a reference for the current scene
         self.scene = None
         self._game_scene = scenes.GameScene(self)
@@ -62,6 +65,7 @@ class GameWindow(pyglet.window.Window):
     def update(self, dt):
         # Here we tell the current scene to update its logic
         self.scene.update(dt)
+        gc.collect(2)
 
     def on_draw(self):
         self.clear()
