@@ -129,6 +129,14 @@ class SplashScene(Scene):
               )
         self.splash_images.append(babaroa)
         
+        logo = SplashImage(img('logo.png'),
+              self.splash_batch, self.bg_group,
+              300, 300,
+              9, 80,
+              -1, 90
+              )
+        self.splash_images.append(logo)
+        
         for i in xrange(7):
             for j in xrange(8):
                 column = rnd.randint(10, 590)

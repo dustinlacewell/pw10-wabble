@@ -3,7 +3,7 @@ import math, random, gc
 import pyglet
 from pyglet.window.key import *
 
-from src.util import img
+from src.util import img, spr
 from src.blob import Blob, Blobule
 from src.player import Player
 from src.collisiondispatch import CollisionDispatcher
@@ -47,6 +47,12 @@ class GameScene(Scene):
         self.blob_group = src.glsl.blob.BlobGroup(300, 300, 8, (0.125, 0.375, 0.0))
         self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.5, 0.0, 0.5))
         self.player = Player(self, self.blob_group)
+        
+        logo = spr('logo.png', batch = self.batch, group=self.scoregroup_hi)
+        logo.image.anchor_x, logo.image.anchor_y = 300, logo.image.height / 2
+        logo.x, logo.y = 300, 300
+        self.logo = logo
+        self.logo_fade = False
         #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
         #self.player.set_position(300, 500)
         self.score = 0
@@ -121,6 +127,11 @@ class GameScene(Scene):
     def on_mouse_motion(self, x, y, dx, dy):
         self.player.x = x
         self.player.y = y
+        
+    def on_key_press(self, symbol, modifiers):
+        if not self.logo_fade and self.logo.opacity == 255:
+            self.logo_fade = True
+
 
     def update(self, dt):
         self.bg.update(dt) # background effects
@@ -171,6 +182,12 @@ class GameScene(Scene):
             if label.update(dt):
                 self.scores.remove(label)
                 label.delete()
+                
+        if self.logo_fade and self.logo.opacity > 0:
+            self.logo.opacity -= 75 * dt
+            if self.logo.opacity <= 0:
+                self.logo.opacity = 0
+                self.logo_fade = False
             
     def draw(self):   
         self.batch.draw()
