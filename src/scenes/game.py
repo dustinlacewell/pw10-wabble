@@ -37,9 +37,11 @@ class GameScene(object):
         # The collision machinery        
         self.coll_funcs = CollisionDispatcher()
         # Each entity pair has an algorithm
-        self.coll_funcs.add(HorizontalLine, Player, coll_segment_player)
-        self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
-        self.coll_funcs.add(Blob, Player, coll_blob_player)
+        # self.coll_funcs.add(HorizontalLine, Player, coll_segment_player)
+        self.coll_funcs.add(HorizontalLine, Player, coll_player_horizontal_line)
+        # self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
+        self.coll_funcs.add(VerticalLine, Player, coll_player_vertical_line)
+        self.coll_funcs.add(Blobule, Player, coll_blob_player)
         # The player blob
         self.blob_group = src.glsl.blob.BlobGroup(300, 300, 8, (0.125, 0.375, 0.0))
         self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.5, 0.0, 0.5))
@@ -64,6 +66,8 @@ class GameScene(object):
     def load_sounds(self):
         self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
         self.scream2 = pyglet.media.load('dat/audio/fx/scream2.mp3', streaming=False)
+        self.scream3 = pyglet.media.load('dat/audio/fx/scream3.mp3', streaming=False)
+        self.eat = pyglet.media.load('dat/audio/fx/fx3.mp3', streaming=False)
         
         
     def reset_blobule(self):
@@ -114,19 +118,19 @@ class GameScene(object):
         self.blobule_group.tick()
         # Line-Player collision
         deleted_lines = []
-        (player_x, player_y) = self.player.get_position()
         for key, line in self.lines.iteritems():
             line.update(dt)
-            check = False # exclude impossible collisions
-            if isinstance(line, VerticalLine) and abs(line.slot - player_x) < 16:
-                check = True
-            elif isinstance(line, HorizontalLine) and abs(line.slot - player_y) < 16:
-                check = True
-            if check and self.coll_funcs.collide(line, self.player):
+
+            if self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
-                scream = random.choice([self.scream1, self.scream2])
+                n_times_before_die = 2
+                if len(self.player.dots) <= 5 + (n_times_before_die + 1) * 3: # 3 dots are removed at once when hit by laser
+                    # painfull screams
+                    scream = random.choice([self.scream1, self.scream2])
+                else:
+                    scream = self.scream3
                 scream.play()
-                # remove_dot returns whether player is dead
+                #remove_dot returns whether player is dead
                 if self.player.remove_dot():
                     self.window.scorescene(score=self.score)
         # clean up the dead lines
@@ -134,14 +138,12 @@ class GameScene(object):
             line = self.lines.pop(key)
             line.delete()
         # Player-Blobule collision
-        #self.coll_funcs.collide(self.blobule, self.player):
-        
-        (blobule_x, blobule_y) = self.blobule.get_position()
-        (player_x, player_y) = self.player.get_position()
-        if ((blobule_x - player_x) ** 2 + (blobule_y - player_y) ** 2) ** 0.5 <= 8.0:
+        if self.coll_funcs.collide(self.blobule, self.player):
+            self.eat.play()
             self.add_score()
             self.reset_blobule() # new blobule position
-            self.player.add_dot(player_x, player_y) # increase bodymass
+            player_pos = self.player.get_position()
+            self.player.add_dot(*player_pos) # increase bodymass
             self.add_line() # new random hazard
             
             if self.score >= 5:
@@ -209,9 +211,65 @@ def coll_segment_player(seg, player):
     return False    
     
 def coll_blob_player(b, player):
-    for dot in player.dots:
-        dist = math.sqrt(((b.x - dot.x)**2) + ((b.y - dot.y)**2))
-        if dist <= 10:
-            return True
+    dx = b.blob_group.x - player.blob.x
+    dy = b.blob_group.y - player.blob.y
+    if dx * dx + dy * dy < 30 * 30:
+        for dot in player.dots:
+            for blub in b.dots:
+                dist_sq = ((blub.x - dot.x)**2) + ((blub.y - dot.y)**2)
+                if dist_sq <= 5*5:
+                    return True
     return False
+    
+def coll_player_vertical_line(line, player):
+    dx = player.blob.x - line.x1
+    if -15 < dx < 15:
+        if player.blob.y - line.y2 <= 20:
+            if line.y1 - player.blob.y <= 20:
+                radius = 6
+                if player.blob.y <= line.y2 and player.blob.y >= line.y1:
+                    # in the segment
+                    for dot in player.dots:
+                        dx = line.x1 - dot.x
+                        if -radius <= dx <= radius:
+                            if __debug__: print "vert in segment collision"
+                            return True
+                else:
+                    if player.blob.y > line.y2:
+                        line_y = line.y2
+                    else:
+                        line_y = line.y1
+                    radius_sq = radius * radius
+                    for dot in player.dots:
+                        if (dot.x - line.x1) ** 2 + (dot.y - line_y) ** 2 < radius_sq:
+                            if __debug__: print "vert out of segment collision, up of line:", line_y==line.y2
+                            return True
+    return False
+
+def coll_player_horizontal_line(line, player):
+    dy = player.blob.y - line.y1
+    if -15 < dy < 15:
+        if player.blob.x - line.x2 <= 20:
+            if line.x1 - player.blob.x <= 20:
+                radius = 6
+                if player.blob.x <= line.x2 and player.blob.x >= line.x1:
+                    # in the segment
+                    for dot in player.dots:
+                        dy = line.y1 - dot.y
+                        if -radius <= dy <= radius:
+                            if __debug__: print "vert in segment collision"
+                            return True
+                else:
+                    if player.blob.x > line.x2:
+                        line_x = line.x2
+                    else:
+                        line_x = line.x1
+                    radius_sq = radius * radius
+                    for dot in player.dots:
+                        if (dot.y - line.y1) ** 2 + (dot.x - line_x) ** 2 < radius_sq:
+                            if __debug__: print "vert out of segment collision, left of line:", line_x==line.x1
+                            return True
+    return False
+
+    
     
