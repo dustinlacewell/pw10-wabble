@@ -157,7 +157,8 @@ class GameScene(Scene):
             player_pos = self.player.get_position()
             self.player.add_dot(*player_pos) # increase bodymass
             self.add_line() # new random hazard
-            print "lines", len(self.lines)
+            if __debug__:
+                print "lines", len(self.lines)
             
             if self.score >= 5:
                 self.bg.do_fade = True
