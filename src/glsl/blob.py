@@ -129,7 +129,7 @@ class BlobGroup(object):
     
     colour = None
     
-    ball_shader = not gl_info.have_version(2) and _buildBallShader()
+    ball_shader = gl_info.have_version(2) and _buildBallShader()
     
     x = None
     y = None
