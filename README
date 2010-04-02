@@ -1,20 +1,52 @@
+Pyweek 10 - "Wibble Wobble"
+Team: __pyweeklings__
+Game: Wabble
 
+Prerequisites:
 
-how to run:
-
-    run run_game.py in the console
-
-how to play:
-    use the arrow keys to move the 'slime monster'
-
-
-problems:
-No sound on windows?
-
-    'AVbin is required to decode compressed media')
-    pyglet.media.riff.WAVEFormatException: AVbin is required to decode compressed media
-
-    -> download it from http://code.google.com/p/avbin/downloads/list
-
-    save the avbin.dll next to python.exe, not in windows/system32 as suggested in the readme
+    Pyglet 1.1.4 or SVN (see troubleshooting) http://www.pyglet.org/download.html
     
+    AVBin:
+        Windows: Extract avbin.dll next to run_game.py
+            http://avbin.googlecode.com/files/avbin-win32-5.zip
+            
+        Linux: Run install.sh
+            http://avbin.googlecode.com/files/avbin-linux-x86-32-7.tar.gz
+
+
+How to Run:
+    Execute run_game.py from the console
+    
+                   or
+
+    Double-click run_game.pyw
+
+
+How to Play:
+    Use the arrow keys to move the 'Blob monster'
+    
+    Get the pink Blobules to increase score
+
+
+**************************************************************************
+**************************************************************************
+**                                                                      **
+**         !         T R O U B L E S H O O T I N G            !         **
+**                                                                      **
+**************************************************************************
+**************************************************************************
+
+EVERYONE:  The best advice is, if you're using Pyglet 1.1.4 and something
+           goes wrong, install the SVN. If you're using SVN and something
+           goes wrong, install 1.1.4. Please try this before rating DNW!
+
+
+                              WINDOWS
+                              
+NO SOUND : Did you install AVBin?
+
+GRAPHIC CORRUPTION : Install Pyglet 1.1.4
+
+                               LINUX
+STUDDERING : Sound issue. Does run_game_silent.py speed things up? If so
+             install Pyglet SVN.    
