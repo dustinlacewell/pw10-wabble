@@ -63,7 +63,7 @@ class GameScene(Scene):
         self.scores = []
 
     def enter(self):
-        self.reset_blobule(0)
+        self.reset_blobule()
         if not self.window.music_player.playing:
             if __debug__: print 'starting playing game scene music'
             self.window.music_player.play()
@@ -75,11 +75,13 @@ class GameScene(Scene):
         self.eat = pyglet.media.load('dat/audio/fx/fx3.mp3', streaming=False)
         # self.blobule_appear = pyglet.media.load('dat/audio/fx/fx1.mp3', streaming=False)
         
-    def remove_blobule(self):
-        self.blobule_group.setPosition(-100, -100) # out of visible/reachable range
-        pyglet.clock.schedule_once(self.reset_blobule, random.randrange(1,4))
+    #===========================================================================
+    # def remove_blobule(self):
+    #    self.blobule_group.setPosition(-100, -100) # out of visible/reachable range
+    #    pyglet.clock.schedule_once(self.reset_blobule, random.randrange(1,4))
+    #===========================================================================
         
-    def reset_blobule(self, dt):
+    def reset_blobule(self):
         '''give the blobule a random position'''
         # self.blobule_appear.play()
         self.blobule_group.setPosition(random.randint(30, 570), random.randint(30, 570))
@@ -148,7 +150,7 @@ class GameScene(Scene):
         if self.coll_funcs.collide(self.blobule, self.player):
             self.eat.play()
             self.add_score()
-            self.remove_blobule() # new blobule position
+            self.reset_blobule() # new blobule position
             player_pos = self.player.get_position()
             self.player.add_dot(*player_pos) # increase bodymass
             self.add_line() # new random hazard
