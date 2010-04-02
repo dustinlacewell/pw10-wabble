@@ -1,4 +1,4 @@
-import math, random
+import math, random, gc
 
 import pyglet
 from pyglet.window.key import *
@@ -61,6 +61,8 @@ class GameScene(Scene):
         pyglet.graphics.glLineWidth(3)
         # Score labels
         self.scores = []
+        
+        gc.disable()
 
     def enter(self):
         self.reset_blobule()
@@ -141,6 +143,7 @@ class GameScene(Scene):
                 scream.play()
                 #remove_dot returns whether player is dead
                 if self.player.remove_dot():
+                    gc.enable()
                     self.window.scorescene(score=self.score)
         # clean up the dead lines
         for key in deleted_lines:

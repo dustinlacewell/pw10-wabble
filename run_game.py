@@ -10,11 +10,12 @@ __version__ = '$Id: run_game.py 218 2009-07-18 20:44:59Z dr0iddr0id $'
 import sys
 import os
 import subprocess
+import cProfile
 
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet
 pyglet.options['debug'] = False
-pyglet.options['audio'] = ('avbin', 'openal', 'directsound', 'alsa', 'silent')
+pyglet.options['audio'] = ('alsa', 'openal', 'directsound', 'silent')
 
 # run in right directory
 if not sys.argv[0]:
@@ -38,6 +39,8 @@ def run_optimized():
         # import the game
         from src.main import run
         run()
+        
 
 if __name__ == '__main__':
     run_optimized()
+    #cProfile.run('run_optimized()', 'profile.txt')

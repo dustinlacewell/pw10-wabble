@@ -13,8 +13,6 @@ def myjoin(*paths):
 
 os.path.join = myjoin
 
-import gc
-
 import pyglet
 from pyglet.window import key
 # Import our submodule
@@ -30,7 +28,7 @@ class GameWindow(pyglet.window.Window):
     def __init__(self):
         super(GameWindow, self).__init__(WINDOW_WIDTH, WINDOW_HEIGHT, caption="Wasers")
         self.setup_gl()
-        # pyglet.clock.schedule(self.update)
+        #pyglet.clock.schedule(self.update)
         pyglet.clock.schedule_interval(self.update, 1.0/30.0)
         self.keys = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keys)
@@ -54,6 +52,7 @@ class GameWindow(pyglet.window.Window):
             self.gamescene()
         else:
             self.splashscene()
+            
 
     def setup_gl(self):
         pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)
@@ -65,7 +64,7 @@ class GameWindow(pyglet.window.Window):
     def update(self, dt):
         # Here we tell the current scene to update its logic
         self.scene.update(dt)
-        gc.collect(2)
+        #gc.collect(2)
 
     def on_draw(self):
         self.clear()
