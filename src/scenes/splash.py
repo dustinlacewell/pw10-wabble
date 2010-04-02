@@ -143,7 +143,7 @@ class SplashScene(Scene):
         self.doblobs = False
         pyglet.clock.schedule_once(self._set_do_blobs, 4.0)
         
-        self.intro_sound = pyglet.media.load('dat/audio/1creepy.mp3')
+        self.intro_sound = pyglet.media.load('dat/audio/1creepy.mp3', streaming=False)
         self.intro_sound.play()
     
         
