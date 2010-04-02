@@ -149,13 +149,14 @@ class BlobGroup(object):
         self.blobs = []
         
     def offsetPosition(self, x, y):
-        self.x += x
-        self.y += y
-        for blob in self.blobs:
-            blob.x += x
-            blob.y += y
-            blob.acceleration = blob.acceleration_max
-            
+        if x or y:
+            self.x += x
+            self.y += y
+            for blob in self.blobs:
+                blob.x += x
+                blob.y += y
+                blob.acceleration = blob.acceleration_max
+                
     def setPosition(self, x, y):
         self.x = x
         self.y = y

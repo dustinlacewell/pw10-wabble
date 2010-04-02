@@ -42,9 +42,16 @@ class Player(Blob):
     def update(self, dt):
         (offset_x, offset_y) = self.handle_movement(dt)
         
-        if offset_x or offset_y:
-            self.blob_group.offsetPosition(offset_x, offset_y)
-            
+        if offset_x + self.blob_group.x > 600:
+            offset_x = 600 - self.blob_group.x
+        elif offset_x + self.blob_group.x < 0:
+            offset_x = -self.blob_group.x
+        if offset_y + self.blob_group.y > 600:
+            offset_y = 600 - self.blob_group.y
+        elif offset_y + self.blob_group.y < 0:
+            offset_y = -self.blob_group.y
+        self.blob_group.offsetPosition(offset_x, offset_y)
+        
     def remove_dot(self):
         super(Player, self).remove_dot()
         super(Player, self).remove_dot()
