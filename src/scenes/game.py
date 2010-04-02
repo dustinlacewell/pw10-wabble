@@ -12,9 +12,10 @@ from src.background import BackgroundManager
 from src.score import ScoreLabel
 
 import src.glsl.blob
+from scene import Scene
 
 # This scene class is the object that the application class maintains
-class GameScene(object):
+class GameScene(Scene):
     def __init__(self, window):
         # Store a reference to the application window
         self.window = window
@@ -49,9 +50,9 @@ class GameScene(object):
         #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
         #self.player.set_position(300, 500)
         self.score = 0
+        self.load_sounds()
         # The blobule powerup
         self.blobule = Blobule(self.blobule_group)
-        self.reset_blobule()
         #self.blobule = Blob(dots=0, batch=self.batch, group=self.blob_group)
         #self.blobule.set_position(300, 300)
         # The lasers
@@ -60,18 +61,27 @@ class GameScene(object):
         pyglet.graphics.glLineWidth(3)
         # Score labels
         self.scores = []
-        self.load_sounds()
 
+    def enter(self):
+        self.reset_blobule(0)
+        if not self.window.music_player.playing:
+            if __debug__: print 'starting playing game scene music'
+            self.window.music_player.play()
     
     def load_sounds(self):
         self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
         self.scream2 = pyglet.media.load('dat/audio/fx/scream2.mp3', streaming=False)
         self.scream3 = pyglet.media.load('dat/audio/fx/scream3.mp3', streaming=False)
         self.eat = pyglet.media.load('dat/audio/fx/fx3.mp3', streaming=False)
+        self.blobule_appear = pyglet.media.load('dat/audio/fx/fx1.mp3', streaming=False)
         
+    def remove_blobule(self):
+        self.blobule_group.setPosition(-100, -100) # out of visible/reachable range
+        pyglet.clock.schedule_once(self.reset_blobule, random.randrange(1,4))
         
-    def reset_blobule(self):
+    def reset_blobule(self, dt):
         '''give the blobule a random position'''
+        self.blobule_appear.play()
         self.blobule_group.setPosition(random.randint(30, 570), random.randint(30, 570))
         
     def add_line(self, r=0):
@@ -109,9 +119,6 @@ class GameScene(object):
         self.player.y = y
 
     def update(self, dt):
-        if not self.window.music_player.playing:
-            if __debug__: print 'starting playing game scene music'
-            self.window.music_player.play()
         self.bg.update(dt) # background effects
         self.player.update(dt)
         self.blob_group.tick()
@@ -141,7 +148,7 @@ class GameScene(object):
         if self.coll_funcs.collide(self.blobule, self.player):
             self.eat.play()
             self.add_score()
-            self.reset_blobule() # new blobule position
+            self.remove_blobule() # new blobule position
             player_pos = self.player.get_position()
             self.player.add_dot(*player_pos) # increase bodymass
             self.add_line() # new random hazard
@@ -165,50 +172,8 @@ class GameScene(object):
         self.laser_batch.draw()
         
         
-# the collision detection is not perfect
-# should it detect collision for each Blob sepeartly?
         
-def coll_line_player(line, player):
-    for dot in player.dots:
-        w1 = dot.x - line.x1 # vector from p1 to the player
-        w2 = dot.y - line.y1
-        # print "w", w1, w2, line.v1, line.v2
-        az = line.v1 * w2 - line.v2 * w1 # cross product
-        a_squared = az * az
-        dist_squared = a_squared / line.length_sq
-        if player.radius * player.radius > dist_squared:
-            print "line collision "
-            return True
-    return False
 
-def coll_segment_player(seg, player):
-    for dot in player.dots:
-        w1 = dot.x - seg.x1 # vector from p1 to the player
-        w2 = dot.y - seg.y1
-        u1 = seg.v1 / seg.LENGTH
-        u2 = seg.v2 / seg.LENGTH
-        s = w1 * u1 + w2 * u2
-        
-        prad_sq = dot.radius * dot.radius
-        if s < 0:
-            x = dot.x - seg.x1
-            y = dot.y - seg.y1
-            dist_sq = x * x + y * y
-            # print "seg1", dist_sq, prad_sq
-            if dist_sq < prad_sq:
-                print "collision 1"
-                return True
-            return False
-        elif s*s > seg.length_sq:
-            x = dot.x - seg.x2
-            y = dot.y - seg.y2
-            dist_sq = x * x + y * y
-            # print "seg2", dist_sq, prad_sq
-            if dist_sq < prad_sq:
-                print "collision 2"
-                return True
-            return False
-    return False    
     
 def coll_blob_player(b, player):
     dx = b.blob_group.x - player.blob.x
@@ -271,5 +236,45 @@ def coll_player_horizontal_line(line, player):
                             return True
     return False
 
-    
+# def coll_line_player(line, player):
+    # for dot in player.dots:
+        # w1 = dot.x - line.x1 # vector from p1 to the player
+        # w2 = dot.y - line.y1
+        # #print "w", w1, w2, line.v1, line.v2
+        # az = line.v1 * w2 - line.v2 * w1 # cross product
+        # a_squared = az * az
+        # dist_squared = a_squared / line.length_sq
+        # if player.radius * player.radius > dist_squared:
+            # print "line collision "
+            # return True
+    # return False
+
+# def coll_segment_player(seg, player):
+    # for dot in player.dots:
+        # w1 = dot.x - seg.x1 # vector from p1 to the player
+        # w2 = dot.y - seg.y1
+        # u1 = seg.v1 / seg.LENGTH
+        # u2 = seg.v2 / seg.LENGTH
+        # s = w1 * u1 + w2 * u2
+        
+        # prad_sq = dot.radius * dot.radius
+        # if s < 0:
+            # x = dot.x - seg.x1
+            # y = dot.y - seg.y1
+            # dist_sq = x * x + y * y
+            # #print "seg1", dist_sq, prad_sq
+            # if dist_sq < prad_sq:
+                # print "collision 1"
+                # return True
+            # return False
+        # elif s*s > seg.length_sq:
+            # x = dot.x - seg.x2
+            # y = dot.y - seg.y2
+            # dist_sq = x * x + y * y
+            # #print "seg2", dist_sq, prad_sq
+            # if dist_sq < prad_sq:
+                # print "collision 2"
+                # return True
+            # return False
+    # return False    
     

@@ -5,6 +5,7 @@ import pyglet
 import src
 from src.util import img
 from src.blob import Blobule
+from scene import Scene
 
 class SplashImage(pyglet.sprite.Sprite):
     def __init__(self, image, batch, group, x, y, wait1, fadein, wait2, fadeout, maxopacity=255):
@@ -48,7 +49,7 @@ class SplashImage(pyglet.sprite.Sprite):
                 self.visible = False
             
 # This scene class is the object that the application class maintains
-class ScoreScene(object):
+class ScoreScene(Scene):
     def __init__(self, window, playerscore):
         window.preload_gamescene()
         pyglet.gl.glClearColor(1.0, 1.0, 1.0, 1.0)

@@ -6,6 +6,8 @@ import src
 from src.util import img
 from src.blob import Blobule
 
+from scene import Scene
+
 class SplashImage(pyglet.sprite.Sprite):
     def __init__(self, image, batch, group, x, y, wait1, fadein, wait2, fadeout, maxopacity=255):
         image.anchor_x, image.anchor_y = 300, image.height / 2
@@ -65,7 +67,7 @@ class PlayerController(object):
             self.group.tick()
             
 # This scene class is the object that the application class maintains
-class SplashScene(object):
+class SplashScene(Scene):
     def __init__(self, window):
         # Store a reference to the application window
         pyglet.gl.glClearColor(0.133, 0.133, 0.133, 1.0)

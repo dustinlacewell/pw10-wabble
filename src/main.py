@@ -79,9 +79,12 @@ class GameWindow(pyglet.window.Window):
     def _set_scene(self, scene):
         # Pop the current scene's event handers
         self.remove_handlers(self.scene)
+        if self.scene:
+            self.scene.leave()
         # Set the new scene reference
         self.scene = scene
         # Push the new scene's event handlers
+        self.scene.enter()
         self.push_handlers(self.scene)
     
     # Utility methods to easily set the two scenes we're using in this example
