@@ -129,7 +129,7 @@ class BlobGroup(object):
     
     colour = None
     
-    ball_shader = _buildBallShader()
+    ball_shader = not gl_info.have_version(2) and _buildBallShader()
     
     x = None
     y = None
@@ -190,23 +190,30 @@ class BlobGroup(object):
         glEnableClientState(GL_VERTEX_ARRAY)
         
         if self.blobs:
-            _ball_shader.enable()
-            
-            _ball_shader.setUniform_vec3('rgb', *self.colour)
-            _ball_shader.setUniform_vec2('core_position', self.x, self.y)
-            _ball_shader.setUniform_float('core_radius', self.core_radius)
-            
-            for blob in self.blobs:
-                _ball_shader.setUniform_vec2('position', blob.x, blob.y)
-                _ball_shader.setUniform_float('radius', blob.radius)
+            if _ball_shader:
+                _ball_shader.enable()
                 
+                _ball_shader.setUniform_vec3('rgb', *self.colour)
+                _ball_shader.setUniform_vec2('core_position', self.x, self.y)
+                _ball_shader.setUniform_float('core_radius', self.core_radius)
+            else:
+                glColor3f(*self.colour)
+                
+            for blob in self.blobs:
+                if _ball_shader:
+                    _ball_shader.setUniform_vec2('position', blob.x, blob.y)
+                    _ball_shader.setUniform_float('radius', blob.radius)
+                    
                 glVertexPointer(2, GL_FLOAT, 0, blob.vertices)
                 glLoadIdentity()
                 glTranslatef(blob.x, blob.y, 0.0)
                 glDrawArrays(GL_TRIANGLE_FAN, 0, blob.sides)
                 
-            _ball_shader.disable()
-            
+            if _ball_shader:
+                _ball_shader.disable()
+            else:
+                glColor3f(1.0, 1.0, 1.0)
+                
         glDisableClientState(GL_VERTEX_ARRAY)
         
         glMatrixMode(GL_PROJECTION)
