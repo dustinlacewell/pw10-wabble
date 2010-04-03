@@ -46,14 +46,14 @@ def _buildLaserShader():
             
             float player_distance = 0.0;
             if(horizontal == 1.0){
-                player_distance = mod((position.x * (gl_FragCoord.y + vertex.y)) + gl_FragCoord.x, 4.0) * 64; 
-                player_distance = max(50.0, min(200.0, player_distance + 30.0));
+                player_distance = mod((position.x * (gl_FragCoord.y + vertex.y)) + gl_FragCoord.x, 8.0) * 64; 
+                player_distance = max(50.0, min(255.0, player_distance + 30.0));
             }else{
-                player_distance = mod((position.x * (gl_FragCoord.x + vertex.x)) + gl_FragCoord.y, 4.0) * 64; 
+                player_distance = mod((position.x * (gl_FragCoord.x + vertex.x)) + gl_FragCoord.y, 8.0) * 64; 
                 player_distance = max(50.0, min(255.0, player_distance + 30.0));
             }
             
-            gl_FragColor = vec4(player_distance / 255.0, player_distance / (255.0*2), player_distance / (255.0*2), 1.0);
+            gl_FragColor = vec4(player_distance / 255.0, 0.0, 0.0, 1.0);
         }"""
      )
     )
