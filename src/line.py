@@ -11,11 +11,8 @@ import glsl.shader as shader
 def _buildLaserShader():
     laser_shader = shader.ShaderProgram(
      shader.VertexShader("""
-        varying vec4 vertex;
-        
         void main(){
-            vertex = vec4(gl_Vertex);
-            gl_Position = gl_ModelViewProjectionMatrix * vertex;
+            gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
         }"""
      ),
      shader.FragmentShader("""
@@ -25,32 +22,14 @@ def _buildLaserShader():
         uniform int enable_intensity;
         uniform int horizontal;
         
-        varying vec4 vertex;
-        
         void main(){
-            /*float base_colour = min(8.0, mod(8.0, mod(gl_FragCoord.x + vertex.x, random.x) + mod(gl_FragCoord.y + vertex.y, random.y)));
-            
-            float player_distance = 0.0;
-            if(enable_intensity == 0){
-                player_distance = 247.0;
-            }else{
-                player_distance = max(0.0, 247.0 - (sqrt(
-                 pow((position.x - core_position.x), 2.0) +
-                 pow((position.y - core_position.y), 2.0)
-                ) / 1.5));
-            }
-            
-            
-            
-            gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);*/
-            
             float red = 0.0;
             float player_distance = 0.0;
             if(horizontal == 1){
-                red = mod((position.x * (gl_FragCoord.y + vertex.y)) + gl_FragCoord.x, 8.0) * 64.0; 
+                red = mod(((position.x + random.x) * gl_FragCoord.y) + gl_FragCoord.x, 8.0) * 64.0; 
                 red = max(50.0, min(255.0, red + 30.0));
             }else{
-                red = mod((position.x * (gl_FragCoord.x + vertex.x)) + gl_FragCoord.y, 8.0) * 64.0; 
+                red = mod(((position.y + random.y) * gl_FragCoord.x) + gl_FragCoord.y, 8.0) * 64.0; 
                 red = max(50.0, min(255.0, red + 30.0));
             }
             
@@ -62,7 +41,7 @@ def _buildLaserShader():
             }
             red = max(0.0, red - max(25.0, (player_distance - 130.0)));
             
-            gl_FragColor = vec4(red / 255.0, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4(red / 255.0, 0.0, 0.0, 0.75);
         }"""
      )
     )
@@ -222,18 +201,18 @@ class LaserGroup(object):
                 _laser_shader.enable()
                 
                 _laser_shader.setUniform_vec2('core_position', player_x, player_y)
-                _laser_shader.setUniform_vec2('random', float(randint(0, 255)), float(randint(0, 255)))
+                _laser_shader.setUniform_vec2('random', uniform(-8.0, 8.0), uniform(-8.0, 8.0))
                 _laser_shader.setUniform_int('enable_intensity', int(enable_intensity))
 
             else:
                 glColor3f(1.0, 0.0, 0.0)
                 
             glVertexPointer(2, GL_FLOAT, 0, self.laser_horizontal)
+            _laser_shader.setUniform_int('horizontal', 1)
             for laser in self.horizontal_lasers:
                 centre_x = (laser.x1 + laser.x2) / 2
                 if _laser_shader:
                     _laser_shader.setUniform_vec2('position', centre_x, laser.y1)
-                    _laser_shader.setUniform_int('horizontal', 1)
                 else:
                     if enable_intensity:
                         glColor3f(max(0.0, (((centre_x - player_x) ** 2) + ((laser.y1 - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
@@ -243,11 +222,11 @@ class LaserGroup(object):
                 glDrawArrays(GL_QUADS, 0, 4)
                 
             glVertexPointer(2, GL_FLOAT, 0, self.laser_vertical)
+            _laser_shader.setUniform_int('horizontal', 0)
             for laser in self.vertical_lasers:
                 centre_y = (laser.y1 + laser.y2) / 2
                 if _laser_shader:
                     _laser_shader.setUniform_vec2('position', laser.x1, centre_y)
-                    _laser_shader.setUniform_int('horizontal', 0)
                 else:
                     if enable_intensity:
                         glColor3f(max(0.0, (((laser.x1 - player_x) ** 2) + ((centre_y - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
