@@ -22,7 +22,8 @@ class Player(Blob):
              src.util.img('slime_2.png'),
             )
             for image in self.slime_images:
-                image.anchor_x = image.anchor_y = 6
+                image.anchor_x = image.width // 2
+                image.anchor_y = image.height // 2
         self.slime_trail = []
         self.slime_group = slime_group
         self.slime_batch = slime_batch
@@ -46,8 +47,19 @@ class Player(Blob):
         
         old_x = new_x = self.blob_group.x
         old_y = new_y = self.blob_group.y
-        rawspeed = self.MAXSPEED - ((len(self.dots) - 5) * 10)
-        speed = max(self.MINSPEED, rawspeed) * dt
+        #rawspeed = self.MAXSPEED - ((len(self.dots) - 5) * 10)
+        #speed = max(self.MINSPEED, rawspeed) * dt
+        speed = int(
+         (
+          self.MINSPEED + (
+           (
+            self.MAXSPEED - self.MINSPEED
+           ) * (
+            1.0 - (len(self.dots) / float(self.MAXDOTS)) ** 0.5
+           )
+          )
+         ) * dt
+        )
         
         new_y += speed if k[UP] else -speed if k[DOWN] else 0
         new_x += speed if k[RIGHT] else -speed if k[LEFT] else 0
@@ -61,12 +73,13 @@ class Player(Blob):
         #Clean up slime trail.
         dead_slime = []
         dot_count = len(self.dots)
+        fade_rate = 0.75 - (dot_count / 175.0) * (1.0 + dt)
         for slime in self.slime_trail:
-            slime.opacity -= random.randint(-10, 75 - dot_count)
-            if slime.opacity <= 0:
+            slime.opacity = int(slime.opacity * random.uniform(fade_rate, 1.25))
+            if slime.opacity <= 0.05:
                 dead_slime.append(slime)
             else:
-                slime.scale *= random.uniform(0.95, 1.125)
+                slime.scale *= random.uniform(0.975, 1.0)
         for slime in dead_slime:
             slime.delete()
             self.slime_trail.remove(slime)
@@ -84,7 +97,7 @@ class Player(Blob):
                 
             if offset_x or offset_y:
                 if self.slime_timeout == 0.0:
-                    self.slime_timeout = 0.05 + dot_count / 500.0
+                    self.slime_timeout = 0.05 + dot_count / 150.0
                     #Add to slime trail.
                     for dot in self.dots:
                         slime = pyglet.sprite.Sprite(
@@ -92,16 +105,14 @@ class Player(Blob):
                          x=dot.x, y=dot.y,
                          batch=self.slime_batch, group=self.slime_group
                         )
-                        slime.scale = 0.333
+                        slime.scale = 0.75
                         self.slime_trail.append(slime)
                         
                 #Update the blob's position.
                 self.blob_group.offsetPosition(offset_x, offset_y)
                 
     def remove_dot(self):
-        super(Player, self).remove_dot()
-        super(Player, self).remove_dot()
-        super(Player, self).remove_dot()
-        if len(self.dots) <= 5:
-            return True
-            
+        return self.remove_dot() or self.remove_dot() or self.remove_dot()
+        #if len(self.dots) <= 5:
+        #    return True
+        

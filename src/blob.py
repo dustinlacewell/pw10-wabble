@@ -19,7 +19,7 @@ class Blob(object):
         self.dots = group.blobs
         
     def _update_wander_limit(self):
-        dot_distance = math.sqrt((len(self.dots) - 1) * math.pi)
+        dot_distance = math.sqrt((len(self.dots) - 1) * math.e)
         for dot in self.dots[1:]:
             dot.wander_limit = dot_distance
             
