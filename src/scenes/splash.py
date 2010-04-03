@@ -161,7 +161,12 @@ class SplashScene(Scene):
         self.intro_player.volume = 0.1
         self.intro_player.play()
     
-        
+    def enter(self):
+        self.window.music_player.pause()
+    
+    def leave(self):
+        self.intro_player.pause()
+    
     def _set_do_blobs(self, dt):
         self.doblobs = True
 
@@ -181,7 +186,7 @@ class SplashScene(Scene):
         #-------------------------------------------- self.blobs.append(newblob)
 
     def update(self, dt):
-        print self.logo.opacity
+        if __debug__: print self.logo.opacity
         for image in self.splash_images:
             image.update(dt)
             
@@ -207,7 +212,7 @@ class SplashScene(Scene):
         self.window.gamescene() 
 
     def draw(self):
-        print self.logo.opacity
+        if __debug__: print self.logo.opacity
         self.splash_batch.draw()
         if self.doblobs:
             for group in [self.player_blob_group] + self.blob_groups:
