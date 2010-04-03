@@ -30,8 +30,8 @@ class Line(object):
         self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
         self.color = (255, 0, 0)
         self.vlist = batch.add(2, pyglet.gl.GL_LINES, group,
-            ('v2f/stream', (x1, y1, x2, y2)),
-            ('c3f/stream', (0, 0, 0, 0, 0, 0),
+            ('v2f', (x1, y1, x2, y2)),
+            ('c3f', (0, 0, 0, 0, 0, 0),
         ))
         self.play_fx()
         
