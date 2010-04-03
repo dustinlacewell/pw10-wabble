@@ -84,27 +84,12 @@ class Player(Blob):
     def handle_movement(self, dt):
         k = self.scene.keys
         
-        # old_x = new_x = self.blob_group.x
-        # old_y = new_y = self.blob_group.y
-        #rawspeed = self.MAXSPEED - ((len(self.dots) - 5) * 10)
-        #speed = max(self.MINSPEED, rawspeed) * dt
         speed = int(
          (
           self.MINSPEED + ( (self.MAXSPEED - self.MINSPEED) * (1.0 - (len(self.dots) / float(self.MAXDOTS)) ** 1)
           )
          ) * dt
         )
-        
-        # dir_y = 1 if k[UP] else -1 if k[DOWN] else 0
-        # dir_x = 1 if k[RIGHT] else -1 if k[LEFT] else 0
-        
-        # new_length = (dir_x * dir_x + dir_y * dir_y) ** 0.5
-        
-        # if new_length != 0:
-            # new_x += dir_x / new_length * speed
-            # new_y += dir_y / new_length * speed
-        
-        
 
         return (self.vel_x * speed, self.vel_y * speed)
         
