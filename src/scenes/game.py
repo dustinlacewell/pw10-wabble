@@ -53,7 +53,7 @@ class GameScene(Scene):
         self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.5, 0.0, 0.5))
         self.player = Player(self, self.blob_group, self.slime_group, self.batch)
         
-        logo = spr('logo.png', batch = self.score_batch, group=self.scoregroup_hi)
+        logo = spr('logo.png', batch = self.batch, group=self.scoregroup_hi)
         logo.image.anchor_x, logo.image.anchor_y = 300, logo.image.height / 2
         logo.x, logo.y = 300, 300
         self.logo = logo
