@@ -1,55 +1,86 @@
-import math
-
-import pyglet
-
 from src.util import gradient
 
-class Line(object):
+from math import cos, hypot, pi, sin
+from random import Random, randint, uniform
+
+import pyglet
+from pyglet.gl import *
+
+import glsl.shader as shader
+
+def _buildLaserShader():
+    laser_shader = shader.ShaderProgram(
+     shader.VertexShader("""
+        varying vec4 vertex;
+        
+        void main(){
+            vertex = vec4(gl_Vertex);
+            gl_Position = gl_ModelViewProjectionMatrix * vertex;
+        }"""
+     ),
+     shader.FragmentShader("""
+        uniform vec2 position;
+        uniform vec2 core_position;
+        uniform vec2 random;
+        uniform int enable_intensity;
+        
+        varying vec4 vertex;
+        
+        void main(){
+            /*float base_colour = min(8.0, mod(8.0, mod(gl_FragCoord.x + vertex.x, random.x) + mod(gl_FragCoord.y + vertex.y, random.y)));
+            
+            float player_distance = 0.0;
+            if(enable_intensity == 0){
+                player_distance = 247.0;
+            }else{
+                player_distance = max(0.0, 247.0 - (sqrt(
+                 pow((position.x - core_position.x), 2.0) +
+                 pow((position.y - core_position.y), 2.0)
+                ) / 1.5));
+            }
+            
+            gl_FragColor = vec4((player_distance + max(0.0, base_colour)) / 255.0, 0.0, 0.0, 1.0);*/
+            
+            float player_distance = 0.0;
+            if(enable_intensity == 0){
+                player_distance = 255.0;
+            }else{
+                player_distance = max(0.0, 255.0 - (sqrt(
+                 pow((position.x - core_position.x), 2.0) +
+                 pow((position.y - core_position.y), 2.0)
+                ) / 1.5));
+            }
+            
+            gl_FragColor = vec4(player_distance / 255.0, 0.0, 0.0, 1.0);
+        }"""
+     )
+    )
+    _shader_message = laser_shader.link()
+    if _shader_message:
+        print _shader_message
+    return laser_shader
     
+class Laser(object):
     LENGTH = 30
     SPEED = 150
-    HEATUP_RADIUS = 300
     
-    gradient = gradient((1.0, 0.0, 0.0), (0.0, 0.0, 0.0), HEATUP_RADIUS)
     laser_fx = pyglet.media.load('dat/audio/fx/laser.mp3', streaming=False)
-
-    def __init__(self, scene, batch, group, x1, y1, x2, y2):
+    
+    def __init__(self, group, x1, y1, x2, y2):
         # TODO: add asserts
         assert(x1 <= x2)
         assert(y1 <= y2)
         
-        self.scene = scene
-        self.batch = batch
+        self.group = group
         
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
-        self.v1 = x2 - x1
-        self.v2 = y2 - y1
-        self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
-        self.color = (255, 0, 0)
-        self.vlist = batch.add(2, pyglet.gl.GL_LINES, group,
-            ('v2f', (x1, y1, x2, y2)),
-            ('c3f', (0, 0, 0, 0, 0, 0),
-        ))
+        #self.v1 = x2 - x1
+        #self.v2 = y2 - y1
+        #self.length_sq = float(self.v1 * self.v1 + self.v2 * self.v2)
         self.play_fx()
-        
-        
-    def update_vlist(self):
-        self.update_color()
-        self.vlist.vertices = [self.x1, self.y1, self.x2, self.y2]
-        self.vlist.colors = self.color*2
-        
-    def update_color(self):
-        if self.scene.score >= 20:
-            (player_x, player_y) = self.scene.player.get_position()
-            dist = math.sqrt(((self.x1 - player_x)**2) + ((self.y1 - player_y)**2))
-            dist = int(min(self.HEATUP_RADIUS - 1, dist))
-            self.color = self.gradient[dist]
-        
-    def delete(self):
-        self.vlist.delete()
         
     def play_fx(self):
         player = pyglet.media.Player()
@@ -57,18 +88,21 @@ class Line(object):
         player.volume = 0.15
         player.play()
         
-        
-class HorizontalLine(Line):
-    def __init__(self, scene, batch, group, y_pos):
+class HorizontalLaser(Laser):
+    def __init__(self, group, y_pos):
         x1 = 0
         x2 = self.LENGTH
         y1 = y2 = y_pos
-        super(HorizontalLine, self).__init__(scene, batch, group, x1, y1, x2, y2)
+        super(HorizontalLaser, self).__init__(group, x1, y1, x2, y2)
         self.forward = True
+        group.addHorizontalLaser(self)
         
     def __slot(self):
         return self.y1
     slot =property(__slot)
+    
+    def delete(self):
+        self.group.removeHorizontalLaser(self)
         
     def update(self, dt):
         if self.forward:
@@ -89,19 +123,22 @@ class HorizontalLine(Line):
                 self.x1 = 0
                 self.x2 = self.LENGTH
                 self.play_fx()
-        self.update_vlist()
                 
-class VerticalLine(Line):
-    def __init__(self, scene, batch, group, x_pos):
+class VerticalLaser(Laser):
+    def __init__(self, group, x_pos):
         y1 = 0
         y2 = self.LENGTH
         x1 = x2 = x_pos
-        super(VerticalLine, self).__init__(scene, batch, group, x1, y1, x2, y2)
+        super(VerticalLaser, self).__init__(group, x1, y1, x2, y2)
         self.forward = True
+        group.addVerticalLaser(self)
         
     def __slot(self):
-        return self.x1
-    slot = property(__slot)
+        return self.y1
+    slot =property(__slot)
+    
+    def delete(self):
+        self.group.removeVerticalLaser(self)
         
     def update(self, dt):
         if self.forward:
@@ -122,5 +159,96 @@ class VerticalLine(Line):
                 self.y1 = 0
                 self.y2 = self.LENGTH
                 self.play_fx()
-        self.update_vlist()
+                
+class LaserGroup(object):
+    horizontal_lasers = None
+    vertical_lasers = None
+    laser_shader = gl_info.have_version(2) and _buildLaserShader()
     
+    def __init__(self):
+        horizontal_vertices = [-15.0, -1.5] + [15.0, -1.5] + [15.0, 1.5] + [-15.0, 1.5]
+        self.laser_horizontal = (GLfloat * len(horizontal_vertices))(*horizontal_vertices)
+        
+        vertical_vertices = [-1.5, -15.0] + [1.5, -15.0] + [1.5, 15.0] + [-1.5, 15.0]
+        self.laser_vertical = (GLfloat * len(vertical_vertices))(*vertical_vertices)
+        
+        self.horizontal_lasers = []
+        self.vertical_lasers = []
+        
+    def addHorizontalLaser(self, laser):
+        self.horizontal_lasers.append(laser)
+        
+    def addVerticalLaser(self, laser):
+        self.vertical_lasers.append(laser)
+        
+    def removeHorizontalLaser(self, laser):
+        self.horizontal_lasers = [l for l in self.horizontal_lasers if not l == laser]
+        
+    def removeVerticalLaser(self, laser):
+        self.vertical_lasers = [l for l in self.vertical_lasers if not l == laser]
+        
+    def update(self, dt):
+        for laser in self.horizontal_lasers + self.vertical_lasers:
+            laser.update(dt)
+            
+    def draw(self, width, height, player_x, player_y, enable_intensity):
+        _laser_shader = self.laser_shader
+        
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        gluOrtho2D(0.0, width, 0.0, height)
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+        
+        glEnableClientState(GL_VERTEX_ARRAY)
+        
+        if self.horizontal_lasers or self.vertical_lasers:
+            if _laser_shader:
+                _laser_shader.enable()
+                
+                _laser_shader.setUniform_vec2('core_position', player_x, player_y)
+                _laser_shader.setUniform_vec2('random', float(randint(0, 15)), float(randint(0, 15)))
+                _laser_shader.setUniform_int('enable_intensity', int(enable_intensity))
+            else:
+                glColor3f(1.0, 0.0, 0.0)
+                
+            glVertexPointer(2, GL_FLOAT, 0, self.laser_horizontal)
+            for laser in self.horizontal_lasers:
+                centre_x = (laser.x1 + laser.x2) / 2
+                if _laser_shader:
+                    _laser_shader.setUniform_vec2('position', centre_x, laser.y1)
+                else:
+                    if enable_intensity:
+                        glColor3f(max(0.0, (((centre_x - player_x) ** 2) + ((laser.y1 - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
+                        
+                glLoadIdentity()
+                glTranslatef(centre_x, laser.y1, 0.0)
+                glDrawArrays(GL_QUADS, 0, 4)
+                
+            glVertexPointer(2, GL_FLOAT, 0, self.laser_vertical)
+            for laser in self.vertical_lasers:
+                centre_y = (laser.y1 + laser.y2) / 2
+                if _laser_shader:
+                    _laser_shader.setUniform_vec2('position', laser.x1, centre_y)
+                else:
+                    if enable_intensity:
+                        glColor3f(max(0.0, (((laser.x1 - player_x) ** 2) + ((centre_y - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
+                        
+                glLoadIdentity()
+                glTranslatef(laser.x1, centre_y, 0.0)
+                glDrawArrays(GL_QUADS, 0, 4)
+                
+            if _laser_shader:
+                _laser_shader.disable()
+            else:
+                glColor3f(1.0, 1.0, 1.0)
+                
+        glDisableClientState(GL_VERTEX_ARRAY)
+        
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        glPopMatrix()
+        

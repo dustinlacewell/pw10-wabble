@@ -7,7 +7,8 @@ from src.util import img, spr
 from src.blob import Blob, Blobule
 from src.player import Player
 from src.collisiondispatch import CollisionDispatcher
-from src.line import Line, HorizontalLine, VerticalLine
+#from src.line import Line, HorizontalLine, VerticalLine
+from src.line import LaserGroup, HorizontalLaser, VerticalLaser
 from src.background import BackgroundManager
 from src.score import ScoreLabel
 
@@ -23,7 +24,9 @@ class GameScene(Scene):
         self.keys = window.keys
         # The rendering batch
         self.batch = pyglet.graphics.Batch()
-        self.laser_batch = pyglet.graphics.Batch()
+        #self.laser_batch = pyglet.graphics.Batch()
+        # The lasers
+        self.laser_group = LaserGroup()
         
         # The foreground rendering groups
         self.scoregroup_hi = pyglet.graphics.OrderedGroup(5)
@@ -37,8 +40,10 @@ class GameScene(Scene):
         # The collision machinery        
         self.coll_funcs = CollisionDispatcher()
         # Each entity pair has an algorithm
-        self.coll_funcs.add(HorizontalLine, Player, coll_player_horizontal_line)
-        self.coll_funcs.add(VerticalLine, Player, coll_player_vertical_line)
+        #self.coll_funcs.add(HorizontalLine, Player, coll_player_horizontal_line)
+        #self.coll_funcs.add(VerticalLine, Player, coll_player_vertical_line)
+        self.coll_funcs.add(HorizontalLaser, Player, coll_player_horizontal_line)
+        self.coll_funcs.add(VerticalLaser, Player, coll_player_vertical_line)
         self.coll_funcs.add(Blobule, Player, coll_blob_player)
         
         # The player blob
@@ -104,9 +109,11 @@ class GameScene(Scene):
             self.add_line(r+1)
         else:
             if t == 'h':
-                newline = HorizontalLine(self, self.laser_batch, None, pos[1])
+                #newline = HorizontalLine(self, self.laser_batch, None, pos[1])
+                newline = HorizontalLaser(self.laser_group, pos[1])
             else:
-                newline = VerticalLine(self, self.laser_batch, None, pos[1])
+                #newline = VerticalLine(self, self.laser_batch, None, pos[1])
+                newline = VerticalLaser(self.laser_group, pos[1])
             self.lines[pos] = newline
             self.do_horiz = not self.do_horiz
             
@@ -125,6 +132,7 @@ class GameScene(Scene):
 
     def update(self, dt):
         self.bg.update(dt) # background effects
+        self.laser_group.update(dt)
         self.player.update(dt)
         self.blob_group.tick()
         self.blobule_group.tick()
@@ -135,11 +143,14 @@ class GameScene(Scene):
             line.update(dt)
             if self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
-                if self.player.remove_dot():
-                    self.scream3.play()
-                    self.window.scorescene(score=self.score)
+                if not self.player.remove_dot():
+                    if len(self.player.dots) > 3:
+                        random.choice((self.scream1, self.scream2)).play()
+                    else:
+                        self.scream3.play()
                 else:
                     random.choice((self.scream1, self.scream2)).play()
+                    self.window.scorescene(score=self.score)
         # clean up the dead lines
         for key in deleted_lines:
             line = self.lines.pop(key)
@@ -177,7 +188,8 @@ class GameScene(Scene):
         self.batch.draw()
         self.blobule_group.draw(600, 600)
         self.blob_group.draw(600, 600)
-        self.laser_batch.draw()
+        #self.laser_batch.draw()
+        self.laser_group.draw(600, 600, self.blob_group.x, self.blob_group.y, self.score >= 20)
     
 def coll_blob_player(b, player):
     dx = b.blob_group.x - player.blob.x
