@@ -26,6 +26,10 @@ def _buildBallShader():
         const float shimmer_radius = 1.75;
         
         void main(){
+            float r = rgb.r;
+            float g = rgb.g;
+            float b = rgb.b;
+            
             //Calculate distance from centre of current blob.
             float distance = sqrt(
              pow((position.x - gl_FragCoord.x), 2.0) +
@@ -40,9 +44,9 @@ def _buildBallShader():
             
             if(core_distance >= core_radius - border_width && abs(distance - radius) <= border_width){
                 gl_FragColor = vec4(
-                 min(1.0, rgb.r * 2.0),
-                 min(1.0, rgb.g * 2.0),
-                 min(1.0, rgb.b * 2.0),
+                 min(1.0, r * 2.0),
+                 min(1.0, g * 2.0),
+                 min(1.0, b * 2.0),
                  0.95
                 );
             }else{
@@ -66,13 +70,18 @@ def _buildBallShader():
                         brightness_mod += min(0.9, sqrt(
                             shimmer_distance / shimmer_radius
                         ) / pow(shimmer_radius, 0.75));
+                    }else{
+                        brightness_mod = 0.3;
+                        r = 0.4;
+                        g = 0.0;
+                        b = 0.6;
                     }
                 }
                 
                 gl_FragColor = vec4(
-                 min(1.0, rgb.r * brightness_mod),
-                 min(1.0, rgb.g * brightness_mod),
-                 min(1.0, rgb.b * brightness_mod),
+                 min(1.0, r * brightness_mod),
+                 min(1.0, g * brightness_mod),
+                 min(1.0, b * brightness_mod),
                  0.95
                 );
             }
