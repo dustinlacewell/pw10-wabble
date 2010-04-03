@@ -11,9 +11,11 @@ import sys
 import os
 import subprocess
 
-import psyco
-psyco.profile()
-
+try:
+    import psyco
+    psyco.profile()
+except:
+    print "psyco not found"
 
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet
