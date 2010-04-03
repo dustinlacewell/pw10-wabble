@@ -198,7 +198,7 @@ class BlobGroup(object):
                 _ball_shader.setUniform_vec2('core_position', self.x, self.y)
                 _ball_shader.setUniform_float('core_radius', self.core_radius)
             else:
-                glColor3f(*self.colour)
+                glColor3f(*[0.75 * c for c in self.colour])
                 
             for blob in self.blobs:
                 if _ball_shader:
