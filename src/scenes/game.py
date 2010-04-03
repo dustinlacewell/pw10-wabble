@@ -207,6 +207,7 @@ def coll_blob_player(b, player):
     return False
     
 def coll_player_vertical_line(line, player):
+    return False
     dx = player.blob.x - line.x1
     if -15 < dx < 15:
         if player.blob.y - line.y2 <= 20:
@@ -234,6 +235,7 @@ def coll_player_vertical_line(line, player):
     return False
 
 def coll_player_horizontal_line(line, player):
+    return False
     dy = player.blob.y - line.y1
     if -15 < dy < 15:
         if player.blob.x - line.x2 <= 20:
