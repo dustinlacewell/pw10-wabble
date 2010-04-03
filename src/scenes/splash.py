@@ -57,7 +57,7 @@ class PlayerController(object):
         if player_dot:
             self.blobule = Blobule(group, dots=5)
         else:
-            self.blobule = Blobule(group, dots=5, accel_max=2.0)
+            self.blobule = Blobule(group, dots=5, accel_max=1.5)
             
     def update(self, dt):
         offset = 100.0 * dt

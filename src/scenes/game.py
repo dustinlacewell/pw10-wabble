@@ -29,6 +29,7 @@ class GameScene(Scene):
         self.scoregroup_lo = pyglet.graphics.OrderedGroup(4)
         #self.laser_group = pyglet.graphics.OrderedGroup(3)
         #self.blob_group = pyglet.graphics.OrderedGroup(2)
+        self.slime_group = pyglet.graphics.OrderedGroup(2)
         self.print_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
         # The containers for all blobs to be rendered
@@ -46,7 +47,7 @@ class GameScene(Scene):
         # The player blob
         self.blob_group = src.glsl.blob.BlobGroup(300, 300, 8, (0.125, 0.375, 0.0))
         self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.5, 0.0, 0.5))
-        self.player = Player(self, self.blob_group)
+        self.player = Player(self, self.blob_group, self.slime_group, self.batch)
         
         logo = spr('logo.png', batch = self.batch, group=self.scoregroup_hi)
         logo.image.anchor_x, logo.image.anchor_y = 300, logo.image.height / 2

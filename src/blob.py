@@ -42,7 +42,7 @@ class Blob(object):
         return (self.blob_group.x, self.blob_group.y)
         
 class Blobule(Blob):
-    def __init__(self, group, doprints=True, dots=1, accel_min=0.0375, accel_max=1.0):
+    def __init__(self, group, doprints=True, dots=10, accel_min=0.0375, accel_max=1.5):
         super(Blobule, self).__init__(group)
         blobule = src.glsl.blob.Blob(
          group.x, group.y,
