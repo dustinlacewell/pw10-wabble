@@ -152,7 +152,7 @@ class Player(Blob):
                         slime.srate = random.uniform(0.975, 0.99)
                         slime.orate = random.uniform(0.8, 0.9)
                         if slime.image in self.blood_images:
-                            slime.orate = random.uniform(0.9, 0.98)
+                            slime.orate = random.uniform(0.94, 0.98)
                         self.slime_trail.append(slime)
                         
             #Update the blob's position.
@@ -160,7 +160,7 @@ class Player(Blob):
                 
     def remove_dot(self):
         self.bloody = True
-        pyglet.clock.schedule_once(self._unset_bloody, .25)
+        pyglet.clock.schedule_once(self._unset_bloody, .45)
         #Kill player when three or fewer children remain, plus itself.
         return super(Player, self).remove_dot() or super(Player, self).remove_dot() or super(Player, self).remove_dot() or len(self.dots) <= 4
         #if len(self.dots) <= 5:
