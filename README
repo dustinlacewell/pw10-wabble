@@ -38,8 +38,9 @@ How to Play:
 **************************************************************************
 
 EVERYONE:  The best advice is, if you're using Pyglet 1.1.4 and something
-           goes wrong, install the SVN. If you're using SVN and something
-           goes wrong, install 1.1.4. Please try this before rating DNW!
+           goes wrong, install the SVN version of pyglet. If you're using 
+           SVN version and something goes wrong, install 1.1.4. 
+           Please try this before rating DNW!
 
 
                               WINDOWS
@@ -49,8 +50,8 @@ NO SOUND : Did you install AVBin?
 GRAPHIC CORRUPTION/ISSUES WITH GL : Install Pyglet 1.1.4
 
                                LINUX
-STUTTERING : Sound issue. Does run_game_silent.py speed things up? If so
-             install Pyglet SVN.
+STUTTERING : Sound issue. Does run_game_no_audio.py speed things up? If so
+             install Pyglet SVN version.
              
                              OS X 10.6
 ERRORS WHEN LAUNCHING : Type the following, in a terminal:
