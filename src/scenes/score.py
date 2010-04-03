@@ -26,11 +26,9 @@ class SplashImage(pyglet.sprite.Sprite):
         #pyglet.clock.schedule_once(self._start_fade1, self.wait1)
         
     def _start_fade1(self, dt):
-        print 'start fade1'
         self.fade1 = True
         
     def _start_fade2(self, dt):
-        print 'start fade2'
         self.fade2 = True
 
     def update(self, dt):

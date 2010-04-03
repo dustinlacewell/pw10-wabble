@@ -46,7 +46,7 @@ def _buildLaserShader():
      )
     )
     _shader_message = laser_shader.link()
-    if _shader_message:
+    if _shader_message and __debug__:
         print _shader_message
     return laser_shader
     

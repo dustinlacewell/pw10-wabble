@@ -23,6 +23,25 @@ import pyglet.media
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 600
 
+console_message = """
+
+
+Wabble by team __pyweeklings__
+
+Thanks for playing our pyweek 10 entry!
+
+How to Play:
+    Use the arrow keys to move the 'Wabble monster'
+    
+    Get the pink Blobules to increase score
+    
+    Fatter Wabbles move slower but take more hits!
+
+"""
+
+for line in console_message.splitlines():
+    print line
+
 
 class GameWindow(pyglet.window.Window):
     def __init__(self):

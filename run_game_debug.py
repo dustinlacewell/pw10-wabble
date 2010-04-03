@@ -15,7 +15,8 @@ try:
     import psyco
     psyco.profile()
 except:
-    print "psyco not found"
+    if __debug__:
+        print "psyco not found"
 
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet

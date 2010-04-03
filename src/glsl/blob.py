@@ -89,7 +89,7 @@ def _buildBallShader():
      )
     )
     _shader_message = ball_shader.link()
-    if _shader_message:
+    if _shader_message and __debug__:
         print _shader_message
     return ball_shader
     

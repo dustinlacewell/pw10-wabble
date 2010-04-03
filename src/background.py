@@ -18,7 +18,6 @@ class BackgroundManager(object):
         
         self.rotation = deque()
         rotation = [line.strip() for line in pyglet.resource.file(rotation)]
-        print rotation
         if not options['DYNAMIC_BACKGROUNDS']:
             rotation = [rotation[0]]
             
