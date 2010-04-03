@@ -4,7 +4,8 @@ Game: Wabble
 
 Prerequisites:
 
-    Pyglet 1.1.4 or SVN (see troubleshooting) http://www.pyglet.org/download.html
+    Pyglet 1.1.4 or SVN (see troubleshooting)
+        http://www.pyglet.org/download.html
     
     AVBin:
         Windows: Extract avbin.dll next to run_game.py
@@ -45,8 +46,9 @@ EVERYONE:  The best advice is, if you're using Pyglet 1.1.4 and something
                               
 NO SOUND : Did you install AVBin?
 
-GRAPHIC CORRUPTION : Install Pyglet 1.1.4
+GRAPHIC CORRUPTION/ISSUES WITH GL : Install Pyglet 1.1.4
 
                                LINUX
-STUDDERING : Sound issue. Does run_game_silent.py speed things up? If so
-             install Pyglet SVN.    
+STUTTERING : Sound issue. Does run_game_silent.py speed things up? If so
+             install Pyglet SVN.
+             
