@@ -123,7 +123,7 @@ class SplashScene(Scene):
               )
         self.splash_images.append(splashgame)
         
-        babaroa = SplashImage(img('babaroa.png'),
+        babaroa = SplashImage(img('dempa.png'),
               self.splash_batch, self.bg_group,
               300, 300,
               9, 80,
