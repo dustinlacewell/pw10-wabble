@@ -98,9 +98,9 @@ class GameScene(Scene):
         (player_x, player_y) = self.player.get_position()
         if pos in self.lines:
             self.add_line(r+1)
-        elif t=='h' and abs(pos[1] - player_y) <= 16:
+        elif t=='h' and abs(pos[1] - player_y) <= 32:
             self.add_line(r+1)
-        elif t=='v' and abs(pos[1] - player_x) <= 16:
+        elif t=='v' and abs(pos[1] - player_x) <= 32:
             self.add_line(r+1)
         else:
             if t == 'h':
