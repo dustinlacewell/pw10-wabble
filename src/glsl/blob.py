@@ -5,6 +5,7 @@ import pyglet
 from pyglet.gl import *
 
 import shader
+import config
 
 def _buildBallShader():
     ball_shader = shader.ShaderProgram(
@@ -129,7 +130,9 @@ class BlobGroup(object):
     rnd = None
     colour = None
     
-    ball_shader = gl_info.have_version(2) and _buildBallShader()
+    ball_shader = None
+    if config.options['USE_SHADERS']:
+        ball_shader = gl_info.have_version(2) and _buildBallShader()
     
     x = None
     y = None
