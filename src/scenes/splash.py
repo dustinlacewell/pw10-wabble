@@ -141,7 +141,7 @@ class SplashScene(Scene):
         
         for i in xrange(7):
             for j in xrange(8):
-                r = b = random.choice(multipliers)
+                r = b = random.choice(multipliers[:-1])
                 g = min(1.0, r + random.choice(multipliers[1:]))
                 column = rnd.randint(10, 590)
                 blob_group = src.glsl.blob.BlobGroup(
