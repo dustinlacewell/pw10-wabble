@@ -39,10 +39,11 @@ class Line(object):
     def update_vlist(self):
         self.update_color()
         # self.vlist.vertices = [self.x1, self.y1, self.x2, self.y2]
-        self.vlist.vertices[0] = self.x1
-        self.vlist.vertices[1] = self.y1
-        self.vlist.vertices[2] = self.x2
-        self.vlist.vertices[3] = self.y2
+        verts = self.vlist.vertices
+        verts[0] = self.x1
+        verts[1] = self.y1
+        verts[2] = self.x2
+        verts[3] = self.y2
         self.vlist.colors = self.color*2
         
     def update_color(self):
