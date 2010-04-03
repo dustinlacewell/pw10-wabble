@@ -22,7 +22,7 @@ def _buildBallShader():
         uniform vec2 core_position;
         uniform float core_radius;
         
-        const float border_width = 1.25;
+        const float border_width = 1.2;
         const float shimmer_radius = 1.75;
         
         void main(){
