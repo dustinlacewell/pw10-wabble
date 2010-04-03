@@ -26,7 +26,7 @@ WINDOW_HEIGHT = 600
 
 class GameWindow(pyglet.window.Window):
     def __init__(self):
-        super(GameWindow, self).__init__(WINDOW_WIDTH, WINDOW_HEIGHT, caption="Wasers")
+        super(GameWindow, self).__init__(WINDOW_WIDTH, WINDOW_HEIGHT, caption="Pyweek 10 - Wabble by team __pyweeklings__")
         self.setup_gl()
         #pyglet.clock.schedule(self.update)
         pyglet.clock.schedule_interval(self.update, 1.0/30.0)
@@ -40,13 +40,13 @@ class GameWindow(pyglet.window.Window):
         
         self.music_player = pyglet.media.Player()
         self.music_player.eos_action = pyglet.media.Player.EOS_LOOP
-        self.music_player.volume = 0.5
+        self.music_player.volume = 0.1
         self.music_player.queue(pyglet.media.load('dat/audio/1indus.mp3', streaming=False))
         # Create a reference for the current scene
         self.scene = None
         self._game_scene = scenes.GameScene(self)
         
-        self.fps_display = pyglet.clock.ClockDisplay(color=(1.0,0.0,0.0,1.0))
+        if __debug__: self.fps_display = pyglet.clock.ClockDisplay(color=(1.0,0.0,0.0,1.0))
         # Set initial scene with our utility function
         if __debug__:
             self.gamescene()

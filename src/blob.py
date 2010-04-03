@@ -23,11 +23,11 @@ class Blob(object):
         for dot in self.dots[1:]:
             dot.wander_limit = dot_distance
             
-    def add_dot(self, x, y, accel_min=0.025, accel_max=1.0):
+    def add_dot(self, x, y, accel_min=0.025, accel_max=1.0, initial_accel=0.0):
         if len(self.dots) < self.MAXDOTS:
             self.dots.append(src.glsl.blob.Blob(
              x, y,
-             acceleration_max=accel_max, acceleration_min=accel_min
+             acceleration_max=accel_max, acceleration_min=accel_min, initial_accelleration=initial_accel
             ))
         self._update_wander_limit()
         
@@ -52,5 +52,5 @@ class Blobule(Blob):
         group.addBlob(blobule)
         
         for i in xrange(dots):
-            self.add_dot(group.x, group.y, accel_min=accel_min, accel_max=accel_max)
+            self.add_dot(group.x, group.y, accel_min=accel_min, accel_max=accel_max, initial_accel=accel_max)
             
