@@ -39,11 +39,13 @@ def _buildLaserShader():
                 ) / 1.5));
             }
             
-            gl_FragColor = vec4((player_distance + max(0.0, base_colour)) / 255.0, 0.0, 0.0, 1.0);*/
+            
+            
+            gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);*/
             
             float player_distance = 0.0;
             if(enable_intensity == 0){
-                player_distance = 255.0;
+                player_distance = mod((random.x + random.y) * (vertex.x + vertex.y) * 4.1, 255.0);
             }else{
                 player_distance = max(0.0, 255.0 - (sqrt(
                  pow((position.x - core_position.x), 2.0) +
