@@ -14,6 +14,7 @@ from src.score import ScoreLabel
 
 import src.glsl.blob
 from scene import Scene
+import config
 
 # This scene class is the object that the application class maintains
 class GameScene(Scene):
@@ -75,11 +76,12 @@ class GameScene(Scene):
     def enter(self):
         self.reset_blobule()
         
-        self.window.music_player = pyglet.media.Player()
-        self.window.music_player.eos_action = pyglet.media.Player.EOS_LOOP
-        self.window.music_player.volume = 0.1
-        self.window.music_player.queue(self.window.music_track)
-        self.window.music_player.play()
+        if config.options['USE_SOUND']:
+            self.window.music_player = pyglet.media.Player()
+            self.window.music_player.eos_action = pyglet.media.Player.EOS_LOOP
+            self.window.music_player.volume = 0.1
+            self.window.music_player.queue(self.window.music_track)
+            self.window.music_player.play()
         
         gc.disable()
         if __debug__: print "gc disabled"
@@ -89,10 +91,11 @@ class GameScene(Scene):
         gc.enable()
     
     def load_sounds(self):
-        self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
-        self.scream2 = pyglet.media.load('dat/audio/fx/scream2.mp3', streaming=False)
-        self.scream3 = pyglet.media.load('dat/audio/fx/scream3.mp3', streaming=False)
-        self.eat = pyglet.media.load('dat/audio/fx/fx3.mp3', streaming=False)
+        if config.options['USE_SOUND']:
+            self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
+            self.scream2 = pyglet.media.load('dat/audio/fx/scream2.mp3', streaming=False)
+            self.scream3 = pyglet.media.load('dat/audio/fx/scream3.mp3', streaming=False)
+            self.eat = pyglet.media.load('dat/audio/fx/fx3.mp3', streaming=False)
         
     def reset_blobule(self):
         '''give the blobule a random position'''
@@ -149,11 +152,14 @@ class GameScene(Scene):
                 deleted_lines.append(key)
                 if not self.player.remove_dot():
                     if len(self.player.dots) > 3:
-                        random.choice((self.scream1, self.scream2)).play().volume = 0.1
+                        if config.options['USE_SOUND']:
+                            random.choice((self.scream1, self.scream2)).play().volume = 0.1
                     else:
-                        self.scream3.play().volume = 0.1
+                        if config.options['USE_SOUND']:
+                            self.scream3.play().volume = 0.1
                 else:
-                    random.choice((self.scream1, self.scream2)).play().volume = 0.1
+                    if config.options['USE_SOUND']:
+                        random.choice((self.scream1, self.scream2)).play().volume = 0.1
                     self.window.scorescene(score=self.score)
         # clean up the dead lines
         for key in deleted_lines:
@@ -162,7 +168,8 @@ class GameScene(Scene):
 
         # Player-Blobule collision
         if self.coll_funcs.collide(self.blobule, self.player):
-            self.eat.play().volume = 0.1
+            if config.options['USE_SOUND']:
+                self.eat.play().volume = 0.1
             self.add_score()
             self.reset_blobule() # new blobule position
             player_pos = self.player.get_position()

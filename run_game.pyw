@@ -11,6 +11,7 @@ import sys
 import os
 import subprocess
 import datetime
+import config
 
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet

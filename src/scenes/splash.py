@@ -5,7 +5,7 @@ import pyglet
 import src
 from src.util import img
 from src.blob import Blobule
-
+import config
 from scene import Scene
 
 class SplashImage(pyglet.sprite.Sprite):
@@ -158,17 +158,20 @@ class SplashScene(Scene):
         self.doblobs = False
         pyglet.clock.schedule_once(self._set_do_blobs, 4.0)
         
-        self.intro_player = pyglet.media.Player()
-        self.intro_sound = pyglet.media.load('dat/audio/1creepy.mp3', streaming=False)
-        self.intro_player.queue(self.intro_sound)
-        self.intro_player.volume = 0.1
-        self.intro_player.play()
+        if config.options['USE_SOUND']:
+            self.intro_player = pyglet.media.Player()
+            self.intro_sound = pyglet.media.load('dat/audio/1creepy.mp3', streaming=False)
+            self.intro_player.queue(self.intro_sound)
+            self.intro_player.volume = 0.1
+            self.intro_player.play()
     
     def enter(self):
-        self.window.music_player.pause()
+        if config.options['USE_SOUND']:
+            self.window.music_player.pause()
     
     def leave(self):
-        self.intro_player.pause()
+        if config.options['USE_SOUND']:
+            self.intro_player.pause()
     
     def _set_do_blobs(self, dt):
         self.doblobs = True

@@ -17,7 +17,7 @@ import pyglet
 from pyglet.window import key
 # Import our submodule
 import scenes
-
+import config
 import pyglet.media
 
 WINDOW_WIDTH = 600
@@ -37,8 +37,9 @@ class GameWindow(pyglet.window.Window):
         pyglet.resource.reindex()
         pyglet.resource.add_font('psychotic.ttf')
         # create background manager
-        self.music_player = pyglet.media.Player()
-        self.music_track = pyglet.media.load('dat/audio/1indus.mp3', streaming=False)
+        if config.options['USE_SOUND']:
+            self.music_player = pyglet.media.Player()
+            self.music_track = pyglet.media.load('dat/audio/1indus.mp3', streaming=False)
         # Create a reference for the current scene
         self.scene = None
         self._game_scene = scenes.GameScene(self)
@@ -100,3 +101,4 @@ class GameWindow(pyglet.window.Window):
 def run():
     window = GameWindow()
     pyglet.app.run()
+

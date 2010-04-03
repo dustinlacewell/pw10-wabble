@@ -5,7 +5,7 @@ from random import Random, randint, uniform
 
 import pyglet
 from pyglet.gl import *
-
+import config
 import glsl.shader as shader
 
 def _buildLaserShader():
@@ -75,7 +75,8 @@ class Laser(object):
     LENGTH = 30
     SPEED = 150
     
-    laser_fx = pyglet.media.load('dat/audio/fx/laser.mp3', streaming=False)
+    laser_fx = pyglet.media.load('dat/audio/fx/laser.mp3', streaming=False) if config.options['USE_SOUND'] else None
+
     
     def __init__(self, group, x1, y1, x2, y2):
         # TODO: add asserts
@@ -94,10 +95,11 @@ class Laser(object):
         self.play_fx()
         
     def play_fx(self):
-        player = pyglet.media.Player()
-        player.queue(self.laser_fx)
-        player.volume = 0.1
-        player.play()
+        if config.options['USE_SOUND']:
+            player = pyglet.media.Player()
+            player.queue(self.laser_fx)
+            player.volume = 0.1
+            player.play()
         
 class HorizontalLaser(Laser):
     def __init__(self, group, y_pos):

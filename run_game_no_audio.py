@@ -10,6 +10,7 @@ __version__ = '$Id: run_game.py 218 2009-07-18 20:44:59Z dr0iddr0id $'
 import sys
 import os
 import subprocess
+import config
 
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet
@@ -36,6 +37,7 @@ def run_optimized():
     else:
         # running optimized
         # import the game
+        config.options['USE_SOUND'] = False
         from src.main import run
         run()
 
