@@ -58,7 +58,7 @@ class PlayerController(object):
         self.ox, self.oy = x, y
         
         if player_dot:
-            self.blobule = Blobule(group, dots=1)
+            self.blobule = Blobule(group, dots=2)
         else:
             self.blobule = Blobule(group, dots=5, accel_max=1.5)
             

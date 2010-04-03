@@ -23,8 +23,7 @@ def _buildBallShader():
         uniform float core_radius;
         
         const float border_width = 1.25;
-        //const float shimmer_mod = 6.0;
-        const float shimmer_radius = 2.0;
+        const float shimmer_radius = 1.75;
         
         void main(){
             //Calculate distance from centre of current blob.
@@ -48,7 +47,7 @@ def _buildBallShader():
                 );
             }else{
                 //Brighten the core of each blob.
-                float brightness_mod = 0.125;
+                float brightness_mod = 0.05;
                 if(distance < 0.75){//Draw a bright dot right in the centre.
                     brightness_mod = 0.25 + sqrt(1.0 / distance);
                 }else{//Apply shimmer.
@@ -64,9 +63,9 @@ def _buildBallShader():
                     float shimmer_distance = sqrt(pow(shimmer_x, 2.0) + pow(shimmer_y, 2.0));
                     
                     if(shimmer_distance <= shimmer_radius){
-                        brightness_mod += min(0.675, sqrt(
+                        brightness_mod += min(0.9, sqrt(
                             shimmer_distance / shimmer_radius
-                        ) / sqrt(shimmer_radius));
+                        ) / pow(shimmer_radius, 0.75));
                     }
                 }
                 
@@ -159,11 +158,6 @@ class BlobGroup(object):
     x = None
     y = None
     
-    shimmer_forward = True
-    shimmer_state = 10
-    shimmer_max = 20
-    shimmer_min = 10
-    
     def __init__(self, x, y, core_radius, colour, seed=None):
         self.colour = colour
         self.x = x
@@ -222,23 +216,10 @@ class BlobGroup(object):
         
         if self.blobs:
             if _ball_shader:
-                if self.shimmer_forward:
-                    if self.shimmer_state < self.shimmer_max:
-                        self.shimmer_state += 1
-                    else:
-                        self.shimmer_forward = False
-                        self.shimmer_state = self.shimmer_max - 1
-                else:
-                    if self.shimmer_state > self.shimmer_min:
-                        self.shimmer_state -= 1
-                    else:
-                        self.shimmer_forward = True
-                        self.shimmer_state = self.shimmer_min + 1
-                        
                 _ball_shader.enable()
                 
                 _ball_shader.setUniform_vec3('rgb', *self.colour)
-                _ball_shader.setUniform_vec3('shimmer', uniform(-2.5, 2.5), uniform(-2.5, 2.5), float(self.shimmer_state))
+                _ball_shader.setUniform_vec3('shimmer', uniform(-5.0, 5.0), uniform(-5.0, 5.0), uniform(10.0, 50.0))
                 _ball_shader.setUniform_vec2('core_position', self.x, self.y)
                 _ball_shader.setUniform_float('core_radius', self.core_radius)
             else:
