@@ -23,6 +23,7 @@ def _buildLaserShader():
         uniform vec2 core_position;
         uniform vec2 random;
         uniform int enable_intensity;
+        uniform int horizontal;
         
         varying vec4 vertex;
         
@@ -44,16 +45,15 @@ def _buildLaserShader():
             gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);*/
             
             float player_distance = 0.0;
-            if(enable_intensity == 0){
-                player_distance = mod((random.x + random.y) * (vertex.x + vertex.y) * 4.1, 255.0);
+            if(horizontal == 1.0){
+                player_distance = mod((position.x * (gl_FragCoord.y + vertex.y)) + gl_FragCoord.x, 4.0) * 64; 
+                player_distance = max(50.0, min(200.0, player_distance + 30.0));
             }else{
-                player_distance = max(0.0, 255.0 - (sqrt(
-                 pow((position.x - core_position.x), 2.0) +
-                 pow((position.y - core_position.y), 2.0)
-                ) / 1.5));
+                player_distance = mod((position.x * (gl_FragCoord.x + vertex.x)) + gl_FragCoord.y, 4.0) * 64; 
+                player_distance = max(50.0, min(255.0, player_distance + 30.0));
             }
             
-            gl_FragColor = vec4(player_distance / 255.0, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4(player_distance / 255.0, player_distance / (255.0*2), player_distance / (255.0*2), 1.0);
         }"""
      )
     )
@@ -211,8 +211,9 @@ class LaserGroup(object):
                 _laser_shader.enable()
                 
                 _laser_shader.setUniform_vec2('core_position', player_x, player_y)
-                _laser_shader.setUniform_vec2('random', float(randint(0, 15)), float(randint(0, 15)))
+                _laser_shader.setUniform_vec2('random', float(randint(0, 255)), float(randint(0, 255)))
                 _laser_shader.setUniform_int('enable_intensity', int(enable_intensity))
+
             else:
                 glColor3f(1.0, 0.0, 0.0)
                 
@@ -221,6 +222,7 @@ class LaserGroup(object):
                 centre_x = (laser.x1 + laser.x2) / 2
                 if _laser_shader:
                     _laser_shader.setUniform_vec2('position', centre_x, laser.y1)
+                    _laser_shader.setUniform_int('horizontal', 1)
                 else:
                     if enable_intensity:
                         glColor3f(max(0.0, (((centre_x - player_x) ** 2) + ((laser.y1 - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
@@ -234,6 +236,7 @@ class LaserGroup(object):
                 centre_y = (laser.y1 + laser.y2) / 2
                 if _laser_shader:
                     _laser_shader.setUniform_vec2('position', laser.x1, centre_y)
+                    _laser_shader.setUniform_int('horizontal', 0)
                 else:
                     if enable_intensity:
                         glColor3f(max(0.0, (((laser.x1 - player_x) ** 2) + ((centre_y - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
