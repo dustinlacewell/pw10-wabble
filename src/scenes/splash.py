@@ -48,6 +48,9 @@ class SplashImage(pyglet.sprite.Sprite):
                 self.opacity = 0
                 self.fade2 = False
                 self.visible = False
+    def unschedule(self):
+        pyglet.clock.unschedule(self._start_fade1)
+        pyglet.clock.unschedule(self._start_fade2)
 
 class PlayerController(object):
     def __init__(self, scene, group, x, y, player_dot=False):
@@ -161,12 +164,19 @@ class SplashScene(Scene):
         self.intro_player.volume = 0.1
         self.intro_player.play()
     
-        
+    def enter(self):
+        self.window.music_player.pause()
+    
+    def leave(self):
+        self.intro_player.pause()
+    
     def _set_do_blobs(self, dt):
         self.doblobs = True
 
     def on_key_press(self, symbol, modifiers):
-        pass
+        if symbol == pyglet.window.key.ESCAPE :
+            self.change_to_game_scene()
+        return True
         #=======================================================================
         # positions = []
         # for blob in self.blobs:
@@ -180,8 +190,15 @@ class SplashScene(Scene):
         #-------------------------------------------- newblob.set_position(x, y)
         #-------------------------------------------- self.blobs.append(newblob)
 
+    def change_to_game_scene(self):
+        pyglet.clock.unschedule(self._set_do_blobs)
+        for img in self.splash_images:
+            img.unschedule()
+        self.window.gamescene()
+        
+        
     def update(self, dt):
-        print self.logo.opacity
+        if __debug__: print self.logo.opacity
         for image in self.splash_images:
             image.update(dt)
             
@@ -198,7 +215,7 @@ class SplashScene(Scene):
                 
         if self.player_blob_group.y == 300 and not self.blob_groups and not self.done:
             self.done = True
-            self.window.gamescene()
+            self.change_to_game_scene()
             
     def do_gamescene(self, dt):
         del self.newblob_group
@@ -207,7 +224,7 @@ class SplashScene(Scene):
         self.window.gamescene() 
 
     def draw(self):
-        print self.logo.opacity
+        if __debug__: print self.logo.opacity
         self.splash_batch.draw()
         if self.doblobs:
             for group in [self.player_blob_group] + self.blob_groups:

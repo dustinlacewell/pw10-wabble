@@ -37,11 +37,8 @@ class GameWindow(pyglet.window.Window):
         pyglet.resource.reindex()
         pyglet.resource.add_font('psychotic.ttf')
         # create background manager
-        
         self.music_player = pyglet.media.Player()
-        self.music_player.eos_action = pyglet.media.Player.EOS_LOOP
-        self.music_player.volume = 0.1
-        self.music_player.queue(pyglet.media.load('dat/audio/1indus.mp3', streaming=False))
+        self.music_track = pyglet.media.load('dat/audio/1indus.mp3', streaming=False)
         # Create a reference for the current scene
         self.scene = None
         self._game_scene = scenes.GameScene(self)
@@ -89,7 +86,6 @@ class GameWindow(pyglet.window.Window):
     # Utility methods to easily set the two scenes we're using in this example
     def splashscene(self):
         if __debug__: print 'pausing game scenes music'
-        self.music_player.pause()
         self._set_scene(scenes.SplashScene(self))
     
     def gamescene(self):

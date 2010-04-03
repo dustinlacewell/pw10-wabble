@@ -74,9 +74,13 @@ class GameScene(Scene):
 
     def enter(self):
         self.reset_blobule()
-        if not self.window.music_player.playing:
-            if __debug__: print 'starting playing game scene music'
-            self.window.music_player.play()
+        
+        self.window.music_player = pyglet.media.Player()
+        self.window.music_player.eos_action = pyglet.media.Player.EOS_LOOP
+        self.window.music_player.volume = 0.1
+        self.window.music_player.queue(self.window.music_track)
+        self.window.music_player.play()
+        
         gc.disable()
         if __debug__: print "gc disabled"
     
@@ -210,7 +214,7 @@ def coll_player_vertical_line(line, player):
             radius = 6
             if player.blob.y <= line.y2 and player.blob.y >= line.y1:
                 # in the segment
-                print 'expensive!'
+                if __debug__: print 'expensive!'
                 for dot in player.dots:
                     dx = line.x1 - dot.x
                     if -radius <= dx <= radius:
@@ -222,7 +226,7 @@ def coll_player_vertical_line(line, player):
                 else:
                     line_y = line.y1
                 radius_sq = radius ** 2
-                print 'expensive!'
+                if __debug__: print 'expensive!'
                 for dot in player.dots:
                     if (dot.x - line.x1) ** 2 + (dot.y - line_y) ** 2 < radius_sq:
                         if __debug__: print "vert out of segment collision, up of line:", line_y==line.y2
@@ -236,7 +240,7 @@ def coll_player_horizontal_line(line, player):
             radius = 6
             if player.blob.x <= line.x2 and player.blob.x >= line.x1:
                 # in the segment
-                print 'expensive!'
+                if __debug__: print 'expensive!'
                 for dot in player.dots:
                     dy = line.y1 - dot.y
                     if -radius <= dy <= radius:
@@ -248,7 +252,7 @@ def coll_player_horizontal_line(line, player):
                 else:
                     line_x = line.x1
                 radius_sq = radius ** 2
-                print 'expensive!'
+                if __debug__: print 'expensive!'
                 for dot in player.dots:
                     if (dot.y - line.y1) ** 2 + (dot.x - line_x) ** 2 < radius_sq:
                         if __debug__: print "vert out of segment collision, left of line:", line_x==line.x1
