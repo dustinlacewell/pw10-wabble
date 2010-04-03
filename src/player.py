@@ -20,6 +20,8 @@ class Player(Blob):
         self.dir_y = 0
         self.vel_x = 0
         self.vel_y = 0
+
+        self.bloody = False
         
         if config.options['SHOW_SLIME_TRAIL']:
             if not self.slime_images:
@@ -31,6 +33,9 @@ class Player(Blob):
                 for image in self.slime_images:
                     image.anchor_x = image.width // 2
                     image.anchor_y = image.height // 2
+            self.blood_images = (
+                src.util.img('blood1.png'),                 
+                )
             self.slime_trail = []
             self.slime_group = slime_group
             self.slime_batch = slime_batch
@@ -45,6 +50,9 @@ class Player(Blob):
         
         for n in xrange(5):
             self.add_dot(group.x, group.y)
+            
+    def _unset_bloody(self, dt):
+        self.bloody = False
 
     def get_blob(self):
         return self.blob
@@ -128,8 +136,13 @@ class Player(Blob):
                     self.slime_timeout = 0.06 + dot_count / 150.0
                     #Add to slime trail.
                     for dot in self.dots:
+                        choices = list()
+                        if self.bloody:
+                            choices += self.blood_images
+                        else:
+                            choices += self.slime_images
                         slime = pyglet.sprite.Sprite(
-                         random.choice(self.slime_images),
+                         random.choice(choices),
                          x=dot.x, y=dot.y,
                          batch=self.slime_batch, group=self.slime_group
                         )
@@ -137,12 +150,16 @@ class Player(Blob):
                         slime.rotation = random.randint(0, 360)
                         slime.srate = random.uniform(0.975, 0.99)
                         slime.orate = random.uniform(0.8, 0.9)
+                        if slime.image in self.blood_images:
+                            slime.orate = random.uniform(0.9, 0.98)
                         self.slime_trail.append(slime)
                         
             #Update the blob's position.
             self.blob_group.offsetPosition(offset_x, offset_y)
                 
     def remove_dot(self):
+        self.bloody = True
+        pyglet.clock.schedule_once(self._unset_bloody, .25)
         #Kill player when three or fewer children remain, plus itself.
         return super(Player, self).remove_dot() or super(Player, self).remove_dot() or super(Player, self).remove_dot() or len(self.dots) <= 4
         #if len(self.dots) <= 5:
