@@ -112,7 +112,7 @@ class Player(Blob):
                 self.blob_group.offsetPosition(offset_x, offset_y)
                 
     def remove_dot(self):
-        return self.remove_dot() or self.remove_dot() or self.remove_dot()
+        return super(Player, self).remove_dot() or super(Player, self).remove_dot() or super(Player, self).remove_dot()
         #if len(self.dots) <= 5:
         #    return True
         

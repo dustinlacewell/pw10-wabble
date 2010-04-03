@@ -35,8 +35,8 @@ class Blob(object):
         if len(self.dots) > 1:
             old_dot = self.dots.pop(1)
             self._update_wander_limit()
-            return True
-        return False
+            return False
+        return True
         
     def get_position(self):
         return (self.blob_group.x, self.blob_group.y)
