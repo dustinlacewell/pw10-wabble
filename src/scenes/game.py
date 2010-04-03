@@ -123,15 +123,10 @@ class GameScene(Scene):
                   color=(0, 255, 0), size=12, 
                   batch=self.batch, group=self.scoregroup_hi)
         self.scores.append(newscore)
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        self.player.x = x
-        self.player.y = y
         
     def on_key_press(self, symbol, modifiers):
         if not self.logo_fade and self.logo.opacity == 255:
             self.logo_fade = True
-
 
     def update(self, dt):
         self.bg.update(dt) # background effects
@@ -202,8 +197,9 @@ class GameScene(Scene):
 def coll_blob_player(b, player):
     dx = b.blob_group.x - player.blob.x
     dy = b.blob_group.y - player.blob.y
-    if dx * dx + dy * dy < 30 * 30:
-        for dot in player.dots:
+    if dx * dx + dy * dy < 20 * 20:
+        return True
+        for n in range(ndots):
             for blub in b.dots:
                 dist_sq = ((blub.x - dot.x)**2) + ((blub.y - dot.y)**2)
                 if dist_sq <= 5*5:
@@ -218,6 +214,7 @@ def coll_player_vertical_line(line, player):
                 radius = 6
                 if player.blob.y <= line.y2 and player.blob.y >= line.y1:
                     # in the segment
+                    print 'expensive!'
                     for dot in player.dots:
                         dx = line.x1 - dot.x
                         if -radius <= dx <= radius:
@@ -229,6 +226,7 @@ def coll_player_vertical_line(line, player):
                     else:
                         line_y = line.y1
                     radius_sq = radius * radius
+                    print 'expensive!'
                     for dot in player.dots:
                         if (dot.x - line.x1) ** 2 + (dot.y - line_y) ** 2 < radius_sq:
                             if __debug__: print "vert out of segment collision, up of line:", line_y==line.y2
@@ -243,6 +241,7 @@ def coll_player_horizontal_line(line, player):
                 radius = 6
                 if player.blob.x <= line.x2 and player.blob.x >= line.x1:
                     # in the segment
+                    print 'expensive!'
                     for dot in player.dots:
                         dy = line.y1 - dot.y
                         if -radius <= dy <= radius:
@@ -254,6 +253,7 @@ def coll_player_horizontal_line(line, player):
                     else:
                         line_x = line.x1
                     radius_sq = radius * radius
+                    print 'expensive!'
                     for dot in player.dots:
                         if (dot.y - line.y1) ** 2 + (dot.x - line_x) ** 2 < radius_sq:
                             if __debug__: print "vert out of segment collision, left of line:", line_x==line.x1

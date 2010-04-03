@@ -11,6 +11,10 @@ import sys
 import os
 import subprocess
 
+import psyco
+psyco.profile()
+
+
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet
 pyglet.options['debug'] = True

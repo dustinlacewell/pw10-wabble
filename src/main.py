@@ -1,5 +1,5 @@
 
-import os
+import os, gc
 import os.path
 
 orig_join = os.path.join
@@ -46,7 +46,7 @@ class GameWindow(pyglet.window.Window):
         self.scene = None
         self._game_scene = scenes.GameScene(self)
         
-        self.fps_display = pyglet.clock.ClockDisplay()
+        self.fps_display = pyglet.clock.ClockDisplay(color=(1.0,0.0,0.0,1.0))
         # Set initial scene with our utility function
         if __debug__:
             self.gamescene()

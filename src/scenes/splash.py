@@ -137,12 +137,16 @@ class SplashScene(Scene):
               )
         self.splash_images.append(logo)
         
+        multipliers = [0.0, 0.3, 0.8]
+        
         for i in xrange(7):
             for j in xrange(8):
+                r = b = random.choice(multipliers)
+                g = min(1.0, r + random.choice(multipliers[1:]))
                 column = rnd.randint(10, 590)
                 blob_group = src.glsl.blob.BlobGroup(
                  column, rnd.randint(-100 * (j + 1), -100 * j),
-                 8, (0.375, 0.125, 0.0)
+                 8, (r, g, b)
                 )
                 self.blob_groups.append(blob_group)
                 newblob = PlayerController(self, blob_group, column, 610)
