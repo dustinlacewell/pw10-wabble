@@ -155,7 +155,9 @@ class VerticalLaser(Laser):
 class LaserGroup(object):
     horizontal_lasers = None
     vertical_lasers = None
-    laser_shader = gl_info.have_version(2) and _buildLaserShader()
+    laser_shader = None
+    if config.options['SHADE_LASERS']:
+        laser_shader = gl_info.have_version(2) and _buildLaserShader()
     
     def __init__(self):
         horizontal_vertices = [-15.0, -1.5] + [15.0, -1.5] + [15.0, 1.5] + [-15.0, 1.5]

@@ -4,6 +4,7 @@ import random
 
 from src.blob import Blob
 import src.util
+import config
 
 import src.glsl.blob
 
@@ -16,18 +17,19 @@ class Player(Blob):
         self.scene = scene
         self.speed = self.MAXSPEED
         
-        if not self.slime_images:
-            self.slime_images = (
-             src.util.img('slime_1.png'),
-             src.util.img('slime_2.png'),
-             src.util.img('blob3.png'),
-            )
-            for image in self.slime_images:
-                image.anchor_x = image.width // 2
-                image.anchor_y = image.height // 2
-        self.slime_trail = []
-        self.slime_group = slime_group
-        self.slime_batch = slime_batch
+        if config.options['SHOW_SLIME_TRAIL']:
+            if not self.slime_images:
+                self.slime_images = (
+                 src.util.img('slime_1.png'),
+                 src.util.img('slime_2.png'),
+                 src.util.img('blob3.png'),
+                )
+                for image in self.slime_images:
+                    image.anchor_x = image.width // 2
+                    image.anchor_y = image.height // 2
+            self.slime_trail = []
+            self.slime_group = slime_group
+            self.slime_batch = slime_batch
         
         self.blob = src.glsl.blob.Blob(
          group.x, group.y,
@@ -37,9 +39,9 @@ class Player(Blob):
         
         self.radius = self.blob.radius
         
-        #for n in xrange(5):
-        #    self.add_dot(group.x, group.y)
-        self.add_dot(group.x, group.y)    
+        for n in xrange(5):
+            self.add_dot(group.x, group.y)
+
     def get_blob(self):
         return self.blob
         
@@ -71,22 +73,23 @@ class Player(Blob):
         
     def update(self, dt):
         (offset_x, offset_y) = self.handle_movement(dt)
-        self.slime_timeout = max(0.0, self.slime_timeout - dt)
         
         #Clean up slime trail.
-        dead_slime = []
-        dot_count = len(self.dots)
-        fade_rate = 0.75 - (dot_count / 175.0) * (1.0 + dt)
-        for slime in self.slime_trail:
-            slime.opacity = int(slime.opacity * slime.orate)
-            if slime.opacity <= 0.05:
-                dead_slime.append(slime)
-            else:
-                slime.scale *= slime.srate
-        for slime in dead_slime:
-            slime.delete()
-            self.slime_trail.remove(slime)
-            
+        if config.options['SHOW_SLIME_TRAIL']:
+            self.slime_timeout = max(0.0, self.slime_timeout - dt)
+            dead_slime = []
+            dot_count = len(self.dots)
+            fade_rate = 0.75 - (dot_count / 175.0) * (1.0 + dt)
+            for slime in self.slime_trail:
+                slime.opacity = int(slime.opacity * slime.orate)
+                if slime.opacity <= 0.05:
+                    dead_slime.append(slime)
+                else:
+                    slime.scale *= slime.srate
+            for slime in dead_slime:
+                slime.delete()
+                self.slime_trail.remove(slime)
+                
         if offset_x or offset_y:
             #Prevent the blob from leaving the field.
             if offset_x + self.blob_group.x > 600:
@@ -98,7 +101,7 @@ class Player(Blob):
             elif offset_y + self.blob_group.y < 0:
                 offset_y = -self.blob_group.y
                 
-            if offset_x or offset_y:
+            if (offset_x or offset_y) and config.options['SHOW_SLIME_TRAIL']:
                 if self.slime_timeout == 0.0:
                     self.slime_timeout = 0.06 + dot_count / 150.0
                     #Add to slime trail.
@@ -114,8 +117,8 @@ class Player(Blob):
                         slime.orate = random.uniform(0.8, 0.9)
                         self.slime_trail.append(slime)
                         
-                #Update the blob's position.
-                self.blob_group.offsetPosition(offset_x, offset_y)
+            #Update the blob's position.
+            self.blob_group.offsetPosition(offset_x, offset_y)
                 
     def remove_dot(self):
         return super(Player, self).remove_dot() or super(Player, self).remove_dot() or super(Player, self).remove_dot()
