@@ -24,26 +24,23 @@ class GameScene(Scene):
         # The rendering batch
         self.batch = pyglet.graphics.Batch()
         self.laser_batch = pyglet.graphics.Batch()
+        
         # The foreground rendering groups
         self.scoregroup_hi = pyglet.graphics.OrderedGroup(5)
         self.scoregroup_lo = pyglet.graphics.OrderedGroup(4)
-        #self.laser_group = pyglet.graphics.OrderedGroup(3)
-        #self.blob_group = pyglet.graphics.OrderedGroup(2)
         self.slime_group = pyglet.graphics.OrderedGroup(2)
         self.print_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
-        # The containers for all blobs to be rendered
-        
         # Manages the background effects
         self.bg = BackgroundManager(batch=self.batch, group=self.bg_group)
+        
         # The collision machinery        
         self.coll_funcs = CollisionDispatcher()
         # Each entity pair has an algorithm
-        # self.coll_funcs.add(HorizontalLine, Player, coll_segment_player)
         self.coll_funcs.add(HorizontalLine, Player, coll_player_horizontal_line)
-        # self.coll_funcs.add(VerticalLine, Player, coll_segment_player)
         self.coll_funcs.add(VerticalLine, Player, coll_player_vertical_line)
         self.coll_funcs.add(Blobule, Player, coll_blob_player)
+        
         # The player blob
         self.blob_group = src.glsl.blob.BlobGroup(300, 300, 8, (0.125, 0.375, 0.0))
         self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.5, 0.0, 0.5))
@@ -54,45 +51,42 @@ class GameScene(Scene):
         logo.x, logo.y = 300, 300
         self.logo = logo
         self.logo_fade = False
-        #self.player = Player(self, batch=self.batch, group=self.blob_group, pgroup=self.print_group)
-        #self.player.set_position(300, 500)
-        self.score = 0
+        
         self.load_sounds()
+        
         # The blobule powerup
         self.blobule = Blobule(self.blobule_group)
-        #self.blobule = Blob(dots=0, batch=self.batch, group=self.blob_group)
-        #self.blobule.set_position(300, 300)
+        
         # The lasers
         self.lines = {}
         self.do_horiz = True
         pyglet.graphics.glLineWidth(3)
+        
         # Score labels
+        self.score = 0
         self.scores = []
         
-        gc.disable()
 
     def enter(self):
         self.reset_blobule()
         if not self.window.music_player.playing:
             if __debug__: print 'starting playing game scene music'
             self.window.music_player.play()
+        gc.disable()
+        if __debug__: print "gc disabled"
+    
+    def leave(self):
+        if __debug__: print "gc enabled"
+        gc.enable()
     
     def load_sounds(self):
         self.scream1 = pyglet.media.load('dat/audio/fx/scream1.mp3', streaming=False)
         self.scream2 = pyglet.media.load('dat/audio/fx/scream2.mp3', streaming=False)
         self.scream3 = pyglet.media.load('dat/audio/fx/scream3.mp3', streaming=False)
         self.eat = pyglet.media.load('dat/audio/fx/fx3.mp3', streaming=False)
-        # self.blobule_appear = pyglet.media.load('dat/audio/fx/fx1.mp3', streaming=False)
-        
-    #===========================================================================
-    # def remove_blobule(self):
-    #    self.blobule_group.setPosition(-100, -100) # out of visible/reachable range
-    #    pyglet.clock.schedule_once(self.reset_blobule, random.randrange(1,4))
-    #===========================================================================
         
     def reset_blobule(self):
         '''give the blobule a random position'''
-        # self.blobule_appear.play()
         self.blobule_group.setPosition(random.randint(30, 570), random.randint(30, 570))
         
     def add_line(self, r=0):
@@ -134,11 +128,11 @@ class GameScene(Scene):
         self.player.update(dt)
         self.blob_group.tick()
         self.blobule_group.tick()
+        
         # Line-Player collision
         deleted_lines = []
         for key, line in self.lines.iteritems():
             line.update(dt)
-
             if self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
                 n_times_before_die = 2
@@ -150,12 +144,12 @@ class GameScene(Scene):
                 scream.play()
                 #remove_dot returns whether player is dead
                 if self.player.remove_dot():
-                    gc.enable()
                     self.window.scorescene(score=self.score)
         # clean up the dead lines
         for key in deleted_lines:
             line = self.lines.pop(key)
             line.delete()
+
         # Player-Blobule collision
         if self.coll_funcs.collide(self.blobule, self.player):
             self.eat.play()
@@ -166,7 +160,6 @@ class GameScene(Scene):
             self.add_line() # new random hazard
             if __debug__:
                 print "lines", len(self.lines)
-            
             if self.score >= 5:
                 self.bg.do_fade = True
             if self.score >= 15:
@@ -190,10 +183,6 @@ class GameScene(Scene):
         self.blobule_group.draw(600, 600)
         self.blob_group.draw(600, 600)
         self.laser_batch.draw()
-        
-        
-        
-
     
 def coll_blob_player(b, player):
     dx = b.blob_group.x - player.blob.x
@@ -208,7 +197,6 @@ def coll_blob_player(b, player):
     return False
     
 def coll_player_vertical_line(line, player):
-    #return False
     dx = player.blob.x - line.x1
     if -15 < dx < 15:
         if player.blob.y - line.y2 <= 20 and line.y1 - player.blob.y <= 20:
@@ -235,7 +223,6 @@ def coll_player_vertical_line(line, player):
     return False
 
 def coll_player_horizontal_line(line, player):
-    #return False
     dy = player.blob.y - line.y1
     if -15 < dy < 15:
         if player.blob.x - line.x2 <= 20 and line.x1 - player.blob.x <= 20:
@@ -261,45 +248,3 @@ def coll_player_horizontal_line(line, player):
                         return True
     return False
 
-# def coll_line_player(line, player):
-    # for dot in player.dots:
-        # w1 = dot.x - line.x1 # vector from p1 to the player
-        # w2 = dot.y - line.y1
-        # #print "w", w1, w2, line.v1, line.v2
-        # az = line.v1 * w2 - line.v2 * w1 # cross product
-        # a_squared = az * az
-        # dist_squared = a_squared / line.length_sq
-        # if player.radius * player.radius > dist_squared:
-            # print "line collision "
-            # return True
-    # return False
-
-# def coll_segment_player(seg, player):
-    # for dot in player.dots:
-        # w1 = dot.x - seg.x1 # vector from p1 to the player
-        # w2 = dot.y - seg.y1
-        # u1 = seg.v1 / seg.LENGTH
-        # u2 = seg.v2 / seg.LENGTH
-        # s = w1 * u1 + w2 * u2
-        
-        # prad_sq = dot.radius * dot.radius
-        # if s < 0:
-            # x = dot.x - seg.x1
-            # y = dot.y - seg.y1
-            # dist_sq = x * x + y * y
-            # #print "seg1", dist_sq, prad_sq
-            # if dist_sq < prad_sq:
-                # print "collision 1"
-                # return True
-            # return False
-        # elif s*s > seg.length_sq:
-            # x = dot.x - seg.x2
-            # y = dot.y - seg.y2
-            # dist_sq = x * x + y * y
-            # #print "seg2", dist_sq, prad_sq
-            # if dist_sq < prad_sq:
-                # print "collision 2"
-                # return True
-            # return False
-    # return False    
-    
