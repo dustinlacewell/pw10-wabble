@@ -82,12 +82,15 @@ class GameScene(Scene):
             self.window.music_player.volume = 0.1
             self.window.music_player.queue(self.window.music_track)
             self.window.music_player.play()
+            
+        self.window.push_handlers(self.player)
         
         gc.disable()
         if __debug__: print "gc disabled"
     
     def leave(self):
         if __debug__: print "gc enabled"
+        self.window.remove_handlers(self.player)
         gc.enable()
     
     def load_sounds(self):

@@ -16,6 +16,10 @@ class Player(Blob):
         super(Player, self).__init__(group)
         self.scene = scene
         self.speed = self.MAXSPEED
+        self.dir_x = 0
+        self.dir_y = 0
+        self.vel_x = 0
+        self.vel_y = 0
         
         if config.options['SHOW_SLIME_TRAIL']:
             if not self.slime_images:
@@ -44,12 +48,44 @@ class Player(Blob):
 
     def get_blob(self):
         return self.blob
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == pyglet.window.key.UP:
+            self.dir_y += 1
+        if symbol == pyglet.window.key.DOWN:
+            self.dir_y -= 1
+        if symbol == pyglet.window.key.LEFT:
+            self.dir_x -= 1
+        if symbol == pyglet.window.key.RIGHT:
+            self.dir_x += 1
+        self._normalize_direction()
+        
+    def on_key_release(self, symbol, modifiers):
+        if symbol == pyglet.window.key.UP:
+            self.dir_y -= 1
+        if symbol == pyglet.window.key.DOWN:
+            self.dir_y += 1
+        if symbol == pyglet.window.key.LEFT:
+            self.dir_x += 1
+        if symbol == pyglet.window.key.RIGHT:
+            self.dir_x -= 1
+        self._normalize_direction()
+            
+    def _normalize_direction(self):
+        if __debug__: print 'dirx/diry', self.dir_x, self.dir_y
+        length = (self.dir_x ** 2 + self.dir_y ** 2) ** 0.5
+        if length:
+            self.vel_x = self.dir_x / length
+            self.vel_y = self.dir_y / length
+        else:
+            self.vel_x = 0
+            self.vel_y = 0
         
     def handle_movement(self, dt):
         k = self.scene.keys
         
-        old_x = new_x = self.blob_group.x
-        old_y = new_y = self.blob_group.y
+        # old_x = new_x = self.blob_group.x
+        # old_y = new_y = self.blob_group.y
         #rawspeed = self.MAXSPEED - ((len(self.dots) - 5) * 10)
         #speed = max(self.MINSPEED, rawspeed) * dt
         speed = int(
@@ -59,17 +95,18 @@ class Player(Blob):
          ) * dt
         )
         
-        dir_y = 1 if k[UP] else -1 if k[DOWN] else 0
-        dir_x = 1 if k[RIGHT] else -1 if k[LEFT] else 0
+        # dir_y = 1 if k[UP] else -1 if k[DOWN] else 0
+        # dir_x = 1 if k[RIGHT] else -1 if k[LEFT] else 0
         
-        new_length = (dir_x * dir_x + dir_y * dir_y) ** 0.5
+        # new_length = (dir_x * dir_x + dir_y * dir_y) ** 0.5
         
-        if new_length != 0:
-            new_x += dir_x / new_length * speed
-            new_y += dir_y / new_length * speed
+        # if new_length != 0:
+            # new_x += dir_x / new_length * speed
+            # new_y += dir_y / new_length * speed
         
         
-        return (new_x - old_x, new_y - old_y)
+
+        return (self.vel_x * speed, self.vel_y * speed)
         
     def update(self, dt):
         (offset_x, offset_y) = self.handle_movement(dt)
