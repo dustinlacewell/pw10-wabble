@@ -65,7 +65,7 @@ class GameScene(Scene):
         # The lasers
         self.lines = {}
         self.do_horiz = True
-        pyglet.graphics.glLineWidth(3)
+        #pyglet.graphics.glLineWidth(3)
         
         # Score labels
         self.score = 0
@@ -144,7 +144,7 @@ class GameScene(Scene):
         # Line-Player collision
         deleted_lines = []
         for key, line in self.lines.iteritems():
-            line.update(dt)
+            #line.update(dt)
             if self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
                 if not self.player.remove_dot():
