@@ -25,13 +25,14 @@ class GameScene(Scene):
         self.keys = window.keys
         # The rendering batch
         self.batch = pyglet.graphics.Batch()
+        self.score_batch = pyglet.graphics.Batch()
         #self.laser_batch = pyglet.graphics.Batch()
         # The lasers
         self.laser_group = LaserGroup()
         
         # The foreground rendering groups
-        self.scoregroup_hi = pyglet.graphics.OrderedGroup(5)
-        self.scoregroup_lo = pyglet.graphics.OrderedGroup(4)
+        self.scoregroup_hi = pyglet.graphics.OrderedGroup(1)
+        self.scoregroup_lo = pyglet.graphics.OrderedGroup(0)
         self.slime_group = pyglet.graphics.OrderedGroup(2)
         self.print_group = pyglet.graphics.OrderedGroup(1)
         self.bg_group = pyglet.graphics.OrderedGroup(0)
@@ -52,7 +53,7 @@ class GameScene(Scene):
         self.blobule_group = src.glsl.blob.BlobGroup(0, 0, 8, (0.5, 0.0, 0.5))
         self.player = Player(self, self.blob_group, self.slime_group, self.batch)
         
-        logo = spr('logo.png', batch = self.batch, group=self.scoregroup_hi)
+        logo = spr('logo.png', batch = self.score_batch, group=self.scoregroup_hi)
         logo.image.anchor_x, logo.image.anchor_y = 300, logo.image.height / 2
         logo.x, logo.y = 300, 300
         self.logo = logo
@@ -133,7 +134,7 @@ class GameScene(Scene):
         newscore = ScoreLabel(str(self.score), 
                   blobule_x, blobule_y, 
                   color=(0, 255, 0), size=12, 
-                  batch=self.batch, group=self.scoregroup_hi)
+                  batch=self.score_batch, group=self.scoregroup_hi)
         self.scores.append(newscore)
         
     def on_key_press(self, symbol, modifiers):
@@ -204,6 +205,7 @@ class GameScene(Scene):
         self.blob_group.draw(600, 600)
         #self.laser_batch.draw()
         self.laser_group.draw(600, 600, self.blob_group.x, self.blob_group.y, self.score >= 20)
+        self.score_batch.draw()
     
 def coll_blob_player(b, player):
     dx = b.blob_group.x - player.blob.x
