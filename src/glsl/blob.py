@@ -17,8 +17,13 @@ def _buildBallShader():
         uniform vec2 position;
         uniform float radius;
         uniform vec3 rgb;
+        uniform vec3 shimmer;
         uniform vec2 core_position;
         uniform float core_radius;
+        
+        const float border_width = 1.25;
+        //const float shimmer_mod = 6.0;
+        const float shimmer_radius = 2.0;
         
         void main(){
             //Calculate distance from centre of current blob.
@@ -33,7 +38,7 @@ def _buildBallShader():
              pow((core_position.y - gl_FragCoord.y), 2.0)
             );
             
-            if(core_distance >= core_radius - 1.1 && abs(distance - radius) <= 1.1){
+            if(core_distance >= core_radius - border_width && abs(distance - radius) <= border_width){
                 gl_FragColor = vec4(
                  min(1.0, rgb.r * 2.0),
                  min(1.0, rgb.g * 2.0),
@@ -42,9 +47,26 @@ def _buildBallShader():
                 );
             }else{
                 //Brighten the core of each blob.
-                float brightness_mod = 0.0;
-                if(distance < 0.75){
-                    brightness_mod = 1.0 + sqrt((1.0 / distance) - 0.75);
+                float brightness_mod = 0.125;
+                if(distance < 0.75){//Draw a bright dot right in the centre.
+                    brightness_mod = 0.25 + sqrt(1.0 / distance);
+                }else{//Apply shimmer.
+                    float shimmer_x = mod(gl_FragCoord.x + shimmer.x, shimmer[2]);
+                    float shimmer_y = mod(gl_FragCoord.y + shimmer.y, shimmer[2]);
+                    if(shimmer_x >= shimmer[2] - shimmer_radius){
+                        shimmer_x -= shimmer[2] + shimmer_radius;
+                    }
+                    if(shimmer_y >= shimmer[2] - shimmer_radius){
+                        shimmer_y -= shimmer[2] + shimmer_radius;
+                    }
+                    
+                    float shimmer_distance = sqrt(pow(shimmer_x, 2.0) + pow(shimmer_y, 2.0));
+                    
+                    if(shimmer_distance <= shimmer_radius){
+                        brightness_mod += min(0.675, sqrt(
+                            shimmer_distance / shimmer_radius
+                        ) / sqrt(shimmer_radius));
+                    }
                 }
                 
                 gl_FragColor = vec4(
@@ -134,6 +156,11 @@ class BlobGroup(object):
     x = None
     y = None
     
+    shimmer_forward = True
+    shimmer_state = 10
+    shimmer_max = 20
+    shimmer_min = 10
+    
     def __init__(self, x, y, core_radius, colour, seed=None):
         self.colour = colour
         self.x = x
@@ -192,13 +219,27 @@ class BlobGroup(object):
         
         if self.blobs:
             if _ball_shader:
+                if self.shimmer_forward:
+                    if self.shimmer_state < self.shimmer_max:
+                        self.shimmer_state += 1
+                    else:
+                        self.shimmer_forward = False
+                        self.shimmer_state = self.shimmer_max - 1
+                else:
+                    if self.shimmer_state > self.shimmer_min:
+                        self.shimmer_state -= 1
+                    else:
+                        self.shimmer_forward = True
+                        self.shimmer_state = self.shimmer_min + 1
+                        
                 _ball_shader.enable()
                 
                 _ball_shader.setUniform_vec3('rgb', *self.colour)
+                _ball_shader.setUniform_vec3('shimmer', uniform(-2.5, 2.5), uniform(-2.5, 2.5), float(self.shimmer_state))
                 _ball_shader.setUniform_vec2('core_position', self.x, self.y)
                 _ball_shader.setUniform_float('core_radius', self.core_radius)
             else:
-                glColor3f(*[0.75 * c for c in self.colour])
+                glColor3f(*[0.8 * c for c in self.colour])
                 
             for blob in self.blobs:
                 if _ball_shader:
