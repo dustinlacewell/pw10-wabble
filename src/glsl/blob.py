@@ -69,7 +69,7 @@ def _buildBallShader():
                     if(shimmer_distance <= shimmer_radius){
                         brightness_mod += min(0.9, sqrt(
                             shimmer_distance / shimmer_radius
-                        ) / pow(shimmer_radius, 0.75));
+                        ));
                     }else{
                         brightness_mod = 0.3;
                         r = 0.4;
