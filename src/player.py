@@ -107,6 +107,7 @@ class Player(Blob):
                          batch=self.slime_batch, group=self.slime_group
                         )
                         slime.scale = 0.85
+                        slime.rotation = random.randint(0, 360)
                         slime.srate = random.uniform(0.975, 0.99)
                         slime.orate = random.uniform(0.8, 0.9)
                         self.slime_trail.append(slime)
