@@ -1,7 +1,7 @@
 (lp0
-I20
-aI25
-aI33
-aI39
-aI50
+I50
+aI56
+aI63
+aI73
+aI75
 a.

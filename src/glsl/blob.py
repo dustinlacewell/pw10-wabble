@@ -124,10 +124,9 @@ class Blob(object):
             self.vec_y = vec_y
             
 class BlobGroup(object):
+    
     blobs = None
-    
     rnd = None
-    
     colour = None
     
     ball_shader = gl_info.have_version(2) and _buildBallShader()

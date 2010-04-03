@@ -37,9 +37,9 @@ class Player(Blob):
         
         self.radius = self.blob.radius
         
-        for n in xrange(5):
-            self.add_dot(group.x, group.y)
-            
+        #for n in xrange(5):
+        #    self.add_dot(group.x, group.y)
+        self.add_dot(group.x, group.y)    
     def get_blob(self):
         return self.blob
         
@@ -52,12 +52,7 @@ class Player(Blob):
         #speed = max(self.MINSPEED, rawspeed) * dt
         speed = int(
          (
-          self.MINSPEED + (
-           (
-            self.MAXSPEED - self.MINSPEED
-           ) * (
-            1.0 - (len(self.dots) / float(self.MAXDOTS)) ** 0.5
-           )
+          self.MINSPEED + ( (self.MAXSPEED - self.MINSPEED) * (1.0 - (len(self.dots) / float(self.MAXDOTS)) ** 1)
           )
          ) * dt
         )

@@ -10,9 +10,9 @@ import src.glsl.blob
                 
 class Blob(object):
     
-    MAXSPEED = 150
-    MINSPEED = 50
-    MAXDOTS = 20
+    MAXSPEED = 160
+    MINSPEED = 45
+    MAXDOTS = 26
 
     def __init__(self, group):
         self.blob_group = group

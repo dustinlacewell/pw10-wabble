@@ -120,12 +120,13 @@ class ScoreScene(Scene):
         if self.lastscore == self.playerscore:
             pyglet.clock.unschedule(self._increase_scorelabel)
             for idx, score in enumerate(self.highscores):
-                if score == self.playerscore and self.highscores[idx+1] != score:
-                    label = self.highscore_labels[idx]
-                    label.begin_update()
-                    self.highscore_labels[idx].color = (0, 255, 0, 255)
-                    label.end_update()
-                    break
+                if score == self.playerscore:
+                    if (idx != len(self.highscores) - 1 and self.highscores[idx+1] != score) or idx == len(self.highscores) - 1:
+                        label = self.highscore_labels[idx]
+                        label.begin_update()
+                        self.highscore_labels[idx].color = (0, 255, 0, 255)
+                        label.end_update()
+                        break
         
         
     def on_key_press(self, symbol, modifiers):
