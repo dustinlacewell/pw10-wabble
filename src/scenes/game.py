@@ -135,16 +135,11 @@ class GameScene(Scene):
             line.update(dt)
             if self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
-                n_times_before_die = 2
-                if len(self.player.dots) <= 5 + (n_times_before_die + 1) * 3: # 3 dots are removed at once when hit by laser
-                    # painfull screams
-                    scream = random.choice([self.scream1, self.scream2])
-                else:
-                    scream = self.scream3
-                scream.play()
-                #remove_dot returns whether player is dead
                 if self.player.remove_dot():
+                    self.scream3.play()
                     self.window.scorescene(score=self.score)
+                else:
+                    random.choice((self.scream1, self.scream2)).play()
         # clean up the dead lines
         for key in deleted_lines:
             line = self.lines.pop(key)
