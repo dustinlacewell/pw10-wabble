@@ -98,7 +98,7 @@ class Player(Blob):
                 
             if offset_x or offset_y:
                 if self.slime_timeout == 0.0:
-                    self.slime_timeout = 0.02 + dot_count / 150.0
+                    self.slime_timeout = 0.06 + dot_count / 150.0
                     #Add to slime trail.
                     for dot in self.dots:
                         slime = pyglet.sprite.Sprite(

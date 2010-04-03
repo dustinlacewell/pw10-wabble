@@ -61,7 +61,7 @@ class GameWindow(pyglet.window.Window):
     def update(self, dt):
         # Here we tell the current scene to update its logic
         self.scene.update(dt)
-        gc.collect(2)
+        #gc.collect(2)
 
     def on_draw(self):
         self.clear()
