@@ -156,7 +156,7 @@ class LaserGroup(object):
     horizontal_lasers = None
     vertical_lasers = None
     laser_shader = None
-    if config.options['USE_SHADERS']:
+    if config.options['SHADE_LASERS']:
         laser_shader = gl_info.have_version(2) and _buildLaserShader()
     
     def __init__(self):

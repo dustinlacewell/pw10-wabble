@@ -6,8 +6,9 @@
 
 options = {
 "USE_SOUND" : True,
-"USE_SHADERS" : False,
-"SHOW_SLIME_TRAIL" : False,
+"SHADE_BLOBS" : True,
+"SHADE_LASERS" : True,
+"SHOW_SLIME_TRAIL" : True,
 "DYNAMIC_BACKGROUNDS" : True,
 }
 

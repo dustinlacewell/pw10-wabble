@@ -131,7 +131,7 @@ class BlobGroup(object):
     colour = None
     
     ball_shader = None
-    if config.options['USE_SHADERS']:
+    if config.options['SHADE_BLOBS']:
         ball_shader = gl_info.have_version(2) and _buildBallShader()
     
     x = None
