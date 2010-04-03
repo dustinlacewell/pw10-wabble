@@ -129,13 +129,13 @@ class SplashScene(Scene):
               )
         self.splash_images.append(babaroa)
         
-        logo = SplashImage(img('logo.png'),
+        self.logo = SplashImage(img('logo.png'),
               self.splash_batch, self.bg_group,
               300, 300,
               9, 80,
               -1, 90
               )
-        self.splash_images.append(logo)
+        self.splash_images.append(self.logo)
         
         multipliers = [0.0, 0.3, 0.8]
         
@@ -155,8 +155,11 @@ class SplashScene(Scene):
         self.doblobs = False
         pyglet.clock.schedule_once(self._set_do_blobs, 4.0)
         
+        self.intro_player = pyglet.media.Player()
         self.intro_sound = pyglet.media.load('dat/audio/1creepy.mp3', streaming=False)
-        self.intro_sound.play()
+        self.intro_player.queue(self.intro_sound)
+        self.intro_player.volume = 0.1
+        self.intro_player.play()
     
         
     def _set_do_blobs(self, dt):
@@ -178,6 +181,7 @@ class SplashScene(Scene):
         #-------------------------------------------- self.blobs.append(newblob)
 
     def update(self, dt):
+        print self.logo.opacity
         for image in self.splash_images:
             image.update(dt)
             
@@ -203,6 +207,7 @@ class SplashScene(Scene):
         self.window.gamescene() 
 
     def draw(self):
+        print self.logo.opacity
         self.splash_batch.draw()
         if self.doblobs:
             for group in [self.player_blob_group] + self.blob_groups:

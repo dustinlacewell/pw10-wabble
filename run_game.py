@@ -10,7 +10,6 @@ __version__ = '$Id: run_game.py 218 2009-07-18 20:44:59Z dr0iddr0id $'
 import sys
 import os
 import subprocess
-import cProfile
 
 # Set Pyglet options now, before anything else can import a sub-module.
 import pyglet
