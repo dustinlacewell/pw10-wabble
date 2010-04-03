@@ -12,7 +12,7 @@ class Blob(object):
     
     MAXSPEED = 150
     MINSPEED = 50
-    MAXDOTS = 25
+    MAXDOTS = 20
 
     def __init__(self, group):
         self.blob_group = group
