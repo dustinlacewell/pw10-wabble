@@ -59,7 +59,7 @@ class Line(object):
     def play_fx(self):
         player = pyglet.media.Player()
         player.queue(self.laser_fx)
-        player.volume = 0.15
+        player.volume = 0.1
         player.play()
         
         

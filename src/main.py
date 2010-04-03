@@ -40,7 +40,7 @@ class GameWindow(pyglet.window.Window):
         
         self.music_player = pyglet.media.Player()
         self.music_player.eos_action = pyglet.media.Player.EOS_LOOP
-        self.music_player.volume = 0.5
+        self.music_player.volume = 0.1
         self.music_player.queue(pyglet.media.load('dat/audio/1indus.mp3', streaming=False))
         # Create a reference for the current scene
         self.scene = None

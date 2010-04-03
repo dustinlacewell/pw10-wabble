@@ -79,14 +79,15 @@ class Blob(object):
      x, y,
      wander_limit=0.0,
      acceleration_max=0.0, acceleration_min=0.0,
-     sides=7, radius=6.0
+     sides=7, radius=6.0,
+     initial_accelleration=0.0,
     ):
         self.x = x
         self.y = y
         self.wander_limit = wander_limit
         self.acceleration_max = acceleration_max
         self.acceleration_min = acceleration_min
-        self.acceleration = acceleration_max
+        self.acceleration = initial_accelleration
         self.vertices = _buildBallVertices(sides, radius)
         self.sides = len(self.vertices) // 2
         self.radius = radius

@@ -136,10 +136,10 @@ class GameScene(Scene):
             if self.coll_funcs.collide(line, self.player):
                 deleted_lines.append(key)
                 if self.player.remove_dot():
-                    self.scream3.play()
+                    self.scream3.play().volume = 0.1
                     self.window.scorescene(score=self.score)
                 else:
-                    random.choice((self.scream1, self.scream2)).play()
+                    random.choice((self.scream1, self.scream2)).play().volume = 0.1
         # clean up the dead lines
         for key in deleted_lines:
             line = self.lines.pop(key)
@@ -147,7 +147,7 @@ class GameScene(Scene):
 
         # Player-Blobule collision
         if self.coll_funcs.collide(self.blobule, self.player):
-            self.eat.play()
+            self.eat.play().volume = 0.1
             self.add_score()
             self.reset_blobule() # new blobule position
             player_pos = self.player.get_position()
