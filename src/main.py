@@ -26,7 +26,7 @@ WINDOW_HEIGHT = 600
 
 class GameWindow(pyglet.window.Window):
     def __init__(self):
-        super(GameWindow, self).__init__(WINDOW_WIDTH, WINDOW_HEIGHT, caption="Wasers")
+        super(GameWindow, self).__init__(WINDOW_WIDTH, WINDOW_HEIGHT, caption="Pyweek 10 - Wabble by team __pyweeklings__")
         self.setup_gl()
         #pyglet.clock.schedule(self.update)
         pyglet.clock.schedule_interval(self.update, 1.0/30.0)
