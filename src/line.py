@@ -34,12 +34,12 @@ def _buildLaserShader():
             }
             
             if (enable_intensity == 1){
-                player_distance = max(0.0, (sqrt(
+                player_distance = sqrt(
                  pow((position.x - core_position.x), 2.0) +
                  pow((position.y - core_position.y), 2.0)
-                )));
+                );
             }
-            red = max(0.0, red - max(25.0, (player_distance - 130.0)));
+            red = max(0.0, red - max(25.0, player_distance - 130.0));
             
             gl_FragColor = vec4(red / 255.0, 0.0, 0.0, 0.75);
         }"""
@@ -203,33 +203,35 @@ class LaserGroup(object):
                 _laser_shader.setUniform_vec2('core_position', player_x, player_y)
                 _laser_shader.setUniform_vec2('random', uniform(-8.0, 8.0), uniform(-8.0, 8.0))
                 _laser_shader.setUniform_int('enable_intensity', int(enable_intensity))
+                _laser_shader.setUniform_int('horizontal', 1)
 
             else:
                 glColor3f(1.0, 0.0, 0.0)
                 
             glVertexPointer(2, GL_FLOAT, 0, self.laser_horizontal)
-            _laser_shader.setUniform_int('horizontal', 1)
             for laser in self.horizontal_lasers:
                 centre_x = (laser.x1 + laser.x2) / 2
                 if _laser_shader:
                     _laser_shader.setUniform_vec2('position', centre_x, laser.y1)
                 else:
                     if enable_intensity:
-                        glColor3f(max(0.0, (((centre_x - player_x) ** 2) + ((laser.y1 - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
+                        glColor3f((255.0 - max(25.0, ((((centre_x - player_x) ** 2) + ((laser.y1 - player_y) ** 2)) ** 0.5) - 130.0)) / 255.0, 0.0, 0.0)
                         
                 glLoadIdentity()
                 glTranslatef(centre_x, laser.y1, 0.0)
                 glDrawArrays(GL_QUADS, 0, 4)
                 
+            if _laser_shader:
+                _laser_shader.setUniform_int('horizontal', 0)
+                
             glVertexPointer(2, GL_FLOAT, 0, self.laser_vertical)
-            _laser_shader.setUniform_int('horizontal', 0)
             for laser in self.vertical_lasers:
                 centre_y = (laser.y1 + laser.y2) / 2
                 if _laser_shader:
                     _laser_shader.setUniform_vec2('position', laser.x1, centre_y)
                 else:
                     if enable_intensity:
-                        glColor3f(max(0.0, (((laser.x1 - player_x) ** 2) + ((centre_y - player_y) ** 2) ** 0.5) / 255.0), 0.0, 0.0)
+                        glColor3f((255.0 - max(25.0, ((((laser.x1 - player_x) ** 2) + ((centre_y - player_y) ** 2)) ** 0.5) - 130.0)) / 255.0, 0.0, 0.0)
                         
                 glLoadIdentity()
                 glTranslatef(laser.x1, centre_y, 0.0)
