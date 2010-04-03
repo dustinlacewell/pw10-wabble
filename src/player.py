@@ -34,7 +34,8 @@ class Player(Blob):
                     image.anchor_x = image.width // 2
                     image.anchor_y = image.height // 2
             self.blood_images = (
-                src.util.img('blood1.png'),                 
+                src.util.img('blood1.png'),      
+                src.util.img('slime_1.png'),              
                 )
             self.slime_trail = []
             self.slime_group = slime_group
