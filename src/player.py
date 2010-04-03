@@ -57,8 +57,15 @@ class Player(Blob):
          ) * dt
         )
         
-        new_y += speed if k[UP] else -speed if k[DOWN] else 0
-        new_x += speed if k[RIGHT] else -speed if k[LEFT] else 0
+        dir_y = 1 if k[UP] else -1 if k[DOWN] else 0
+        dir_x = 1 if k[RIGHT] else -1 if k[LEFT] else 0
+        
+        new_length = (dir_x * dir_x + dir_y * dir_y) ** 0.5
+        
+        if new_length != 0:
+            new_x += dir_x / new_length * speed
+            new_y += dir_y / new_length * speed
+        
         
         return (new_x - old_x, new_y - old_y)
         
