@@ -1,6 +1,6 @@
-babaroa.png
-cushion.png
 dempa.png
+cushion.png
+babaroa.png
 dots.png
 eyes.png
 kabuki.png

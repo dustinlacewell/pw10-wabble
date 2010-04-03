@@ -4,18 +4,25 @@ from collections import deque
 import pyglet
 
 from src.util import spr
+from config import options
 
 class BackgroundManager(object):
     
     # Fade Effect
     MAXOPACITY = 128
+    SINGLEBG = 'dempa.png'
     
     def __init__(self, rotation='backgrounds.txt', batch=None, group=None):
         self.batch = batch
         self.group = group         
         
         self.rotation = deque()
-        for line in pyglet.resource.file(rotation):
+        rotation = [line.strip() for line in pyglet.resource.file(rotation)]
+        print rotation
+        if not options['DYNAMIC_BACKGROUNDS']:
+            rotation = [rotation[0]]
+            
+        for line in rotation:
             newspr = spr(line.strip(), batch=batch, group=group)
             newspr.image.anchor_x, newspr.image.anchor_y = 300, 300
             newspr.x, newspr.y = 300, 300
@@ -60,6 +67,8 @@ class BackgroundManager(object):
     def _get_do_spin(self):
         return self.__do_spin
     def _set_do_spin(self, bool):
+        if not options['DYNAMIC_BACKGROUNDS']:
+            return
         if bool:
             if self.__do_spin:
                 return
@@ -99,6 +108,8 @@ class BackgroundManager(object):
     def _get_do_zoom(self):
         return self.__do_zoom
     def _set_do_zoom(self, bool):
+        if not options['DYNAMIC_BACKGROUNDS']:
+            return
         if bool:
             if self.__do_zoom:
                 return
@@ -134,6 +145,8 @@ class BackgroundManager(object):
     def _get_do_fade(self):
         return self.__do_fade
     def _set_do_fade(self, bool):
+        if not options['DYNAMIC_BACKGROUNDS']:
+            return
         if bool:
             if self.__do_fade:
                 return
@@ -156,6 +169,8 @@ class BackgroundManager(object):
         
         
     def update(self, dt):
+        if not options['DYNAMIC_BACKGROUNDS']:
+            return
         # Fade effect
         if self.fading:
             old = self.rotation[1]
