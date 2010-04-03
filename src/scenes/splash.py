@@ -130,7 +130,7 @@ class SplashScene(Scene):
         self.splash_images.append(babaroa)
         
         self.logo = SplashImage(img('logo.png'),
-              self.splash_batch, self.bg_group,
+              self.splash_batch, self.label_group,
               300, 300,
               9, 80,
               -1, 90
