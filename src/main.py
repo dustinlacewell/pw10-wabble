@@ -32,9 +32,9 @@ Thanks for playing our pyweek 10 entry!
 
 How to Play:
     Use the arrow keys to move the 'Wabble monster'
-    
+
     Get the pink Blobules to increase score
-    
+
     Fatter Wabbles move slower but take more hits!
 
 """
@@ -77,7 +77,7 @@ class GameWindow(pyglet.window.Window):
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA,
                 pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-  
+
     def update(self, dt):
         # Here we tell the current scene to update its logic
         self.scene.update(dt)
@@ -87,10 +87,10 @@ class GameWindow(pyglet.window.Window):
         self.clear()
         # Here we hand off the drawing to the current scene
         self.scene.draw()
-        
+
         if __debug__:
             self.fps_display.draw()
-    
+
     # This utility function will remove the current scene and set a new one
     def _set_scene(self, scene):
         # Pop the current scene's event handers
@@ -102,18 +102,18 @@ class GameWindow(pyglet.window.Window):
         # Push the new scene's event handlers
         self.scene.enter()
         self.push_handlers(self.scene)
-    
+
     # Utility methods to easily set the two scenes we're using in this example
     def splashscene(self):
         if __debug__: print 'pausing game scenes music'
         self._set_scene(scenes.SplashScene(self))
-    
+
     def gamescene(self):
         self._set_scene(self._game_scene)
-        
+
     def scorescene(self, score=0):
         self._set_scene(scenes.ScoreScene(self, score))
-        
+
     def preload_gamescene(self):
         self._game_scene = scenes.GameScene(self)
 
